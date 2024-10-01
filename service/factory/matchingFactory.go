@@ -5,15 +5,19 @@ import (
 	"hedgehog-forms/model/form/section/block/question"
 )
 
-type MatchingFactory struct{}
+type MatchingFactory struct {
+	commonMapper *CommonFieldQuestionMapper
+}
 
 func NewMatchingFactory() *MatchingFactory {
-	return &MatchingFactory{}
+	return &MatchingFactory{
+		commonMapper: &CommonFieldQuestionMapper{},
+	}
 }
 
 func (m *MatchingFactory) buildFromDto(dto dto.CreateMatchingQuestionDto) question.Matching {
 	var questionObj question.Matching
-	NewCommonFieldQuestionMapper().MapCommonFieldsDto(dto.NewQuestionDto, questionObj.Question)
+	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, questionObj.Question)
 
 	listsSize := len(dto.TermsAndDefinitions)
 	terms := make([]question.MatchingTerm, listsSize)
@@ -50,7 +54,7 @@ func (m *MatchingFactory) buildFromObj(questionObj question.Matching) question.M
 	newQuestionObj.Terms = terms
 	newQuestionObj.Definitions = definitions
 
-	NewCommonFieldQuestionMapper().MapCommonFieldsObj(questionObj.Question, newQuestionObj.Question)
+	m.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj.Question)
 
 	return newQuestionObj
 }

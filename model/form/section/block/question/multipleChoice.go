@@ -7,12 +7,13 @@ import (
 
 type MultipleChoice struct {
 	Question
-	MultipleChoiceOptions []MultipleChoiceOption
+	Options []MultipleChoiceOption
+	Points  []MultipleChoicePoints
 }
 
 type MultipleChoicePoints struct {
 	model.BaseModel
-	CorrectAnswers   int
+	CorrectAnswer    int
 	Points           int
 	MultipleChoiceId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 }
