@@ -13,4 +13,11 @@ type Question struct {
 	VariantId          uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	DynamicBlockId     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	IsQuestionFromBank bool
+	Attachments        []Attachment
+}
+
+type Attachment struct {
+	model.BaseModel
+	Description string
+	QuestionId  uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 }

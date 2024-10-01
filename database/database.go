@@ -47,24 +47,33 @@ func Sync() {
 		&form.FormGenerated{},
 		&form.FormPublishedGroup{},
 		&form.FormPublishedUser{},
+
 		&section.Section{},
+
 		&block.Block{},
 		&block.StaticBlock{},
 		&block.DynamicBlock{},
 		&block.Variant{},
+
 		&question.Question{},
+		&question.Attachment{},
+
 		&question.MultipleChoice{},
 		&question.MultipleChoicePoints{},
 		&question.MultipleChoiceOption{},
+
 		&question.SingleChoice{},
 		&question.SingleChoiceOption{},
+
 		&question.TextInput{},
 		&question.TextInputAnswer{},
+
 		&question.Matching{},
-		&question.MatchingPoints{},
+		&question.MatchingPoint{},
 		&question.MatchingTerm{},
 		&question.MatchingDefinition{},
 	)
+
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -5,8 +5,16 @@ import (
 	"hedgehog-forms/model/form/section/block/question"
 )
 
+type CreateQuestion interface {
+	GetType() question.QuestionType
+}
+
 type CreateQuestionDto struct {
 	Type question.QuestionType `json:"type"`
+}
+
+func (q CreateQuestionDto) GetType() question.QuestionType {
+	return q.Type
 }
 
 type CreateQuestionOnExistingDto struct {
@@ -16,7 +24,7 @@ type CreateQuestionOnExistingDto struct {
 
 type NewQuestionDto struct {
 	CreateQuestionDto
-	Title       string      `json:"title"`
+	Description string      `json:"description"`
 	Attachments []uuid.UUID `json:"attachments"`
 }
 

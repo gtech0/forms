@@ -9,12 +9,14 @@ type Matching struct {
 	Question
 	Terms       []MatchingTerm
 	Definitions []MatchingDefinition
+	Points      []MatchingPoint
 }
 
-type MatchingPoints struct {
-	CorrectAnswers int
-	Points         int
-	MatchingId     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+type MatchingPoint struct {
+	model.BaseModel
+	CorrectAnswer int
+	Points        int
+	MatchingId    uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 }
 
 type MatchingTerm struct {
@@ -28,4 +30,5 @@ type MatchingDefinition struct {
 	model.BaseModel
 	Text       string
 	MatchingId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	Term       MatchingTerm
 }
