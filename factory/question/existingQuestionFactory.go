@@ -1,4 +1,4 @@
-package factory
+package question
 
 import (
 	"fmt"
@@ -24,7 +24,7 @@ func (e *ExistingQuestionFactory) BuildFromDto(existingDto dto.CreateQuestionOnE
 
 	switch questionObj.(question.Question).Type {
 	case question.MATCHING:
-		return NewMatchingFactory().buildFromObj(questionObj.(question.Matching)), nil
+		return NewMatchingFactory().BuildFromObj(questionObj.(question.Matching)), nil
 	case question.TEXT_INPUT:
 		return NewTextInputFactory().BuildFromDto(questionObj.(dto.CreateTextQuestionDto)), nil
 	case question.SINGLE_CHOICE:

@@ -1,4 +1,4 @@
-package factory
+package question
 
 import (
 	"hedgehog-forms/dto"
@@ -37,7 +37,7 @@ func (m *MatchingFactory) BuildFromDto(dto dto.CreateMatchingQuestionDto) (quest
 	return questionObj, nil
 }
 
-func (m *MatchingFactory) buildFromObj(questionObj question.Matching) question.Matching {
+func (m *MatchingFactory) BuildFromObj(questionObj question.Matching) question.Matching {
 	var newQuestionObj question.Matching
 	terms := make([]question.MatchingTerm, len(questionObj.Terms))
 	definitions := make([]question.MatchingDefinition, len(questionObj.Definitions))
