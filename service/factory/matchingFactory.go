@@ -15,7 +15,7 @@ func NewMatchingFactory() *MatchingFactory {
 	}
 }
 
-func (m *MatchingFactory) buildFromDto(dto dto.CreateMatchingQuestionDto) question.Matching {
+func (m *MatchingFactory) BuildFromDto(dto dto.CreateMatchingQuestionDto) (question.Matching, error) {
 	var questionObj question.Matching
 	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, questionObj.Question)
 
@@ -34,7 +34,7 @@ func (m *MatchingFactory) buildFromDto(dto dto.CreateMatchingQuestionDto) questi
 		questionObj.Points = append(questionObj.Points, pointObj)
 	}
 
-	return questionObj
+	return questionObj, nil
 }
 
 func (m *MatchingFactory) buildFromObj(questionObj question.Matching) question.Matching {

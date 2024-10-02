@@ -16,7 +16,7 @@ func NewMultipleChoiceFactory() *MultipleChoiceFactory {
 	}
 }
 
-func (m *MultipleChoiceFactory) BuildFromDto(questionDto dto.CreateMultipleChoiceQuestionDto) question.MultipleChoice {
+func (m *MultipleChoiceFactory) BuildFromDto(questionDto dto.CreateMultipleChoiceQuestionDto) (question.MultipleChoice, error) {
 	var questionObj question.MultipleChoice
 	m.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj.Question)
 
@@ -36,7 +36,7 @@ func (m *MultipleChoiceFactory) BuildFromDto(questionDto dto.CreateMultipleChoic
 		questionObj.Points = append(questionObj.Points, pointsObj)
 	}
 
-	return questionObj
+	return questionObj, nil
 }
 
 func (m *MultipleChoiceFactory) buildOptionFromDto(

@@ -6,14 +6,14 @@ import (
 )
 
 type CreateQuestion interface {
-	GetType() question.QuestionType
+	GetDtoType() question.QuestionType
 }
 
 type CreateQuestionDto struct {
 	Type question.QuestionType `json:"type"`
 }
 
-func (q CreateQuestionDto) GetType() question.QuestionType {
+func (q CreateQuestionDto) GetDtoType() question.QuestionType {
 	return q.Type
 }
 
