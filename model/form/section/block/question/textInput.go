@@ -9,7 +9,7 @@ type TextInput struct {
 	Question
 	Points          int
 	IsCaseSensitive bool
-	Answer          TextInputAnswer
+	Answer          []TextInputAnswer
 }
 
 type TextInputAnswer struct {

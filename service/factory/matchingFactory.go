@@ -11,7 +11,7 @@ type MatchingFactory struct {
 
 func NewMatchingFactory() *MatchingFactory {
 	return &MatchingFactory{
-		commonMapper: &CommonFieldQuestionMapper{},
+		commonMapper: NewCommonFieldQuestionMapper(),
 	}
 }
 

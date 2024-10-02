@@ -12,7 +12,7 @@ type MultipleChoiceFactory struct {
 
 func NewMultipleChoiceFactory() *MultipleChoiceFactory {
 	return &MultipleChoiceFactory{
-		commonMapper: &CommonFieldQuestionMapper{},
+		commonMapper: NewCommonFieldQuestionMapper(),
 	}
 }
 
