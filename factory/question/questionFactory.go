@@ -10,7 +10,7 @@ import (
 type QuestionFactory struct {
 }
 
-func (q *QuestionFactory) buildQuestion(questionDto dto.CreateQuestion) (any, error) {
+func (q *QuestionFactory) buildQuestionFromDto(questionDto dto.CreateQuestion) (any, error) {
 	switch questionDto.GetDtoType() {
 	case question.EXISTING:
 		return NewExistingQuestionFactory().BuildFromDto(questionDto.(dto.CreateQuestionOnExistingDto))
@@ -27,10 +27,13 @@ func (q *QuestionFactory) buildQuestion(questionDto dto.CreateQuestion) (any, er
 	}
 }
 
-func (q *QuestionFactory) buildQuestionDtoForDynamicBlock(questionDtos []dto.CreateQuestionDto, dynamicBlock block.DynamicBlock) ([]question.Question, error) {
+func (q *QuestionFactory) buildQuestionForDynamicBlockDto(
+	questionDtos []dto.CreateQuestionDto,
+	dynamicBlock block.DynamicBlock,
+) ([]question.Question, error) {
 	questionObjs := make([]question.Question, len(questionDtos))
 	for _, questionDto := range questionDtos {
-		questionObj, err := q.buildQuestion(questionDto)
+		questionObj, err := q.buildQuestionFromDto(questionDto)
 		if err != nil {
 			return nil, err
 		}
@@ -41,60 +44,68 @@ func (q *QuestionFactory) buildQuestionDtoForDynamicBlock(questionDtos []dto.Cre
 	return questionObjs, nil
 }
 
-//    public List<QuestionEntity> buildQuestionsForDynamicBlockFromEntities(
-//            List<QuestionEntity> questionEntities,
-//            DynamicBlockEntity blockEntity
-//    ) {
-//        var newQuestionEntities = new ArrayList<QuestionEntity>(questionEntities.size());
-//
-//        for (QuestionEntity questionEntity : questionEntities) {
-//            var newQuestionEntity = buildQuestionFromEntity(questionEntity);
-//            newQuestionEntity.setDynamicBlock(blockEntity);
-//
-//            newQuestionEntities.add(newQuestionEntity);
-//        }
-//
-//        return newQuestionEntities;
-//    }
-//
-//    public List<QuestionEntity> buildQuestionsForVariantFromDtos(List<CreateQuestionDto> questionDtos,
-//                                                                 VariantEntity variantEntity
-//    ) {
-//        var questionEntities = new ArrayList<QuestionEntity>(questionDtos.size());
-//        for (int i = 0; i < questionDtos.size(); i++) {
-//            var questionDto = questionDtos.get(i);
-//
-//            var questionEntity = buildQuestionFromDto(questionDto);
-//            questionEntity.setVariant(variantEntity);
-//            questionEntity.setOrder(i);
-//
-//            questionEntities.add(questionEntity);
-//        }
-//
-//        return questionEntities;
-//    }
-//
-//    public List<QuestionEntity> buildQuestionsForVariantFromEntities(
-//            List<QuestionEntity> questionEntities,
-//            VariantEntity variantEntity
-//    ) {
-//        var newQuestionEntities = new ArrayList<QuestionEntity>(questionEntities.size());
-//
-//        for (int i = 0; i < questionEntities.size(); i++) {
-//            var questionEntity = questionEntities.get(i);
-//            var newQuestionEntity = buildQuestionFromEntity(questionEntity);
-//            newQuestionEntity.setVariant(variantEntity);
-//            newQuestionEntity.setOrder(i);
-//
-//            newQuestionEntities.add(newQuestionEntity);
-//        }
-//
-//        return newQuestionEntities;
-//    }
-//
-//    private QuestionEntity buildQuestionFromEntity(QuestionEntity questionEntity) {
-//        var questionDto = new CreateQuestionBasedOnExistingDto();
-//        questionDto.setQuestionId(questionEntity.getId());
-//
-//        return buildQuestionFromDto(questionDto);
-//    }
+func (q *QuestionFactory) buildQuestionForDynamicBlockObj(
+	questionObjs []question.Question,
+	dynamicBlock block.DynamicBlock,
+) ([]question.Question, error) {
+	newQuestionObjs := make([]question.Question, len(questionObjs))
+	for _, questionDto := range questionObjs {
+		newQuestionObj, err := q.buildQuestionFromObj(questionDto)
+		if err != nil {
+			return nil, err
+		}
+
+		newQuestionObj.DynamicBlockId = dynamicBlock.Id
+		newQuestionObjs = append(newQuestionObjs, newQuestionObj)
+	}
+
+	return questionObjs, nil
+}
+
+func (q *QuestionFactory) buildQuestionForVariantDto(
+	questionDtos []dto.CreateQuestionDto,
+	variant block.Variant,
+) ([]question.Question, error) {
+	questionObjs := make([]question.Question, len(questionDtos))
+	for order, questionDto := range questionDtos {
+		questionObj, err := q.buildQuestionFromDto(questionDto)
+		if err != nil {
+			return nil, err
+		}
+
+		questionObj.(*question.Question).VariantId = variant.Id
+		questionObj.(*question.Question).Order = order
+		questionObjs = append(questionObjs, questionObj.(question.Question))
+	}
+	return questionObjs, nil
+}
+
+func (q *QuestionFactory) buildQuestionForVariantObj(
+	questionObjs []question.Question,
+	variant block.Variant,
+) ([]question.Question, error) {
+	newQuestionObjs := make([]question.Question, len(questionObjs))
+	for order, questionDto := range questionObjs {
+		newQuestionObj, err := q.buildQuestionFromObj(questionDto)
+		if err != nil {
+			return nil, err
+		}
+
+		newQuestionObj.VariantId = variant.Id
+		newQuestionObj.Order = order
+		newQuestionObjs = append(newQuestionObjs, newQuestionObj)
+	}
+
+	return questionObjs, nil
+}
+
+func (q *QuestionFactory) buildQuestionFromObj(questionObj question.Question) (question.Question, error) {
+	var questionDto dto.CreateQuestionOnExistingDto
+	questionDto.QuestionId = questionObj.Id
+	result, err := q.buildQuestionFromDto(questionDto)
+	if err != nil {
+		return question.Question{}, err
+	}
+
+	return result.(question.Question), nil
+}
