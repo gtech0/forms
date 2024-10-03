@@ -9,7 +9,7 @@ import (
 type FormPatternFactory struct {
 }
 
-func (f *FormPatternFactory) BuildFormPattern(dto dto.CreateFormPatternDto) (form.FormPattern, error) {
+func (f *FormPatternFactory) BuildFormPattern(dto *dto.CreateFormPatternDto) (form.FormPattern, error) {
 	var formPattern form.FormPattern
 	formPattern.Title = dto.Title
 	formPattern.Description = dto.Description

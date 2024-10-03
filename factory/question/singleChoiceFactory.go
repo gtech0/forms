@@ -15,7 +15,7 @@ func NewSingleChoiceFactory() *SingleChoiceFactory {
 	}
 }
 
-func (s *SingleChoiceFactory) BuildFromDto(questionDto dto.CreateSingleChoiceQuestionDto) (question.SingleChoice, error) {
+func (s *SingleChoiceFactory) BuildFromDto(questionDto *dto.CreateSingleChoiceQuestionDto) (question.SingleChoice, error) {
 	var questionObj question.SingleChoice
 	s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj.Question)
 	questionObj.Points = questionDto.Points
@@ -30,7 +30,7 @@ func (s *SingleChoiceFactory) BuildFromDto(questionDto dto.CreateSingleChoiceQue
 	return questionObj, nil
 }
 
-func (s *SingleChoiceFactory) BuildFromEntity(questionObj question.SingleChoice) question.SingleChoice {
+func (s *SingleChoiceFactory) BuildFromObj(questionObj question.SingleChoice) question.SingleChoice {
 	var newQuestionObj question.SingleChoice
 	s.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj.Question)
 	newQuestionObj.Points = questionObj.Points
@@ -48,7 +48,7 @@ func (s *SingleChoiceFactory) BuildFromEntity(questionObj question.SingleChoice)
 }
 
 func (s *SingleChoiceFactory) buildOptionFromDto(
-	questionDto dto.CreateSingleChoiceQuestionDto,
+	questionDto *dto.CreateSingleChoiceQuestionDto,
 	order int,
 	questionObj question.SingleChoice,
 ) question.SingleChoiceOption {

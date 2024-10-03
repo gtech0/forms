@@ -10,25 +10,29 @@ import (
 type QuestionFactory struct {
 }
 
-func (q *QuestionFactory) buildQuestionFromDto(questionDto dto.CreateQuestion) (any, error) {
-	switch questionDto.GetDtoType() {
-	case question.EXISTING:
-		return NewExistingQuestionFactory().BuildFromDto(questionDto.(dto.CreateQuestionOnExistingDto))
-	case question.MATCHING:
-		return NewMatchingFactory().BuildFromDto(questionDto.(dto.CreateMatchingQuestionDto))
-	case question.TEXT_INPUT:
-		return NewTextInputFactory().BuildFromDto(questionDto.(dto.CreateTextQuestionDto))
-	case question.SINGLE_CHOICE:
-		return NewSingleChoiceFactory().BuildFromDto(questionDto.(dto.CreateSingleChoiceQuestionDto))
-	case question.MULTIPLE_CHOICE:
-		return NewMultipleChoiceFactory().BuildFromDto(questionDto.(dto.CreateMultipleChoiceQuestionDto))
+func NewQuestionFactory() *QuestionFactory {
+	return &QuestionFactory{}
+}
+
+func (q *QuestionFactory) buildQuestionFromDto(questionDto any) (any, error) {
+	switch quest := questionDto.(type) {
+	case *dto.CreateQuestionOnExistingDto:
+		return NewExistingQuestionFactory().BuildFromDto(quest)
+	case *dto.CreateMatchingQuestionDto:
+		return NewMatchingFactory().BuildFromDto(quest)
+	case *dto.CreateTextQuestionDto:
+		return NewTextInputFactory().BuildFromDto(quest)
+	case *dto.CreateSingleChoiceQuestionDto:
+		return NewSingleChoiceFactory().BuildFromDto(quest)
+	case *dto.CreateMultipleChoiceQuestionDto:
+		return NewMultipleChoiceFactory().BuildFromDto(quest)
 	default:
 		return nil, errors.New("unknown question type")
 	}
 }
 
-func (q *QuestionFactory) buildQuestionForDynamicBlockDto(
-	questionDtos []dto.CreateQuestionDto,
+func (q *QuestionFactory) BuildQuestionForDynamicBlockDto(
+	questionDtos []any,
 	dynamicBlock block.DynamicBlock,
 ) ([]question.Question, error) {
 	questionObjs := make([]question.Question, len(questionDtos))
@@ -44,7 +48,7 @@ func (q *QuestionFactory) buildQuestionForDynamicBlockDto(
 	return questionObjs, nil
 }
 
-func (q *QuestionFactory) buildQuestionForDynamicBlockObj(
+func (q *QuestionFactory) BuildQuestionForDynamicBlockObj(
 	questionObjs []question.Question,
 	dynamicBlock block.DynamicBlock,
 ) ([]question.Question, error) {
@@ -62,8 +66,8 @@ func (q *QuestionFactory) buildQuestionForDynamicBlockObj(
 	return questionObjs, nil
 }
 
-func (q *QuestionFactory) buildQuestionForVariantDto(
-	questionDtos []dto.CreateQuestionDto,
+func (q *QuestionFactory) BuildQuestionForVariantDto(
+	questionDtos []any,
 	variant block.Variant,
 ) ([]question.Question, error) {
 	questionObjs := make([]question.Question, len(questionDtos))
@@ -80,7 +84,7 @@ func (q *QuestionFactory) buildQuestionForVariantDto(
 	return questionObjs, nil
 }
 
-func (q *QuestionFactory) buildQuestionForVariantObj(
+func (q *QuestionFactory) BuildQuestionForVariantObj(
 	questionObjs []question.Question,
 	variant block.Variant,
 ) ([]question.Question, error) {

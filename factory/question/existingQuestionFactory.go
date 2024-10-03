@@ -14,7 +14,7 @@ func NewExistingQuestionFactory() *ExistingQuestionFactory {
 	return &ExistingQuestionFactory{}
 }
 
-func (e *ExistingQuestionFactory) BuildFromDto(existingDto dto.CreateQuestionOnExistingDto) (any, error) {
+func (e *ExistingQuestionFactory) BuildFromDto(existingDto *dto.CreateQuestionOnExistingDto) (any, error) {
 	var questionObj any
 	if err := database.DB.Model(&question.Question{}).
 		Where("id = ?", existingDto.QuestionId).
@@ -26,11 +26,11 @@ func (e *ExistingQuestionFactory) BuildFromDto(existingDto dto.CreateQuestionOnE
 	case question.MATCHING:
 		return NewMatchingFactory().BuildFromObj(questionObj.(question.Matching)), nil
 	case question.TEXT_INPUT:
-		return NewTextInputFactory().BuildFromDto(questionObj.(dto.CreateTextQuestionDto)), nil
+		return NewTextInputFactory().BuildFromObj(questionObj.(question.TextInput)), nil
 	case question.SINGLE_CHOICE:
-		return NewSingleChoiceFactory().BuildFromDto(questionObj.(dto.CreateSingleChoiceQuestionDto)), nil
+		return NewSingleChoiceFactory().BuildFromObj(questionObj.(question.SingleChoice)), nil
 	case question.MULTIPLE_CHOICE:
-		return NewMultipleChoiceFactory().BuildFromDto(questionObj.(dto.CreateMultipleChoiceQuestionDto)), nil
+		return NewMultipleChoiceFactory().BuildFromObj(questionObj.(question.MultipleChoice)), nil
 	default:
 		return question.Question{}, fmt.Errorf("unknown question type")
 	}

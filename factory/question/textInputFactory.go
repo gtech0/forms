@@ -15,7 +15,7 @@ func NewTextInputFactory() *TextInputFactory {
 	}
 }
 
-func (t *TextInputFactory) BuildFromDto(questionDto dto.CreateTextQuestionDto) (question.TextInput, error) {
+func (t *TextInputFactory) BuildFromDto(questionDto *dto.CreateTextQuestionDto) (question.TextInput, error) {
 	var questionObj question.TextInput
 	t.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj.Question)
 
@@ -29,7 +29,7 @@ func (t *TextInputFactory) BuildFromDto(questionDto dto.CreateTextQuestionDto) (
 	return questionObj, nil
 }
 
-func (t *TextInputFactory) BuildFromEntity(questionObj question.TextInput) question.TextInput {
+func (t *TextInputFactory) BuildFromObj(questionObj question.TextInput) question.TextInput {
 	var newQuestionObj question.TextInput
 	t.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj.Question)
 

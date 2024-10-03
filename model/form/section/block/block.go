@@ -17,7 +17,7 @@ type Block struct {
 
 type DynamicBlock struct {
 	Block
-	BlockObjects []question.Question
+	Questions []question.Question
 }
 
 type StaticBlock struct {
