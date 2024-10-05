@@ -11,5 +11,5 @@ type Variant struct {
 	Title         string
 	Description   string
 	StaticBlockID uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
-	Questions     []question.Question
+	Questions     []question.IQuestion
 }

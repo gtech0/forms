@@ -14,102 +14,104 @@ func NewQuestionFactory() *QuestionFactory {
 	return &QuestionFactory{}
 }
 
-func (q *QuestionFactory) buildQuestionFromDto(questionDto any) (any, error) {
-	switch quest := questionDto.(type) {
+func (q *QuestionFactory) buildQuestionFromDto(questionDto any) (question.IQuestion, error) {
+	switch questionTyped := questionDto.(type) {
 	case *dto.CreateQuestionOnExistingDto:
-		return NewExistingQuestionFactory().BuildFromDto(quest)
+		return NewExistingQuestionFactory().BuildFromDto(questionTyped)
 	case *dto.CreateMatchingQuestionDto:
-		return NewMatchingFactory().BuildFromDto(quest)
+		return NewMatchingFactory().BuildFromDto(questionTyped)
 	case *dto.CreateTextQuestionDto:
-		return NewTextInputFactory().BuildFromDto(quest)
+		return NewTextInputFactory().BuildFromDto(questionTyped)
 	case *dto.CreateSingleChoiceQuestionDto:
-		return NewSingleChoiceFactory().BuildFromDto(quest)
+		return NewSingleChoiceFactory().BuildFromDto(questionTyped)
 	case *dto.CreateMultipleChoiceQuestionDto:
-		return NewMultipleChoiceFactory().BuildFromDto(quest)
+		return NewMultipleChoiceFactory().BuildFromDto(questionTyped)
 	default:
 		return nil, errors.New("unknown question type")
 	}
 }
 
-func (q *QuestionFactory) BuildQuestionForDynamicBlockDto(
+func (q *QuestionFactory) BuildQuestionDtoForDynamicBlock(
 	questionDtos []any,
-	dynamicBlock block.DynamicBlock,
-) ([]question.Question, error) {
-	questionObjs := make([]question.Question, len(questionDtos))
+	dynamicBlock *block.DynamicBlock,
+) ([]question.IQuestion, error) {
+	questionObjs := make([]question.IQuestion, len(questionDtos))
 	for _, questionDto := range questionDtos {
 		questionObj, err := q.buildQuestionFromDto(questionDto)
 		if err != nil {
 			return nil, err
 		}
 
-		questionObj.(*question.Question).DynamicBlockId = dynamicBlock.Id
-		questionObjs = append(questionObjs, questionObj.(question.Question))
+		questionObjs = append(questionObjs, questionObj)
 	}
+
+	dynamicBlock.Questions = questionObjs
 	return questionObjs, nil
 }
 
-func (q *QuestionFactory) BuildQuestionForDynamicBlockObj(
-	questionObjs []question.Question,
-	dynamicBlock block.DynamicBlock,
-) ([]question.Question, error) {
-	newQuestionObjs := make([]question.Question, len(questionObjs))
-	for _, questionDto := range questionObjs {
-		newQuestionObj, err := q.buildQuestionFromObj(questionDto)
+func (q *QuestionFactory) BuildQuestionObjForDynamicBlock(
+	questionObjs []question.IQuestion,
+	dynamicBlock *block.DynamicBlock,
+) ([]question.IQuestion, error) {
+	newQuestionObjs := make([]question.IQuestion, len(questionObjs))
+	for _, questionObj := range questionObjs {
+		newQuestionObj, err := q.buildQuestionFromObj(questionObj)
 		if err != nil {
 			return nil, err
 		}
 
-		newQuestionObj.DynamicBlockId = dynamicBlock.Id
 		newQuestionObjs = append(newQuestionObjs, newQuestionObj)
 	}
 
+	dynamicBlock.Questions = newQuestionObjs
 	return questionObjs, nil
 }
 
-func (q *QuestionFactory) BuildQuestionForVariantDto(
+func (q *QuestionFactory) BuildQuestionDtoForVariant(
 	questionDtos []any,
-	variant block.Variant,
-) ([]question.Question, error) {
-	questionObjs := make([]question.Question, len(questionDtos))
+	variant *block.Variant,
+) ([]question.IQuestion, error) {
+	questionObjs := make([]question.IQuestion, len(questionDtos))
 	for order, questionDto := range questionDtos {
 		questionObj, err := q.buildQuestionFromDto(questionDto)
 		if err != nil {
 			return nil, err
 		}
 
-		questionObj.(*question.Question).VariantId = variant.Id
-		questionObj.(*question.Question).Order = order
-		questionObjs = append(questionObjs, questionObj.(question.Question))
+		questionObj.SetOrder(order)
+		questionObjs = append(questionObjs, questionObj)
 	}
+
+	variant.Questions = questionObjs
 	return questionObjs, nil
 }
 
 func (q *QuestionFactory) BuildQuestionForVariantObj(
-	questionObjs []question.Question,
-	variant block.Variant,
-) ([]question.Question, error) {
-	newQuestionObjs := make([]question.Question, len(questionObjs))
+	questionObjs []question.IQuestion,
+	variant *block.Variant,
+) ([]question.IQuestion, error) {
+	newQuestionObjs := make([]question.IQuestion, len(questionObjs))
 	for order, questionDto := range questionObjs {
 		newQuestionObj, err := q.buildQuestionFromObj(questionDto)
 		if err != nil {
 			return nil, err
 		}
 
-		newQuestionObj.VariantId = variant.Id
-		newQuestionObj.Order = order
+		newQuestionObj.SetOrder(order)
 		newQuestionObjs = append(newQuestionObjs, newQuestionObj)
 	}
 
-	return questionObjs, nil
+	variant.Questions = questionObjs
+	return newQuestionObjs, nil
 }
 
-func (q *QuestionFactory) buildQuestionFromObj(questionObj question.Question) (question.Question, error) {
-	var questionDto dto.CreateQuestionOnExistingDto
-	questionDto.QuestionId = questionObj.Id
+func (q *QuestionFactory) buildQuestionFromObj(questionObj question.IQuestion) (question.IQuestion, error) {
+	var questionDto *dto.CreateQuestionOnExistingDto
+	questionDto.QuestionId = questionObj.GetId()
 	result, err := q.buildQuestionFromDto(questionDto)
 	if err != nil {
-		return question.Question{}, err
+		return nil, err
 	}
 
-	return result.(question.Question), nil
+	return result, nil
 }

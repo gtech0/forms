@@ -21,6 +21,7 @@ func Connect() {
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,7 +56,7 @@ func Sync() {
 		&block.DynamicBlock{},
 		&block.Variant{},
 
-		&question.Question{},
+		//&question.Question{},
 		&question.Attachment{},
 
 		&question.MultipleChoice{},

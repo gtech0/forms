@@ -46,6 +46,8 @@ func (c *CreateNewSectionDto) UnmarshalJSON(b []byte) error {
 			blockI = &CreateStaticBlockDto{}
 		case block.DYNAMIC:
 			blockI = &CreateDynamicBlockDto{}
+		case block.EXISTING:
+			blockI = &CreateBlockOnExistingDto{}
 		default:
 			return fmt.Errorf("unknown block type: %s", blockDto.Type)
 		}

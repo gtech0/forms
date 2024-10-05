@@ -11,15 +11,15 @@ func NewCommonFieldQuestionMapper() *CommonFieldQuestionMapper {
 	return &CommonFieldQuestionMapper{}
 }
 
-func (c *CommonFieldQuestionMapper) MapCommonFieldsDto(source dto.NewQuestionDto, target question.Question) {
-	target.Description = source.Description
+func (c *CommonFieldQuestionMapper) MapCommonFieldsDto(source dto.NewQuestionDto, target question.IQuestion) {
+	target.SetDescription(source.Description)
 	//target.Attachments = source.Attachments
-	target.Type = source.Type
+	target.SetType(source.Type)
 }
 
-func (c *CommonFieldQuestionMapper) MapCommonFieldsObj(source question.Question, target question.Question) {
-	target.Description = source.Description
-	target.Attachments = source.Attachments
-	target.Type = source.Type
-	target.IsQuestionFromBank = source.IsQuestionFromBank
+func (c *CommonFieldQuestionMapper) MapCommonFieldsObj(source question.Question, target question.IQuestion) {
+	target.SetDescription(source.Description)
+	//target.Attachments = source.Attachments
+	target.SetType(source.Type)
+	target.SetIsQuestionFromBank(source.IsQuestionFromBank)
 }

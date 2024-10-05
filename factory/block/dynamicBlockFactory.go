@@ -16,11 +16,11 @@ func NewDynamicBlockFactory() *DynamicBlockFactory {
 	}
 }
 
-func (d *DynamicBlockFactory) buildFromDto(dynamicDto *dto.CreateDynamicBlockDto) (block.DynamicBlock, error) {
-	var blockObj block.DynamicBlock
-	questions, err := d.questionFactory.BuildQuestionForDynamicBlockDto(dynamicDto.Questions, blockObj)
+func (d *DynamicBlockFactory) buildFromDto(dynamicDto *dto.CreateDynamicBlockDto) (*block.DynamicBlock, error) {
+	var blockObj *block.DynamicBlock
+	questions, err := d.questionFactory.BuildQuestionDtoForDynamicBlock(dynamicDto.Questions, blockObj)
 	if err != nil {
-		return block.DynamicBlock{}, err
+		return nil, err
 	}
 
 	blockObj.Title = dynamicDto.Title
@@ -30,11 +30,11 @@ func (d *DynamicBlockFactory) buildFromDto(dynamicDto *dto.CreateDynamicBlockDto
 	return blockObj, nil
 }
 
-func (d *DynamicBlockFactory) buildFromObj(dynamicBlock block.DynamicBlock) (block.DynamicBlock, error) {
-	var newBlockObj block.DynamicBlock
-	newQuestions, err := d.questionFactory.BuildQuestionForDynamicBlockObj(dynamicBlock.Questions, newBlockObj)
+func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block.DynamicBlock) (*block.DynamicBlock, error) {
+	var newBlockObj *block.DynamicBlock
+	newQuestions, err := d.questionFactory.BuildQuestionObjForDynamicBlock(dynamicBlock.Questions, newBlockObj)
 	if err != nil {
-		return block.DynamicBlock{}, err
+		return nil, err
 	}
 
 	newBlockObj.Title = dynamicBlock.Title

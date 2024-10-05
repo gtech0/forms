@@ -15,9 +15,9 @@ func NewSingleChoiceFactory() *SingleChoiceFactory {
 	}
 }
 
-func (s *SingleChoiceFactory) BuildFromDto(questionDto *dto.CreateSingleChoiceQuestionDto) (question.SingleChoice, error) {
-	var questionObj question.SingleChoice
-	s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj.Question)
+func (s *SingleChoiceFactory) BuildFromDto(questionDto *dto.CreateSingleChoiceQuestionDto) (*question.SingleChoice, error) {
+	var questionObj *question.SingleChoice
+	s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj)
 	questionObj.Points = questionDto.Points
 
 	optionNames := questionDto.Options
@@ -30,9 +30,9 @@ func (s *SingleChoiceFactory) BuildFromDto(questionDto *dto.CreateSingleChoiceQu
 	return questionObj, nil
 }
 
-func (s *SingleChoiceFactory) BuildFromObj(questionObj question.SingleChoice) question.SingleChoice {
-	var newQuestionObj question.SingleChoice
-	s.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj.Question)
+func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.SingleChoice) *question.SingleChoice {
+	var newQuestionObj *question.SingleChoice
+	s.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj)
 	newQuestionObj.Points = questionObj.Points
 
 	options := make([]question.SingleChoiceOption, len(questionObj.SingleChoiceOptions))
@@ -41,7 +41,6 @@ func (s *SingleChoiceFactory) BuildFromObj(questionObj question.SingleChoice) qu
 		newOption.Title = option.Title
 		newOption.Order = option.Order
 		newOption.IsAnswer = option.IsAnswer
-		newOption.SingleChoiceId = newQuestionObj.Id
 	}
 	newQuestionObj.SingleChoiceOptions = options
 	return newQuestionObj
@@ -50,7 +49,7 @@ func (s *SingleChoiceFactory) BuildFromObj(questionObj question.SingleChoice) qu
 func (s *SingleChoiceFactory) buildOptionFromDto(
 	questionDto *dto.CreateSingleChoiceQuestionDto,
 	order int,
-	questionObj question.SingleChoice,
+	questionObj *question.SingleChoice,
 ) question.SingleChoiceOption {
 	var option question.SingleChoiceOption
 	option.Title = questionDto.Options[order]

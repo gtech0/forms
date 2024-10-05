@@ -15,9 +15,9 @@ func NewMatchingFactory() *MatchingFactory {
 	}
 }
 
-func (m *MatchingFactory) BuildFromDto(dto *dto.CreateMatchingQuestionDto) (question.Matching, error) {
+func (m *MatchingFactory) BuildFromDto(dto *dto.CreateMatchingQuestionDto) (question.IQuestion, error) {
 	var questionObj question.Matching
-	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, questionObj.Question)
+	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, &questionObj)
 
 	listsSize := len(dto.TermsAndDefinitions)
 	terms := make([]question.MatchingTerm, listsSize)
@@ -34,10 +34,10 @@ func (m *MatchingFactory) BuildFromDto(dto *dto.CreateMatchingQuestionDto) (ques
 		questionObj.Points = append(questionObj.Points, pointObj)
 	}
 
-	return questionObj, nil
+	return &questionObj, nil
 }
 
-func (m *MatchingFactory) BuildFromObj(questionObj question.Matching) question.Matching {
+func (m *MatchingFactory) BuildFromObj(questionObj *question.Matching) question.IQuestion {
 	var newQuestionObj question.Matching
 	terms := make([]question.MatchingTerm, len(questionObj.Terms))
 	definitions := make([]question.MatchingDefinition, len(questionObj.Definitions))
@@ -54,9 +54,9 @@ func (m *MatchingFactory) BuildFromObj(questionObj question.Matching) question.M
 	newQuestionObj.Terms = terms
 	newQuestionObj.Definitions = definitions
 
-	m.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj.Question)
+	m.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj)
 
-	return newQuestionObj
+	return &newQuestionObj
 }
 
 func (m *MatchingFactory) buildTermFromEntity(

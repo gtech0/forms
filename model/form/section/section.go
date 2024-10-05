@@ -11,7 +11,7 @@ type Section struct {
 	Title           string
 	Description     string
 	Order           int
-	Blocks          []block.Block
+	Blocks          []block.IBlock
 	FormPatternId   uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	FormGeneratedId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 }

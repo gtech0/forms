@@ -18,11 +18,11 @@ func NewStaticBlockFactory() *StaticBlockFactory {
 	}
 }
 
-func (s *StaticBlockFactory) buildFromDto(blockDto *dto.CreateStaticBlockDto) (block.StaticBlock, error) {
-	var blockObj block.StaticBlock
+func (s *StaticBlockFactory) buildFromDto(blockDto *dto.CreateStaticBlockDto) (*block.StaticBlock, error) {
+	var blockObj *block.StaticBlock
 	variants, err := s.variantFactory.buildFromDtos(blockDto.Variants, blockObj)
 	if err != nil {
-		return block.StaticBlock{}, err
+		return nil, err
 	}
 
 	blockObj.Title = blockDto.Title
@@ -32,11 +32,11 @@ func (s *StaticBlockFactory) buildFromDto(blockDto *dto.CreateStaticBlockDto) (b
 	return blockObj, nil
 }
 
-func (s *StaticBlockFactory) buildFromObj(blockObj block.StaticBlock) (block.StaticBlock, error) {
-	var newBlock block.StaticBlock
+func (s *StaticBlockFactory) buildFromObj(blockObj *block.StaticBlock) (*block.StaticBlock, error) {
+	var newBlock *block.StaticBlock
 	newVariants, err := s.variantFactory.buildFromObjs(blockObj.Variants, newBlock)
 	if err != nil {
-		return block.StaticBlock{}, err
+		return nil, err
 	}
 
 	newBlock.Title = blockObj.Title
