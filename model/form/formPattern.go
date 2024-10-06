@@ -10,7 +10,7 @@ type FormPattern struct {
 	model.BaseModel
 	Title       string
 	Description string
-	OwnerId     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
-	SubjectId   uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	OwnerId     uuid.UUID `gorm:"type:uuid"`
+	SubjectId   uuid.UUID `gorm:"type:uuid"`
 	Sections    []section.Section
 }

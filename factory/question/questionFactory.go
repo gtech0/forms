@@ -35,7 +35,7 @@ func (q *QuestionFactory) BuildQuestionDtoForDynamicBlock(
 	questionDtos []any,
 	dynamicBlock *block.DynamicBlock,
 ) ([]question.IQuestion, error) {
-	questionObjs := make([]question.IQuestion, len(questionDtos))
+	questionObjs := make([]question.IQuestion, 0)
 	for _, questionDto := range questionDtos {
 		questionObj, err := q.buildQuestionFromDto(questionDto)
 		if err != nil {
@@ -53,7 +53,7 @@ func (q *QuestionFactory) BuildQuestionObjForDynamicBlock(
 	questionObjs []question.IQuestion,
 	dynamicBlock *block.DynamicBlock,
 ) ([]question.IQuestion, error) {
-	newQuestionObjs := make([]question.IQuestion, len(questionObjs))
+	newQuestionObjs := make([]question.IQuestion, 0)
 	for _, questionObj := range questionObjs {
 		newQuestionObj, err := q.buildQuestionFromObj(questionObj)
 		if err != nil {
@@ -71,7 +71,7 @@ func (q *QuestionFactory) BuildQuestionDtoForVariant(
 	questionDtos []any,
 	variant *block.Variant,
 ) ([]question.IQuestion, error) {
-	questionObjs := make([]question.IQuestion, len(questionDtos))
+	questionObjs := make([]question.IQuestion, 0)
 	for order, questionDto := range questionDtos {
 		questionObj, err := q.buildQuestionFromDto(questionDto)
 		if err != nil {
@@ -90,7 +90,7 @@ func (q *QuestionFactory) BuildQuestionForVariantObj(
 	questionObjs []question.IQuestion,
 	variant *block.Variant,
 ) ([]question.IQuestion, error) {
-	newQuestionObjs := make([]question.IQuestion, len(questionObjs))
+	newQuestionObjs := make([]question.IQuestion, 0)
 	for order, questionDto := range questionObjs {
 		newQuestionObj, err := q.buildQuestionFromObj(questionDto)
 		if err != nil {
@@ -106,7 +106,7 @@ func (q *QuestionFactory) BuildQuestionForVariantObj(
 }
 
 func (q *QuestionFactory) buildQuestionFromObj(questionObj question.IQuestion) (question.IQuestion, error) {
-	var questionDto *dto.CreateQuestionOnExistingDto
+	questionDto := new(dto.CreateQuestionOnExistingDto)
 	questionDto.QuestionId = questionObj.GetId()
 	result, err := q.buildQuestionFromDto(questionDto)
 	if err != nil {

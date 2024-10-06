@@ -14,22 +14,22 @@ type FormPublished struct {
 	PostModeration bool
 	Groups         []FormPublishedGroup
 	Users          []FormPublishedUser
-	FormPatternId  uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	FormPatternId  uuid.UUID `gorm:"type:uuid"`
 	FormsGenerated []FormGenerated
 }
 
 type MarkConfiguration struct {
 	MinPoints       int
 	Mark            string
-	FormPublishedId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	FormPublishedId uuid.UUID `gorm:"type:uuid"`
 }
 
 type FormPublishedGroup struct {
-	FormPublishedId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
-	GroupId         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	FormPublishedId uuid.UUID `gorm:"type:uuid"`
+	GroupId         uuid.UUID `gorm:"type:uuid"`
 }
 
 type FormPublishedUser struct {
-	FormPublishedId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
-	UserId          uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	FormPublishedId uuid.UUID `gorm:"type:uuid"`
+	UserId          uuid.UUID `gorm:"type:uuid"`
 }

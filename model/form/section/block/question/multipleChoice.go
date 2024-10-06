@@ -15,7 +15,7 @@ type MultipleChoicePoints struct {
 	model.BaseModel
 	CorrectAnswer    int
 	Points           int
-	MultipleChoiceId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	MultipleChoiceId uuid.UUID `gorm:"type:uuid"`
 }
 
 type MultipleChoiceOption struct {
@@ -23,5 +23,5 @@ type MultipleChoiceOption struct {
 	Title            string
 	Order            int
 	IsAnswer         bool
-	MultipleChoiceId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	MultipleChoiceId uuid.UUID `gorm:"type:uuid"`
 }

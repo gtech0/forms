@@ -17,7 +17,7 @@ func NewVariantFactory() *VariantFactory {
 }
 
 func (v *VariantFactory) buildFromDto(variantDto dto.UpdateVariantDto, blockObj *block.StaticBlock) (*block.Variant, error) {
-	var variant *block.Variant
+	variant := new(block.Variant)
 	variant.Title = variantDto.Title
 	variant.Description = variantDto.Description
 	questions, err := v.questionFactory.BuildQuestionDtoForVariant(variantDto.Questions, variant)
@@ -30,7 +30,7 @@ func (v *VariantFactory) buildFromDto(variantDto dto.UpdateVariantDto, blockObj 
 }
 
 func (v *VariantFactory) buildFromObj(variant *block.Variant, blockObj *block.StaticBlock) (*block.Variant, error) {
-	var newVariant *block.Variant
+	newVariant := new(block.Variant)
 	newVariant.Title = variant.Title
 	newVariant.Description = variant.Description
 	questions, err := v.questionFactory.BuildQuestionForVariantObj(variant.Questions, newVariant)
@@ -43,7 +43,7 @@ func (v *VariantFactory) buildFromObj(variant *block.Variant, blockObj *block.St
 }
 
 func (v *VariantFactory) buildFromDtos(variantDtos []dto.UpdateVariantDto, blockObj *block.StaticBlock) ([]block.Variant, error) {
-	variants := make([]block.Variant, len(variantDtos))
+	variants := make([]block.Variant, 0)
 	for _, variantDto := range variantDtos {
 		variant, err := v.buildFromDto(variantDto, blockObj)
 		if err != nil {
@@ -55,7 +55,7 @@ func (v *VariantFactory) buildFromDtos(variantDtos []dto.UpdateVariantDto, block
 }
 
 func (v *VariantFactory) buildFromObjs(variantObjs []block.Variant, blockObj *block.StaticBlock) ([]block.Variant, error) {
-	variants := make([]block.Variant, len(variantObjs))
+	variants := make([]block.Variant, 0)
 	for _, variantObj := range variantObjs {
 		variant, err := v.buildFromObj(&variantObj, blockObj)
 		if err != nil {

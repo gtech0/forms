@@ -1,6 +1,7 @@
 package question
 
 import (
+	"github.com/google/uuid"
 	"hedgehog-forms/dto"
 	"hedgehog-forms/model/form/section/block/question"
 	"slices"
@@ -17,18 +18,17 @@ func NewMultipleChoiceFactory() *MultipleChoiceFactory {
 }
 
 func (m *MultipleChoiceFactory) BuildFromDto(questionDto *dto.CreateMultipleChoiceQuestionDto) (*question.MultipleChoice, error) {
-	var questionObj *question.MultipleChoice
+	questionObj := new(question.MultipleChoice)
 	m.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj)
 
 	optionNames := questionDto.Options
-	options := make([]question.MultipleChoiceOption, len(optionNames))
-
+	options := make([]question.MultipleChoiceOption, 0)
 	for order := 0; order < len(optionNames); order++ {
-		option := m.buildOptionFromDto(questionDto, order, questionObj)
+		option := m.buildOptionFromDto(questionDto, order, questionObj.Id)
 		options = append(options, option)
 	}
 
-	points := make([]question.MultipleChoicePoints, len(questionDto.Points))
+	points := make([]question.MultipleChoicePoints, 0)
 	for answer, point := range questionDto.Points {
 		var pointsObj question.MultipleChoicePoints
 		pointsObj.CorrectAnswer = answer
@@ -44,39 +44,38 @@ func (m *MultipleChoiceFactory) BuildFromDto(questionDto *dto.CreateMultipleChoi
 func (m *MultipleChoiceFactory) buildOptionFromDto(
 	questionDto *dto.CreateMultipleChoiceQuestionDto,
 	order int,
-	questionObj *question.MultipleChoice,
+	questionId uuid.UUID,
 ) question.MultipleChoiceOption {
 	var option question.MultipleChoiceOption
 	option.Title = questionDto.Options[order]
 	option.Order = order
 	option.IsAnswer = slices.Contains(questionDto.CorrectOptions, order)
-	option.MultipleChoiceId = questionObj.Id
+	option.MultipleChoiceId = questionId
 	return option
 }
 
 func (m *MultipleChoiceFactory) BuildFromObj(questionObj *question.MultipleChoice) *question.MultipleChoice {
-	var newQuestionObj *question.MultipleChoice
-	options := make([]question.MultipleChoiceOption, len(questionObj.Options))
+	newQuestionObj := new(question.MultipleChoice)
+	options := make([]question.MultipleChoiceOption, 0)
 	newQuestionObj.Points = questionObj.Points
 	m.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj)
 
 	for _, option := range questionObj.Options {
-		m.buildOptionFromEntity(&option, newQuestionObj)
+		m.buildOptionFromEntity(&option, newQuestionObj.Id)
 		options = append(options, option)
 	}
 
 	newQuestionObj.Options = options
-
 	return newQuestionObj
 }
 
 func (m *MultipleChoiceFactory) buildOptionFromEntity(
 	optionObj *question.MultipleChoiceOption,
-	questionObj *question.MultipleChoice,
+	questionId uuid.UUID,
 ) {
 	var option question.MultipleChoiceOption
 	option.Title = optionObj.Title
 	option.Order = optionObj.Order
 	option.IsAnswer = optionObj.IsAnswer
-	option.MultipleChoiceId = questionObj.Id
+	option.MultipleChoiceId = questionId
 }

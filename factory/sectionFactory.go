@@ -42,7 +42,7 @@ func (s *SectionFactory) buildSectionNew(sectionDto *dto.CreateNewSectionDto) (s
 }
 
 func (s *SectionFactory) buildAndAddBlocksFromDto(blockDtos []any, sectionObj *section.Section) error {
-	blocks := make([]block.IBlock, len(blockDtos))
+	blocks := make([]block.IBlock, 0)
 	for order, blockDto := range blockDtos {
 		blockObj, err := s.blockFactory.BuildFromDto(blockDto)
 		if err != nil {
@@ -76,7 +76,7 @@ func (s *SectionFactory) buildSectionExisting(sectionDto *dto.CreateSectionOnExi
 }
 
 func (s *SectionFactory) buildAndAddBlocksFromObj(blockObjs []block.IBlock, sectionObj *section.Section) {
-	blocks := make([]block.IBlock, len(blockObjs))
+	blocks := make([]block.IBlock, 0)
 	for order, blockObj := range blockObjs {
 		blockObj.SetOrder(order)
 		blocks = append(blocks, blockObj)

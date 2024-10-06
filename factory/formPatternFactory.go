@@ -27,7 +27,7 @@ func (f *FormPatternFactory) BuildAndAddSections(
 	sectionDtos []any,
 	formPattern form.FormPattern,
 ) ([]section.Section, error) {
-	sections := make([]section.Section, len(sectionDtos))
+	sections := make([]section.Section, 0)
 	for order, sectionDto := range sectionDtos {
 		sectionObj, err := NewSectionFactory().buildSection(sectionDto)
 		if err != nil {

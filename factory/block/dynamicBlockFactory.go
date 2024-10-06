@@ -17,7 +17,7 @@ func NewDynamicBlockFactory() *DynamicBlockFactory {
 }
 
 func (d *DynamicBlockFactory) buildFromDto(dynamicDto *dto.CreateDynamicBlockDto) (*block.DynamicBlock, error) {
-	var blockObj *block.DynamicBlock
+	blockObj := new(block.DynamicBlock)
 	questions, err := d.questionFactory.BuildQuestionDtoForDynamicBlock(dynamicDto.Questions, blockObj)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (d *DynamicBlockFactory) buildFromDto(dynamicDto *dto.CreateDynamicBlockDto
 }
 
 func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block.DynamicBlock) (*block.DynamicBlock, error) {
-	var newBlockObj *block.DynamicBlock
+	newBlockObj := new(block.DynamicBlock)
 	newQuestions, err := d.questionFactory.BuildQuestionObjForDynamicBlock(dynamicBlock.Questions, newBlockObj)
 	if err != nil {
 		return nil, err

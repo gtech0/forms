@@ -15,5 +15,5 @@ type TextInput struct {
 type TextInputAnswer struct {
 	model.BaseModel
 	Answer      string
-	TextInputId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	TextInputId uuid.UUID `gorm:"type:uuid"`
 }

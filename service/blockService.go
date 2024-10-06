@@ -13,12 +13,12 @@ func NewBlockService() *BlockService {
 }
 
 func (b *BlockService) GetBlockObjectById(id uuid.UUID) (*block.Block, error) {
-	var obj *block.Block
-	if err := database.DB.Model(block.Block{}).
+	blockObj := new(block.Block)
+	if err := database.DB.Model(&block.Block{}).
 		Where("id = ?", id).
-		First(obj).Error; err != nil {
+		First(blockObj).Error; err != nil {
 		return nil, err
 	}
 
-	return obj, nil
+	return blockObj, nil
 }

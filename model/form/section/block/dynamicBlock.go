@@ -1,17 +1,12 @@
 package block
 
 import (
-	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"hedgehog-forms/model"
 	"hedgehog-forms/model/form/section/block/question"
 )
 
-type Variant struct {
-	model.BaseModel
-	Title          string
-	Description    string
-	StaticBlockID  uuid.UUID            `gorm:"type:uuid"`
+type DynamicBlock struct {
+	Block
 	Questions      []question.IQuestion `gorm:"-"`
 	MultipleChoice []*question.MultipleChoice
 	TextInput      []*question.TextInput
@@ -19,7 +14,7 @@ type Variant struct {
 	Matching       []*question.Matching
 }
 
-func (d *Variant) BeforeSave(*gorm.DB) error {
+func (d *DynamicBlock) BeforeSave(*gorm.DB) error {
 	for _, iQuestion := range d.Questions {
 		switch iQuestion.GetType() {
 		case question.MULTIPLE_CHOICE:

@@ -16,5 +16,5 @@ type SingleChoiceOption struct {
 	Title          string
 	Order          int
 	IsAnswer       bool
-	SingleChoiceId uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	SingleChoiceId uuid.UUID `gorm:"type:uuid"`
 }

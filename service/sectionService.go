@@ -13,12 +13,12 @@ func NewSectionService() *SectionService {
 }
 
 func (b *SectionService) GetSectionObjectById(id uuid.UUID) (section.Section, error) {
-	var obj section.Section
-	if err := database.DB.Model(section.Section{}).
+	var sectionObj section.Section
+	if err := database.DB.Model(&section.Section{}).
 		Where("id = ?", id).
-		First(&obj).Error; err != nil {
+		First(&sectionObj).Error; err != nil {
 		return section.Section{}, err
 	}
 
-	return obj, nil
+	return sectionObj, nil
 }

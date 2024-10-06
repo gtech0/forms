@@ -16,13 +16,13 @@ func NewTextInputFactory() *TextInputFactory {
 }
 
 func (t *TextInputFactory) BuildFromDto(questionDto *dto.CreateTextQuestionDto) (*question.TextInput, error) {
-	var questionObj *question.TextInput
+	questionObj := new(question.TextInput)
 	t.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj)
 
 	questionObj.Points = questionDto.Points
 	questionObj.IsCaseSensitive = questionDto.IsCaseSensitive
 
-	answers := make([]question.TextInputAnswer, len(questionDto.Answers))
+	answers := make([]question.TextInputAnswer, 0)
 	for _, answer := range questionDto.Answers {
 		var questionObjAnswer question.TextInputAnswer
 		questionObjAnswer.Answer = answer

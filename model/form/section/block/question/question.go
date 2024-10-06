@@ -15,9 +15,9 @@ type IQuestion interface {
 	GetType() QuestionType
 	SetType(QuestionType)
 
-	SetVariantId(uuid.UUID)
+	SetVariantId(nullUUID uuid.NullUUID)
 
-	SetDynamicBlockId(uuid.UUID)
+	SetDynamicBlockId(nullUUID uuid.NullUUID)
 
 	SetIsQuestionFromBank(bool)
 }
@@ -27,8 +27,8 @@ type Question struct {
 	Description        string
 	Order              int
 	Type               QuestionType
-	VariantId          uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
-	DynamicBlockId     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	VariantId          uuid.NullUUID `gorm:"type:uuid"`
+	DynamicBlockId     uuid.NullUUID `gorm:"type:uuid"`
 	IsQuestionFromBank bool
 	Attachments        []Attachment
 }
@@ -53,20 +53,14 @@ func (q *Question) SetType(t QuestionType) {
 	q.Type = t
 }
 
-func (q *Question) SetVariantId(id uuid.UUID) {
+func (q *Question) SetVariantId(id uuid.NullUUID) {
 	q.VariantId = id
 }
 
-func (q *Question) SetDynamicBlockId(id uuid.UUID) {
+func (q *Question) SetDynamicBlockId(id uuid.NullUUID) {
 	q.DynamicBlockId = id
 }
 
-func (q *Question) SetIsQuestionFromBank(b bool) {
-	q.IsQuestionFromBank = b
-}
-
-type Attachment struct {
-	model.BaseModel
-	Description string
-	QuestionId  uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+func (q *Question) SetIsQuestionFromBank(isQuestionFromBank bool) {
+	q.IsQuestionFromBank = isQuestionFromBank
 }

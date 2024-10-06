@@ -51,7 +51,7 @@ func Sync() {
 
 		&section.Section{},
 
-		&block.Block{},
+		//&block.Block{},
 		&block.StaticBlock{},
 		&block.DynamicBlock{},
 		&block.Variant{},

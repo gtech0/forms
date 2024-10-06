@@ -1,6 +1,7 @@
 package question
 
 import (
+	"github.com/google/uuid"
 	"hedgehog-forms/dto"
 	"hedgehog-forms/model/form/section/block/question"
 )
@@ -16,14 +17,14 @@ func NewSingleChoiceFactory() *SingleChoiceFactory {
 }
 
 func (s *SingleChoiceFactory) BuildFromDto(questionDto *dto.CreateSingleChoiceQuestionDto) (*question.SingleChoice, error) {
-	var questionObj *question.SingleChoice
+	questionObj := new(question.SingleChoice)
 	s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj)
 	questionObj.Points = questionDto.Points
 
 	optionNames := questionDto.Options
-	options := make([]question.SingleChoiceOption, len(optionNames))
+	options := make([]question.SingleChoiceOption, 0)
 	for order := 0; order < len(optionNames); order++ {
-		option := s.buildOptionFromDto(questionDto, order, questionObj)
+		option := s.buildOptionFromDto(questionDto, order, questionObj.Id)
 		options = append(options, option)
 	}
 	questionObj.SingleChoiceOptions = options
@@ -31,11 +32,11 @@ func (s *SingleChoiceFactory) BuildFromDto(questionDto *dto.CreateSingleChoiceQu
 }
 
 func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.SingleChoice) *question.SingleChoice {
-	var newQuestionObj *question.SingleChoice
+	newQuestionObj := new(question.SingleChoice)
 	s.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj)
 	newQuestionObj.Points = questionObj.Points
 
-	options := make([]question.SingleChoiceOption, len(questionObj.SingleChoiceOptions))
+	options := make([]question.SingleChoiceOption, 0)
 	for _, option := range questionObj.SingleChoiceOptions {
 		var newOption question.SingleChoiceOption
 		newOption.Title = option.Title
@@ -49,12 +50,12 @@ func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.SingleChoice) *
 func (s *SingleChoiceFactory) buildOptionFromDto(
 	questionDto *dto.CreateSingleChoiceQuestionDto,
 	order int,
-	questionObj *question.SingleChoice,
+	questionId uuid.UUID,
 ) question.SingleChoiceOption {
 	var option question.SingleChoiceOption
 	option.Title = questionDto.Options[order]
 	option.Order = order
 	option.IsAnswer = questionDto.CorrectOption == order
-	option.SingleChoiceId = questionObj.Id
+	option.SingleChoiceId = questionId
 	return option
 }
