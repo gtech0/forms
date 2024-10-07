@@ -1,7 +1,7 @@
 package block
 
 import (
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/factory/question"
 	"hedgehog-forms/model/form/section/block"
 )
@@ -18,7 +18,7 @@ func NewStaticBlockFactory() *StaticBlockFactory {
 	}
 }
 
-func (s *StaticBlockFactory) buildFromDto(blockDto *dto.CreateStaticBlockDto) (*block.StaticBlock, error) {
+func (s *StaticBlockFactory) buildFromDto(blockDto *create.StaticBlockDto) (*block.StaticBlock, error) {
 	blockObj := new(block.StaticBlock)
 	variants, err := s.variantFactory.buildFromDtos(blockDto.Variants, blockObj)
 	if err != nil {

@@ -1,4 +1,4 @@
-package dto
+package create
 
 import (
 	"encoding/json"
@@ -8,25 +8,25 @@ import (
 	"hedgehog-forms/model/form/section/block"
 )
 
-type CreateSectionDto struct {
+type SectionDto struct {
 	Type section.SectionType `json:"type"`
 }
 
-type CreateSectionOnExistingDto struct {
-	CreateSectionDto
+type SectionOnExistingDto struct {
+	SectionDto
 	SectionId uuid.UUID `json:"sectionId"`
 }
 
-type CreateNewSectionDto struct {
-	CreateSectionDto
+type NewSectionDto struct {
+	SectionDto
 	Title       string            `json:"title"`
 	Description string            `json:"description"`
 	Blocks      []any             `json:"-"`
 	RawBlocks   []json.RawMessage `json:"blocks"`
 }
 
-func (c *CreateNewSectionDto) UnmarshalJSON(b []byte) error {
-	type sectionDto CreateNewSectionDto
+func (c *NewSectionDto) UnmarshalJSON(b []byte) error {
+	type sectionDto NewSectionDto
 
 	err := json.Unmarshal(b, (*sectionDto)(c))
 	if err != nil {
@@ -34,7 +34,7 @@ func (c *CreateNewSectionDto) UnmarshalJSON(b []byte) error {
 	}
 
 	for _, rawBlock := range c.RawBlocks {
-		var blockDto CreateBlockDto
+		var blockDto BlockDto
 		err = json.Unmarshal(rawBlock, &blockDto)
 		if err != nil {
 			return err
@@ -43,11 +43,11 @@ func (c *CreateNewSectionDto) UnmarshalJSON(b []byte) error {
 		var blockI any
 		switch blockDto.Type {
 		case block.STATIC:
-			blockI = &CreateStaticBlockDto{}
+			blockI = &StaticBlockDto{}
 		case block.DYNAMIC:
-			blockI = &CreateDynamicBlockDto{}
+			blockI = &DynamicBlockDto{}
 		case block.EXISTING:
-			blockI = &CreateBlockOnExistingDto{}
+			blockI = &BlockOnExistingDto{}
 		default:
 			return fmt.Errorf("unknown block type: %s", blockDto.Type)
 		}
@@ -63,8 +63,8 @@ func (c *CreateNewSectionDto) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (c *CreateNewSectionDto) MarshalJSON() ([]byte, error) {
-	type sectionDto CreateNewSectionDto
+func (c *NewSectionDto) MarshalJSON() ([]byte, error) {
+	type sectionDto NewSectionDto
 
 	if c.Blocks != nil {
 		for _, blockDto := range c.Blocks {

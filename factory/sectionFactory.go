@@ -2,7 +2,7 @@ package factory
 
 import (
 	"errors"
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	blockF "hedgehog-forms/factory/block"
 	"hedgehog-forms/model/form/section"
 	"hedgehog-forms/model/form/section/block"
@@ -21,16 +21,16 @@ func NewSectionFactory() *SectionFactory {
 
 func (s *SectionFactory) buildSection(sectionDto any) (section.Section, error) {
 	switch sect := sectionDto.(type) {
-	case *dto.CreateNewSectionDto:
+	case *create.NewSectionDto:
 		return s.buildSectionNew(sect)
-	case *dto.CreateSectionOnExistingDto:
+	case *create.SectionOnExistingDto:
 		return s.buildSectionExisting(sect)
 	default:
 		return section.Section{}, errors.New("invalid section type")
 	}
 }
 
-func (s *SectionFactory) buildSectionNew(sectionDto *dto.CreateNewSectionDto) (section.Section, error) {
+func (s *SectionFactory) buildSectionNew(sectionDto *create.NewSectionDto) (section.Section, error) {
 	var sectionObj section.Section
 	sectionObj.Title = sectionDto.Title
 	sectionObj.Description = sectionDto.Description
@@ -62,7 +62,7 @@ func (s *SectionFactory) buildAndAddBlocksFromDto(blockDtos []any, sectionObj *s
 	return nil
 }
 
-func (s *SectionFactory) buildSectionExisting(sectionDto *dto.CreateSectionOnExistingDto) (section.Section, error) {
+func (s *SectionFactory) buildSectionExisting(sectionDto *create.SectionOnExistingDto) (section.Section, error) {
 	sectObj, err := service.NewSectionService().GetSectionObjectById(sectionDto.SectionId)
 	if err != nil {
 		return section.Section{}, err

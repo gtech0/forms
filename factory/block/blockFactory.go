@@ -2,7 +2,7 @@ package block
 
 import (
 	"errors"
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/section/block"
 	"hedgehog-forms/service"
 )
@@ -21,11 +21,11 @@ func NewBlockFactory() *BlockFactory {
 
 func (b *BlockFactory) BuildFromDto(blockDto any) (block.IBlock, error) {
 	switch bl := blockDto.(type) {
-	case *dto.CreateDynamicBlockDto:
+	case *create.DynamicBlockDto:
 		return b.dynamicFactory.buildFromDto(bl)
-	case *dto.CreateStaticBlockDto:
+	case *create.StaticBlockDto:
 		return b.staticFactory.buildFromDto(bl)
-	case *dto.CreateBlockOnExistingDto:
+	case *create.BlockOnExistingDto:
 		return b.buildFromExisting(bl)
 	default:
 		return nil, errors.New("unidentified block dto type")
@@ -43,7 +43,7 @@ func (b *BlockFactory) buildFromObject(blockObj block.IBlock) (block.IBlock, err
 	}
 }
 
-func (b *BlockFactory) buildFromExisting(dto *dto.CreateBlockOnExistingDto) (block.IBlock, error) {
+func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (block.IBlock, error) {
 	blockObj, err := service.NewBlockService().GetBlockObjectById(dto.BlockId)
 	if err != nil {
 		return nil, err

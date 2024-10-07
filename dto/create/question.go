@@ -1,46 +1,46 @@
-package dto
+package create
 
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/model/form/section/block/question"
 )
 
-type CreateQuestionDto struct {
+type QuestionDto struct {
 	Type question.QuestionType `json:"type"`
 }
 
-type CreateQuestionOnExistingDto struct {
-	CreateQuestionDto
+type QuestionOnExistingDto struct {
+	QuestionDto
 	QuestionId uuid.UUID `json:"questionId"`
 }
 
 type NewQuestionDto struct {
-	CreateQuestionDto
+	QuestionDto
 	Description string      `json:"description"`
 	Attachments []uuid.UUID `json:"attachments"`
 }
 
-type CreateMultipleChoiceQuestionDto struct {
+type MultipleChoiceQuestionDto struct {
 	NewQuestionDto
 	Options        []string    `json:"options"`
 	CorrectOptions []int       `json:"correctOptions"`
 	Points         map[int]int `json:"points"`
 }
 
-type CreateTextQuestionDto struct {
+type TextQuestionDto struct {
 	NewQuestionDto
 	IsCaseSensitive bool     `json:"isCaseSensitive"`
 	Answers         []string `json:"answers"`
 	Points          int      `json:"points"`
 }
 
-type CreateMatchingQuestionDto struct {
+type MatchingQuestionDto struct {
 	NewQuestionDto
 	TermsAndDefinitions map[string]string `json:"termsAndDefinitions"`
 	Points              map[int]int       `json:"points"`
 }
 
-type CreateSingleChoiceQuestionDto struct {
+type SingleChoiceQuestionDto struct {
 	NewQuestionDto
 	Options       []string `json:"options"`
 	CorrectOption int      `json:"correctOption"`

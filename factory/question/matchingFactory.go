@@ -2,7 +2,7 @@ package question
 
 import (
 	"github.com/google/uuid"
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/section/block/question"
 )
 
@@ -16,7 +16,7 @@ func NewMatchingFactory() *MatchingFactory {
 	}
 }
 
-func (m *MatchingFactory) BuildFromDto(dto *dto.CreateMatchingQuestionDto) (*question.Matching, error) {
+func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*question.Matching, error) {
 	questionObj := new(question.Matching)
 	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, questionObj)
 

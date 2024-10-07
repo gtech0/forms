@@ -1,7 +1,7 @@
 package question
 
 import (
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/section/block/question"
 )
 
@@ -11,7 +11,7 @@ func NewCommonFieldQuestionMapper() *CommonFieldQuestionMapper {
 	return &CommonFieldQuestionMapper{}
 }
 
-func (c *CommonFieldQuestionMapper) MapCommonFieldsDto(source dto.NewQuestionDto, target question.IQuestion) {
+func (c *CommonFieldQuestionMapper) MapCommonFieldsDto(source create.NewQuestionDto, target question.IQuestion) {
 	target.SetDescription(source.Description)
 	//target.Attachments = source.Attachments
 	target.SetType(source.Type)

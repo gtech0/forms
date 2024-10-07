@@ -1,7 +1,7 @@
 package block
 
 import (
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/factory/question"
 	"hedgehog-forms/model/form/section/block"
 )
@@ -16,7 +16,7 @@ func NewVariantFactory() *VariantFactory {
 	}
 }
 
-func (v *VariantFactory) buildFromDto(variantDto dto.UpdateVariantDto, blockObj *block.StaticBlock) (*block.Variant, error) {
+func (v *VariantFactory) buildFromDto(variantDto create.UpdateVariantDto, blockObj *block.StaticBlock) (*block.Variant, error) {
 	variant := new(block.Variant)
 	variant.Title = variantDto.Title
 	variant.Description = variantDto.Description
@@ -42,7 +42,7 @@ func (v *VariantFactory) buildFromObj(variant *block.Variant, blockObj *block.St
 	return newVariant, nil
 }
 
-func (v *VariantFactory) buildFromDtos(variantDtos []dto.UpdateVariantDto, blockObj *block.StaticBlock) ([]block.Variant, error) {
+func (v *VariantFactory) buildFromDtos(variantDtos []create.UpdateVariantDto, blockObj *block.StaticBlock) ([]block.Variant, error) {
 	variants := make([]block.Variant, 0)
 	for _, variantDto := range variantDtos {
 		variant, err := v.buildFromDto(variantDto, blockObj)

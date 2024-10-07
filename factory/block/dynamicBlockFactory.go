@@ -1,7 +1,7 @@
 package block
 
 import (
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/factory/question"
 	"hedgehog-forms/model/form/section/block"
 )
@@ -16,7 +16,7 @@ func NewDynamicBlockFactory() *DynamicBlockFactory {
 	}
 }
 
-func (d *DynamicBlockFactory) buildFromDto(dynamicDto *dto.CreateDynamicBlockDto) (*block.DynamicBlock, error) {
+func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (*block.DynamicBlock, error) {
 	blockObj := new(block.DynamicBlock)
 	questions, err := d.questionFactory.BuildQuestionDtoForDynamicBlock(dynamicDto.Questions, blockObj)
 	if err != nil {

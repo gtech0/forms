@@ -3,7 +3,7 @@ package question
 import (
 	"fmt"
 	"hedgehog-forms/database"
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/section/block/question"
 )
 
@@ -14,7 +14,7 @@ func NewExistingQuestionFactory() *ExistingQuestionFactory {
 	return &ExistingQuestionFactory{}
 }
 
-func (e *ExistingQuestionFactory) BuildFromDto(existingDto *dto.CreateQuestionOnExistingDto) (question.IQuestion, error) {
+func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExistingDto) (question.IQuestion, error) {
 	var questionObj question.IQuestion
 	if err := database.DB.Model(&question.Question{}).
 		Where("id = ?", existingDto.QuestionId).

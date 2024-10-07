@@ -27,6 +27,7 @@ func main() {
 	formPattern := router.Group("/api/form/pattern")
 	{
 		formPattern.POST("/create", formPatternController.CreateFormPattern)
+		formPattern.GET("/get/:patternId", formPatternController.GetFormPattern)
 	}
 
 	if err := router.Run(); err != nil {

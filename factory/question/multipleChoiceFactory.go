@@ -2,7 +2,7 @@ package question
 
 import (
 	"github.com/google/uuid"
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/section/block/question"
 	"slices"
 )
@@ -17,7 +17,7 @@ func NewMultipleChoiceFactory() *MultipleChoiceFactory {
 	}
 }
 
-func (m *MultipleChoiceFactory) BuildFromDto(questionDto *dto.CreateMultipleChoiceQuestionDto) (*question.MultipleChoice, error) {
+func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQuestionDto) (*question.MultipleChoice, error) {
 	questionObj := new(question.MultipleChoice)
 	m.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj)
 
@@ -42,7 +42,7 @@ func (m *MultipleChoiceFactory) BuildFromDto(questionDto *dto.CreateMultipleChoi
 }
 
 func (m *MultipleChoiceFactory) buildOptionFromDto(
-	questionDto *dto.CreateMultipleChoiceQuestionDto,
+	questionDto *create.MultipleChoiceQuestionDto,
 	order int,
 	questionId uuid.UUID,
 ) question.MultipleChoiceOption {

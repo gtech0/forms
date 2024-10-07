@@ -1,28 +1,49 @@
-package dto
+package create
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
+	"hedgehog-forms/model/form/section/block"
 	"hedgehog-forms/model/form/section/block/question"
 )
 
-type UpdateVariantDto struct {
-	Title        string            `json:"title"`
-	Description  string            `json:"description"`
+type BlockDto struct {
+	Type block.BlockType `json:"type"`
+}
+
+type BlockOnExistingDto struct {
+	BlockDto
+	BlockId uuid.UUID `json:"block_id"`
+}
+
+type NewBlockDto struct {
+	BlockDto
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+type StaticBlockDto struct {
+	NewBlockDto
+	Variants []UpdateVariantDto `json:"variants"`
+}
+
+type DynamicBlockDto struct {
+	NewBlockDto
 	Questions    []any             `json:"-"`
 	RawQuestions []json.RawMessage `json:"questions"`
 }
 
-func (c *UpdateVariantDto) UnmarshalJSON(b []byte) error {
-	type variantDto UpdateVariantDto
+func (c *DynamicBlockDto) UnmarshalJSON(b []byte) error {
+	type blockDto DynamicBlockDto
 
-	err := json.Unmarshal(b, (*variantDto)(c))
+	err := json.Unmarshal(b, (*blockDto)(c))
 	if err != nil {
 		return err
 	}
 
 	for _, rawQuestion := range c.RawQuestions {
-		var questionDto CreateQuestionDto
+		var questionDto QuestionDto
 		err = json.Unmarshal(rawQuestion, &questionDto)
 		if err != nil {
 			return err
@@ -31,15 +52,15 @@ func (c *UpdateVariantDto) UnmarshalJSON(b []byte) error {
 		var questionI any
 		switch questionDto.Type {
 		case question.EXISTING:
-			questionI = &CreateQuestionOnExistingDto{}
+			questionI = &QuestionOnExistingDto{}
 		case question.MATCHING:
-			questionI = &CreateMatchingQuestionDto{}
+			questionI = &MatchingQuestionDto{}
 		case question.MULTIPLE_CHOICE:
-			questionI = &CreateMultipleChoiceQuestionDto{}
+			questionI = &MultipleChoiceQuestionDto{}
 		case question.SINGLE_CHOICE:
-			questionI = &CreateSingleChoiceQuestionDto{}
+			questionI = &SingleChoiceQuestionDto{}
 		case question.TEXT_INPUT:
-			questionI = &CreateTextQuestionDto{}
+			questionI = &TextQuestionDto{}
 		default:
 			return fmt.Errorf("unknown question type: %s", questionDto.Type)
 		}
@@ -55,8 +76,8 @@ func (c *UpdateVariantDto) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (c *UpdateVariantDto) MarshalJSON() ([]byte, error) {
-	type variantDto UpdateVariantDto
+func (c *DynamicBlockDto) MarshalJSON() ([]byte, error) {
+	type blockDto DynamicBlockDto
 
 	if c.Questions != nil {
 		for _, questionDto := range c.Questions {
@@ -68,5 +89,5 @@ func (c *UpdateVariantDto) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	return json.Marshal((*variantDto)(c))
+	return json.Marshal((*blockDto)(c))
 }

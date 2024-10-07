@@ -2,7 +2,7 @@ package question
 
 import (
 	"github.com/google/uuid"
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/section/block/question"
 )
 
@@ -16,7 +16,7 @@ func NewSingleChoiceFactory() *SingleChoiceFactory {
 	}
 }
 
-func (s *SingleChoiceFactory) BuildFromDto(questionDto *dto.CreateSingleChoiceQuestionDto) (*question.SingleChoice, error) {
+func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuestionDto) (*question.SingleChoice, error) {
 	questionObj := new(question.SingleChoice)
 	s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj)
 	questionObj.Points = questionDto.Points
@@ -48,7 +48,7 @@ func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.SingleChoice) *
 }
 
 func (s *SingleChoiceFactory) buildOptionFromDto(
-	questionDto *dto.CreateSingleChoiceQuestionDto,
+	questionDto *create.SingleChoiceQuestionDto,
 	order int,
 	questionId uuid.UUID,
 ) question.SingleChoiceOption {

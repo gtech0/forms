@@ -1,4 +1,4 @@
-package dto
+package create
 
 import (
 	"encoding/json"
@@ -7,16 +7,17 @@ import (
 	"hedgehog-forms/model/form/section"
 )
 
-type CreateFormPatternDto struct {
-	Title       string            `json:"title"`
-	Description string            `json:"description"`
+type FormPatternDto struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	//OwnerId     uuid.UUID         `json:"ownerId"`
 	SubjectId   uuid.UUID         `json:"subjectId"`
 	Sections    []any             `json:"-"`
 	RawSections []json.RawMessage `json:"sections"`
 }
 
-func (c *CreateFormPatternDto) UnmarshalJSON(b []byte) error {
-	type patternDto CreateFormPatternDto
+func (c *FormPatternDto) UnmarshalJSON(b []byte) error {
+	type patternDto FormPatternDto
 
 	err := json.Unmarshal(b, (*patternDto)(c))
 	if err != nil {
@@ -24,7 +25,7 @@ func (c *CreateFormPatternDto) UnmarshalJSON(b []byte) error {
 	}
 
 	for _, rawSection := range c.RawSections {
-		var sectionDto CreateSectionDto
+		var sectionDto SectionDto
 		err = json.Unmarshal(rawSection, &sectionDto)
 		if err != nil {
 			return err
@@ -33,9 +34,9 @@ func (c *CreateFormPatternDto) UnmarshalJSON(b []byte) error {
 		var sectionI any
 		switch sectionDto.Type {
 		case section.NEW:
-			sectionI = &CreateNewSectionDto{}
+			sectionI = new(NewSectionDto)
 		case section.EXISTING:
-			sectionI = &CreateSectionOnExistingDto{}
+			sectionI = new(SectionOnExistingDto)
 		default:
 			return fmt.Errorf("unknown section type: %s", sectionDto.Type)
 		}
@@ -51,8 +52,8 @@ func (c *CreateFormPatternDto) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (c *CreateFormPatternDto) MarshalJSON() ([]byte, error) {
-	type patternDto CreateFormPatternDto
+func (c *FormPatternDto) MarshalJSON() ([]byte, error) {
+	type patternDto FormPatternDto
 
 	if c.Sections != nil {
 		for _, sectionDto := range c.Sections {

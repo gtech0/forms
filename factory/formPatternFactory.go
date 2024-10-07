@@ -1,20 +1,21 @@
 package factory
 
 import (
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form"
 	"hedgehog-forms/model/form/section"
 )
 
 type FormPatternFactory struct {
+	sectionFactory *SectionFactory
 }
 
-func (f *FormPatternFactory) BuildFormPattern(dto *dto.CreateFormPatternDto) (form.FormPattern, error) {
+func (f *FormPatternFactory) BuildFormPattern(dto *create.FormPatternDto) (form.FormPattern, error) {
 	var formPattern form.FormPattern
 	formPattern.Title = dto.Title
 	formPattern.Description = dto.Description
 	formPattern.SubjectId = dto.SubjectId
-	sections, err := f.BuildAndAddSections(dto.Sections, formPattern)
+	sections, err := f.buildAndAddSections(dto.Sections, formPattern)
 	if err != nil {
 		return form.FormPattern{}, err
 	}
@@ -23,13 +24,13 @@ func (f *FormPatternFactory) BuildFormPattern(dto *dto.CreateFormPatternDto) (fo
 	return formPattern, nil
 }
 
-func (f *FormPatternFactory) BuildAndAddSections(
+func (f *FormPatternFactory) buildAndAddSections(
 	sectionDtos []any,
 	formPattern form.FormPattern,
 ) ([]section.Section, error) {
 	sections := make([]section.Section, 0)
 	for order, sectionDto := range sectionDtos {
-		sectionObj, err := NewSectionFactory().buildSection(sectionDto)
+		sectionObj, err := f.sectionFactory.buildSection(sectionDto)
 		if err != nil {
 			return nil, err
 		}

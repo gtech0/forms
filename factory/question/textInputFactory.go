@@ -1,7 +1,7 @@
 package question
 
 import (
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/section/block/question"
 )
 
@@ -15,7 +15,7 @@ func NewTextInputFactory() *TextInputFactory {
 	}
 }
 
-func (t *TextInputFactory) BuildFromDto(questionDto *dto.CreateTextQuestionDto) (*question.TextInput, error) {
+func (t *TextInputFactory) BuildFromDto(questionDto *create.TextQuestionDto) (*question.TextInput, error) {
 	questionObj := new(question.TextInput)
 	t.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj)
 

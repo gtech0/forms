@@ -2,7 +2,7 @@ package question
 
 import (
 	"errors"
-	"hedgehog-forms/dto"
+	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/section/block"
 	"hedgehog-forms/model/form/section/block/question"
 )
@@ -16,15 +16,15 @@ func NewQuestionFactory() *QuestionFactory {
 
 func (q *QuestionFactory) buildQuestionFromDto(questionDto any) (question.IQuestion, error) {
 	switch questionTyped := questionDto.(type) {
-	case *dto.CreateQuestionOnExistingDto:
+	case *create.QuestionOnExistingDto:
 		return NewExistingQuestionFactory().BuildFromDto(questionTyped)
-	case *dto.CreateMatchingQuestionDto:
+	case *create.MatchingQuestionDto:
 		return NewMatchingFactory().BuildFromDto(questionTyped)
-	case *dto.CreateTextQuestionDto:
+	case *create.TextQuestionDto:
 		return NewTextInputFactory().BuildFromDto(questionTyped)
-	case *dto.CreateSingleChoiceQuestionDto:
+	case *create.SingleChoiceQuestionDto:
 		return NewSingleChoiceFactory().BuildFromDto(questionTyped)
-	case *dto.CreateMultipleChoiceQuestionDto:
+	case *create.MultipleChoiceQuestionDto:
 		return NewMultipleChoiceFactory().BuildFromDto(questionTyped)
 	default:
 		return nil, errors.New("unknown question type")
@@ -106,7 +106,7 @@ func (q *QuestionFactory) BuildQuestionForVariantObj(
 }
 
 func (q *QuestionFactory) buildQuestionFromObj(questionObj question.IQuestion) (question.IQuestion, error) {
-	questionDto := new(dto.CreateQuestionOnExistingDto)
+	questionDto := new(create.QuestionOnExistingDto)
 	questionDto.QuestionId = questionObj.GetId()
 	result, err := q.buildQuestionFromDto(questionDto)
 	if err != nil {
