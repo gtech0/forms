@@ -19,17 +19,17 @@ type Variant struct {
 	Matching       []*question.Matching
 }
 
-func (d *Variant) BeforeSave(*gorm.DB) error {
-	for _, iQuestion := range d.Questions {
+func (v *Variant) BeforeSave(*gorm.DB) error {
+	for _, iQuestion := range v.Questions {
 		switch iQuestion.GetType() {
 		case question.MULTIPLE_CHOICE:
-			d.MultipleChoice = append(d.MultipleChoice, iQuestion.(*question.MultipleChoice))
+			v.MultipleChoice = append(v.MultipleChoice, iQuestion.(*question.MultipleChoice))
 		case question.SINGLE_CHOICE:
-			d.SingleChoice = append(d.SingleChoice, iQuestion.(*question.SingleChoice))
+			v.SingleChoice = append(v.SingleChoice, iQuestion.(*question.SingleChoice))
 		case question.MATCHING:
-			d.Matching = append(d.Matching, iQuestion.(*question.Matching))
+			v.Matching = append(v.Matching, iQuestion.(*question.Matching))
 		case question.TEXT_INPUT:
-			d.TextInput = append(d.TextInput, iQuestion.(*question.TextInput))
+			v.TextInput = append(v.TextInput, iQuestion.(*question.TextInput))
 		}
 	}
 	return nil

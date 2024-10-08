@@ -19,13 +19,13 @@ type Section struct {
 	FormGeneratedId uuid.NullUUID `gorm:"type:uuid"`
 }
 
-func (d *Section) BeforeSave(*gorm.DB) error {
-	for _, iBlock := range d.Blocks {
+func (s *Section) BeforeSave(*gorm.DB) error {
+	for _, iBlock := range s.Blocks {
 		switch iBlock.GetType() {
 		case block.DYNAMIC:
-			d.DynamicBlocks = append(d.DynamicBlocks, iBlock.(*block.DynamicBlock))
+			s.DynamicBlocks = append(s.DynamicBlocks, iBlock.(*block.DynamicBlock))
 		case block.STATIC:
-			d.StaticBlocks = append(d.StaticBlocks, iBlock.(*block.StaticBlock))
+			s.StaticBlocks = append(s.StaticBlocks, iBlock.(*block.StaticBlock))
 		}
 	}
 	return nil

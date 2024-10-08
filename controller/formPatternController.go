@@ -67,7 +67,7 @@ func (f *FormPatternController) GetFormPattern(ctx *gin.Context) {
 	var formPattern form.FormPattern
 	if err = database.DB.Model(&form.FormPattern{}).
 		Where("id = ?", parsedPatternId).
-		Find(&formPattern).Error; err != nil {
+		First(&formPattern).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
