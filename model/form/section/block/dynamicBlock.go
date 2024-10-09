@@ -8,10 +8,10 @@ import (
 type DynamicBlock struct {
 	Block
 	Questions      []question.IQuestion `gorm:"-"`
-	MultipleChoice []*question.MultipleChoice
-	TextInput      []*question.TextInput
-	SingleChoice   []*question.SingleChoice
-	Matching       []*question.Matching
+	MultipleChoice question.MultipleChoiceSlice
+	TextInput      question.TextInputSlice
+	SingleChoice   question.SingleChoiceSlice
+	Matching       question.MatchingSlice
 }
 
 func (d *DynamicBlock) BeforeSave(*gorm.DB) error {
@@ -28,4 +28,14 @@ func (d *DynamicBlock) BeforeSave(*gorm.DB) error {
 		}
 	}
 	return nil
+}
+
+type DynamicBlockSlice []*DynamicBlock
+
+func (d *DynamicBlockSlice) ToInterface() []IBlock {
+	blocks := make([]IBlock, 0)
+	for _, dynamicBlock := range *d {
+		blocks = append(blocks, dynamicBlock)
+	}
+	return blocks
 }

@@ -14,24 +14,32 @@ type FormPatternMapper struct {
 func NewFormPatternMapper() *FormPatternMapper {
 	return &FormPatternMapper{
 		subjectMapper: NewSubjectMapper(),
+		sectionMapper: NewSectionMapper(),
 	}
 }
 
-func (f *FormPatternMapper) toDto(formPattern form.FormPattern) get.FormPatternDto {
+func (f *FormPatternMapper) ToDto(formPattern form.FormPattern) (get.FormPatternDto, error) {
 	var formPatternDto get.FormPatternDto
 	formPatternDto.Id = formPattern.Id
 	formPatternDto.Title = formPattern.Title
 	formPatternDto.Description = formPattern.Description
 	formPatternDto.Subject = f.subjectMapper.toDto(formPattern.Subject)
-	formPatternDto.Sections = f.sectionsToDto(formPattern.Sections)
-	return formPatternDto
+	sections, err := f.sectionsToDto(formPattern.Sections)
+	if err != nil {
+		return get.FormPatternDto{}, err
+	}
+	formPatternDto.Sections = sections
+	return formPatternDto, nil
 }
 
-func (f *FormPatternMapper) sectionsToDto(sections []section.Section) []get.SectionDto {
+func (f *FormPatternMapper) sectionsToDto(sections []section.Section) ([]get.SectionDto, error) {
 	mappedSections := make([]get.SectionDto, 0)
 	for _, currentSection := range sections {
-		mappedSection := f.sectionMapper.toDto(currentSection)
+		mappedSection, err := f.sectionMapper.toDto(currentSection)
+		if err != nil {
+			return nil, err
+		}
 		mappedSections = append(mappedSections, mappedSection)
 	}
-	return mappedSections
+	return mappedSections, nil
 }

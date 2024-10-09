@@ -18,3 +18,13 @@ type SingleChoiceOption struct {
 	IsAnswer       bool
 	SingleChoiceId uuid.UUID `gorm:"type:uuid"`
 }
+
+type SingleChoiceSlice []*SingleChoice
+
+func (s *SingleChoiceSlice) ToInterface() []IQuestion {
+	questions := make([]IQuestion, 0)
+	for _, singleChoice := range *s {
+		questions = append(questions, singleChoice)
+	}
+	return questions
+}

@@ -10,6 +10,12 @@ type FormPatternFactory struct {
 	sectionFactory *SectionFactory
 }
 
+func NewFormPatternFactory() *FormPatternFactory {
+	return &FormPatternFactory{
+		sectionFactory: NewSectionFactory(),
+	}
+}
+
 func (f *FormPatternFactory) BuildFormPattern(dto *create.FormPatternDto) (form.FormPattern, error) {
 	var formPattern form.FormPattern
 	formPattern.Title = dto.Title

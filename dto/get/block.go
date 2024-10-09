@@ -1,14 +1,23 @@
 package get
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"hedgehog-forms/model/form/section/block"
+)
 
 type IBlockDto interface {
+	GetType() block.BlockType
 }
 
 type BlockDto struct {
-	Id          uuid.UUID `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
+	Id          uuid.UUID       `json:"id"`
+	Title       string          `json:"title"`
+	Description string          `json:"description"`
+	Type        block.BlockType `json:"type"`
+}
+
+func (b *BlockDto) GetType() block.BlockType {
+	return b.Type
 }
 
 type DynamicBlockDto struct {

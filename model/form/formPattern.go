@@ -11,7 +11,7 @@ type FormPattern struct {
 	Title       string
 	Description string
 	OwnerId     uuid.UUID `gorm:"type:uuid"`
-	Subject     Subject
+	Subject     model.Subject
 	SubjectId   uuid.UUID `gorm:"type:uuid"`
 	Sections    []section.Section
 }

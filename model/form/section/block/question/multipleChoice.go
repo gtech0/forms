@@ -25,3 +25,13 @@ type MultipleChoiceOption struct {
 	IsAnswer         bool
 	MultipleChoiceId uuid.UUID `gorm:"type:uuid"`
 }
+
+type MultipleChoiceSlice []*MultipleChoice
+
+func (m *MultipleChoiceSlice) ToInterface() []IQuestion {
+	questions := make([]IQuestion, 0)
+	for _, multipleChoice := range *m {
+		questions = append(questions, multipleChoice)
+	}
+	return questions
+}

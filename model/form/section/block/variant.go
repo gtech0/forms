@@ -13,10 +13,10 @@ type Variant struct {
 	Description    string
 	StaticBlockID  uuid.UUID            `gorm:"type:uuid"`
 	Questions      []question.IQuestion `gorm:"-"`
-	MultipleChoice []*question.MultipleChoice
-	TextInput      []*question.TextInput
-	SingleChoice   []*question.SingleChoice
-	Matching       []*question.Matching
+	MultipleChoice question.MultipleChoiceSlice
+	TextInput      question.TextInputSlice
+	SingleChoice   question.SingleChoiceSlice
+	Matching       question.MatchingSlice
 }
 
 func (v *Variant) BeforeSave(*gorm.DB) error {

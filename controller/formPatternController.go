@@ -17,7 +17,10 @@ type FormPatternController struct {
 }
 
 func NewFormPatternController() *FormPatternController {
-	return &FormPatternController{}
+	return &FormPatternController{
+		formPatternFactory: factory.NewFormPatternFactory(),
+		formPatternMapper:  mapper.NewFormPatternMapper(),
+	}
 }
 
 func (f *FormPatternController) CreateFormPattern(ctx *gin.Context) {
@@ -66,13 +69,22 @@ func (f *FormPatternController) GetFormPattern(ctx *gin.Context) {
 
 	var formPattern form.FormPattern
 	if err = database.DB.Model(&form.FormPattern{}).
-		Where("id = ?", parsedPatternId).
-		First(&formPattern).Error; err != nil {
+		Preload("Subject").
+		Preload("Sections.DynamicBlocks.~~~as~~~.~~~as~~~").
+		Preload("Sections.StaticBlocks.Variants.~~~as~~~.~~~as~~~").
+		First(&formPattern, "form_patterns.id = ?", parsedPatternId).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, formPattern)
+	dto, err := f.formPatternMapper.ToDto(formPattern)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, dto)
 }

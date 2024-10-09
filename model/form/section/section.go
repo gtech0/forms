@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"hedgehog-forms/model"
 	"hedgehog-forms/model/form/section/block"
+	"slices"
 )
 
 type Section struct {
@@ -13,8 +14,8 @@ type Section struct {
 	Description     string
 	Order           int
 	Blocks          []block.IBlock `gorm:"-"`
-	DynamicBlocks   []*block.DynamicBlock
-	StaticBlocks    []*block.StaticBlock
+	DynamicBlocks   block.DynamicBlockSlice
+	StaticBlocks    block.StaticBlockSlice
 	FormPatternId   uuid.UUID     `gorm:"type:uuid"`
 	FormGeneratedId uuid.NullUUID `gorm:"type:uuid"`
 }
@@ -28,5 +29,10 @@ func (s *Section) BeforeSave(*gorm.DB) error {
 			s.StaticBlocks = append(s.StaticBlocks, iBlock.(*block.StaticBlock))
 		}
 	}
+	return nil
+}
+
+func (s *Section) AfterFind(*gorm.DB) error {
+	s.Blocks = slices.Concat(s.DynamicBlocks.ToInterface(), s.StaticBlocks.ToInterface())
 	return nil
 }

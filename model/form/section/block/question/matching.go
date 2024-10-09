@@ -32,3 +32,13 @@ type MatchingDefinition struct {
 	MatchingId uuid.UUID `gorm:"type:uuid"`
 	Term       MatchingTerm
 }
+
+type MatchingSlice []*Matching
+
+func (s *MatchingSlice) ToInterface() []IQuestion {
+	questions := make([]IQuestion, 0)
+	for _, matching := range *s {
+		questions = append(questions, matching)
+	}
+	return questions
+}

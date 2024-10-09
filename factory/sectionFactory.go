@@ -10,12 +10,14 @@ import (
 )
 
 type SectionFactory struct {
-	blockFactory *blockF.BlockFactory
+	blockFactory   *blockF.BlockFactory
+	sectionService *service.SectionService
 }
 
 func NewSectionFactory() *SectionFactory {
 	return &SectionFactory{
-		blockFactory: blockF.NewBlockFactory(),
+		blockFactory:   blockF.NewBlockFactory(),
+		sectionService: service.NewSectionService(),
 	}
 }
 
@@ -63,7 +65,7 @@ func (s *SectionFactory) buildAndAddBlocksFromDto(blockDtos []any, sectionObj *s
 }
 
 func (s *SectionFactory) buildSectionExisting(sectionDto *create.SectionOnExistingDto) (section.Section, error) {
-	sectObj, err := service.NewSectionService().GetSectionObjectById(sectionDto.SectionId)
+	sectObj, err := s.sectionService.GetSectionObjectById(sectionDto.SectionId)
 	if err != nil {
 		return section.Section{}, err
 	}

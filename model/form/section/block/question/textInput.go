@@ -17,3 +17,13 @@ type TextInputAnswer struct {
 	Answer      string
 	TextInputId uuid.UUID `gorm:"type:uuid"`
 }
+
+type TextInputSlice []*TextInput
+
+func (t *TextInputSlice) ToInterface() []IQuestion {
+	questions := make([]IQuestion, 0)
+	for _, textInput := range *t {
+		questions = append(questions, textInput)
+	}
+	return questions
+}
