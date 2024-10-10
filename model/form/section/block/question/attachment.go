@@ -7,6 +7,5 @@ import (
 
 type Attachment struct {
 	model.BaseModel
-	Description string
-	QuestionId  uuid.UUID `gorm:"type:uuid"`
+	QuestionId uuid.UUID `gorm:"type:uuid"`
 }

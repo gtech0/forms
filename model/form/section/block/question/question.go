@@ -15,6 +15,8 @@ type IQuestion interface {
 	GetType() QuestionType
 	SetType(QuestionType)
 
+	SetAttachments([]Attachment)
+
 	SetVariantId(nullUUID uuid.NullUUID)
 
 	SetDynamicBlockId(nullUUID uuid.NullUUID)
@@ -53,6 +55,10 @@ func (q *Question) GetType() QuestionType {
 
 func (q *Question) SetType(t QuestionType) {
 	q.Type = t
+}
+
+func (q *Question) SetAttachments(attachments []Attachment) {
+	q.Attachments = attachments
 }
 
 func (q *Question) SetVariantId(id uuid.NullUUID) {

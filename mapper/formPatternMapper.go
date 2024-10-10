@@ -23,6 +23,7 @@ func (f *FormPatternMapper) ToDto(formPattern form.FormPattern) (get.FormPattern
 	formPatternDto.Id = formPattern.Id
 	formPatternDto.Title = formPattern.Title
 	formPatternDto.Description = formPattern.Description
+	formPatternDto.OwnerId = formPattern.OwnerId
 	formPatternDto.Subject = f.subjectMapper.toDto(formPattern.Subject)
 	sections, err := f.sectionsToDto(formPattern.Sections)
 	if err != nil {

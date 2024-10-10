@@ -13,13 +13,20 @@ func NewCommonFieldQuestionMapper() *CommonFieldQuestionMapper {
 
 func (c *CommonFieldQuestionMapper) MapCommonFieldsDto(source create.NewQuestionDto, target question.IQuestion) {
 	target.SetDescription(source.Description)
-	//target.Attachments = source.Attachments
+	attachments := make([]question.Attachment, 0)
+	for _, attachmentId := range source.Attachments {
+		attachmentObj := new(question.Attachment)
+		attachmentObj.Id = attachmentId
+		attachmentObj.QuestionId = target.GetId()
+		attachments = append(attachments, *attachmentObj)
+	}
+	target.SetAttachments(attachments)
 	target.SetType(source.Type)
 }
 
 func (c *CommonFieldQuestionMapper) MapCommonFieldsObj(source question.Question, target question.IQuestion) {
 	target.SetDescription(source.Description)
-	//target.Attachments = source.Attachments
+	target.SetAttachments(source.Attachments)
 	target.SetType(source.Type)
 	target.SetIsQuestionFromBank(source.IsQuestionFromBank)
 }
