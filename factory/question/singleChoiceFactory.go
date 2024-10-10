@@ -39,7 +39,7 @@ func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.SingleChoice) *
 	options := make([]question.SingleChoiceOption, 0)
 	for _, option := range questionObj.SingleChoiceOptions {
 		var newOption question.SingleChoiceOption
-		newOption.Title = option.Title
+		newOption.Text = option.Text
 		newOption.Order = option.Order
 		newOption.IsAnswer = option.IsAnswer
 	}
@@ -53,7 +53,7 @@ func (s *SingleChoiceFactory) buildOptionFromDto(
 	questionId uuid.UUID,
 ) question.SingleChoiceOption {
 	var option question.SingleChoiceOption
-	option.Title = questionDto.Options[order]
+	option.Text = questionDto.Options[order]
 	option.Order = order
 	option.IsAnswer = questionDto.CorrectOption == order
 	option.SingleChoiceId = questionId

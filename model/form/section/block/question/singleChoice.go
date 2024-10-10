@@ -13,7 +13,7 @@ type SingleChoice struct {
 
 type SingleChoiceOption struct {
 	model.BaseModel
-	Title          string
+	Text           string
 	Order          int
 	IsAnswer       bool
 	SingleChoiceId uuid.UUID `gorm:"type:uuid"`
