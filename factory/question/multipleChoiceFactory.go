@@ -47,7 +47,7 @@ func (m *MultipleChoiceFactory) buildOptionFromDto(
 	questionId uuid.UUID,
 ) question.MultipleChoiceOption {
 	var option question.MultipleChoiceOption
-	option.Title = questionDto.Options[order]
+	option.Text = questionDto.Options[order]
 	option.Order = order
 	option.IsAnswer = slices.Contains(questionDto.CorrectOptions, order)
 	option.MultipleChoiceId = questionId
@@ -74,7 +74,7 @@ func (m *MultipleChoiceFactory) buildOptionFromEntity(
 	questionId uuid.UUID,
 ) {
 	var option question.MultipleChoiceOption
-	option.Title = optionObj.Title
+	option.Text = optionObj.Text
 	option.Order = optionObj.Order
 	option.IsAnswer = optionObj.IsAnswer
 	option.MultipleChoiceId = questionId

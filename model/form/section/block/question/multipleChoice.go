@@ -20,7 +20,7 @@ type MultipleChoicePoints struct {
 
 type MultipleChoiceOption struct {
 	model.BaseModel
-	Title            string
+	Text             string
 	Order            int
 	IsAnswer         bool
 	MultipleChoiceId uuid.UUID `gorm:"type:uuid"`

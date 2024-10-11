@@ -4,11 +4,11 @@ import "github.com/google/uuid"
 
 type MatchingDto struct {
 	QuestionDto
-	Points              map[int]int         `json:"points"`
-	TermsAndDefinitions []TermDefinitionDto `json:"termsAndDefinitions"`
+	Points              map[int]int                 `json:"points"`
+	TermsAndDefinitions []MatchingTermDefinitionDto `json:"termsAndDefinitions"`
 }
 
-type TermDefinitionDto struct {
+type MatchingTermDefinitionDto struct {
 	Term       MatchingOptionDto `json:"term"`
 	Definition MatchingOptionDto `json:"definition"`
 }

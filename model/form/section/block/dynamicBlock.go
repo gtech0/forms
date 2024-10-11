@@ -3,6 +3,7 @@ package block
 import (
 	"gorm.io/gorm"
 	"hedgehog-forms/model/form/section/block/question"
+	"slices"
 )
 
 type DynamicBlock struct {
@@ -27,6 +28,16 @@ func (d *DynamicBlock) BeforeSave(*gorm.DB) error {
 			d.TextInput = append(d.TextInput, iQuestion.(*question.TextInput))
 		}
 	}
+	return nil
+}
+
+func (d *DynamicBlock) AfterFind(*gorm.DB) error {
+	d.Questions = slices.Concat(
+		d.MultipleChoice.ToInterface(),
+		d.TextInput.ToInterface(),
+		d.SingleChoice.ToInterface(),
+		d.Matching.ToInterface(),
+	)
 	return nil
 }
 

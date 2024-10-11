@@ -70,8 +70,8 @@ func (f *FormPatternController) GetFormPattern(ctx *gin.Context) {
 	var formPattern form.FormPattern
 	if err = database.DB.Model(&form.FormPattern{}).
 		Preload("Subject").
-		Preload("Sections.DynamicBlocks.~~~as~~~.~~~as~~~").
-		Preload("Sections.StaticBlocks.Variants.~~~as~~~.~~~as~~~").
+		Preload("Sections.DynamicBlocks.~~~as~~~.~~~as~~~.~~~as~~~").
+		Preload("Sections.StaticBlocks.Variants.~~~as~~~.~~~as~~~.~~~as~~~").
 		First(&formPattern, "form_patterns.id = ?", parsedPatternId).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

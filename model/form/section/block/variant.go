@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"hedgehog-forms/model"
 	"hedgehog-forms/model/form/section/block/question"
+	"slices"
 )
 
 type Variant struct {
@@ -32,5 +33,15 @@ func (v *Variant) BeforeSave(*gorm.DB) error {
 			v.TextInput = append(v.TextInput, iQuestion.(*question.TextInput))
 		}
 	}
+	return nil
+}
+
+func (v *Variant) AfterFind(*gorm.DB) error {
+	v.Questions = slices.Concat(
+		v.MultipleChoice.ToInterface(),
+		v.TextInput.ToInterface(),
+		v.SingleChoice.ToInterface(),
+		v.Matching.ToInterface(),
+	)
 	return nil
 }

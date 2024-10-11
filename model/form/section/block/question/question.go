@@ -7,6 +7,7 @@ import (
 
 type IQuestion interface {
 	GetId() uuid.UUID
+	SetId(uuid.UUID)
 
 	GetDescription() string
 	SetDescription(string)
@@ -42,6 +43,10 @@ type Question struct {
 	Subject            model.Subject
 	SubjectId          uuid.NullUUID `gorm:"type:uuid"`
 	IsQuestionFromBank bool
+}
+
+func (q *Question) SetId(id uuid.UUID) {
+	q.Id = id
 }
 
 func (q *Question) GetId() uuid.UUID {

@@ -5,7 +5,7 @@ import "github.com/google/uuid"
 type MultipleChoiceDto struct {
 	QuestionDto
 	Points  map[int]int         `json:"points"`
-	Choices []MultipleOptionDto `json:"choices"`
+	Options []MultipleOptionDto `json:"options"`
 }
 
 type MultipleOptionDto struct {

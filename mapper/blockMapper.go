@@ -49,8 +49,37 @@ func (b *BlockMapper) staticToDto(staticBlock *block.StaticBlock) (*get.StaticBl
 	staticBlockDto.Title = staticBlock.Title
 	staticBlockDto.Description = staticBlock.Description
 	staticBlockDto.Type = staticBlock.Type
-	//staticBlockDto.Variants =
+	variants, err := b.variantsToDto(staticBlock.Variants)
+	if err != nil {
+		return nil, err
+	}
+	staticBlockDto.Variants = variants
 	return staticBlockDto, nil
+}
+
+func (b *BlockMapper) variantsToDto(variants []block.Variant) ([]get.VariantDto, error) {
+	mappedVariants := make([]get.VariantDto, 0)
+	for _, variant := range variants {
+		mappedVariant, err := b.variantToDto(variant)
+		if err != nil {
+			return nil, err
+		}
+		mappedVariants = append(mappedVariants, mappedVariant)
+	}
+	return mappedVariants, nil
+}
+
+func (b *BlockMapper) variantToDto(variantObj block.Variant) (get.VariantDto, error) {
+	var variantDto get.VariantDto
+	variantDto.Id = variantObj.Id
+	variantDto.Title = variantObj.Title
+	variantDto.Description = variantObj.Description
+	questions, err := b.questionsToDto(variantObj.Questions)
+	if err != nil {
+		return get.VariantDto{}, err
+	}
+	variantDto.Questions = questions
+	return variantDto, nil
 }
 
 func (b *BlockMapper) questionsToDto(questions []question.IQuestion) ([]get.IQuestionDto, error) {

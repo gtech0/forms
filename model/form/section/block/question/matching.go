@@ -12,13 +12,6 @@ type Matching struct {
 	Points      []MatchingPoint
 }
 
-type MatchingPoint struct {
-	model.BaseModel
-	CorrectAnswer int
-	Points        int
-	MatchingId    uuid.UUID `gorm:"type:uuid"`
-}
-
 type MatchingTerm struct {
 	model.BaseModel
 	Text                 string
@@ -31,6 +24,13 @@ type MatchingDefinition struct {
 	Text       string
 	MatchingId uuid.UUID `gorm:"type:uuid"`
 	Term       MatchingTerm
+}
+
+type MatchingPoint struct {
+	model.BaseModel
+	CorrectAnswer int
+	Points        int
+	MatchingId    uuid.UUID `gorm:"type:uuid"`
 }
 
 type MatchingSlice []*Matching
