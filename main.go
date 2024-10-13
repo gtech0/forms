@@ -25,11 +25,17 @@ func main() {
 	router.Use(cors.New(corsConfig))
 
 	formPatternController := controller.NewFormPatternController()
+	fileController := controller.NewFileController()
 
 	formPattern := router.Group("/api/form/pattern")
 	{
 		formPattern.POST("/create", formPatternController.CreateFormPattern)
 		formPattern.GET("/get/:patternId", formPatternController.GetFormPattern)
+	}
+
+	fileGroup := router.Group("/api/file")
+	{
+		fileGroup.POST("/upload", fileController.UploadFile)
 	}
 
 	if err := router.Run(); err != nil {

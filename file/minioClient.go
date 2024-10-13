@@ -16,7 +16,7 @@ func InitializeClient() {
 	secretKey := os.Getenv("MINIO_SECRET_KEY")
 	MinioClient, err = minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
-		Secure: true,
+		Secure: false,
 	})
 	if err != nil {
 		log.Fatalln(err)
