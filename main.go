@@ -6,6 +6,7 @@ import (
 	"hedgehog-forms/controller"
 	"hedgehog-forms/database"
 	"hedgehog-forms/enviroment"
+	"hedgehog-forms/file"
 	"log"
 )
 
@@ -13,6 +14,7 @@ func init() {
 	enviroment.Load()
 	database.Connect()
 	database.Sync()
+	file.InitializeClient()
 }
 
 func main() {
