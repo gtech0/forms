@@ -5,6 +5,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
+	"hedgehog-forms/model"
 	"hedgehog-forms/model/form"
 	"hedgehog-forms/model/form/section"
 	"hedgehog-forms/model/form/section/block"
@@ -20,6 +22,9 @@ func Connect() {
 	dsn := ConvertToDSN()
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
 	})
 
 	if err != nil {
@@ -58,6 +63,7 @@ func Sync() {
 
 		//&question.Question{},
 		&question.Attachment{},
+		&model.File{},
 
 		&question.MultipleChoice{},
 		&question.MultipleChoicePoints{},

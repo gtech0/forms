@@ -29,13 +29,14 @@ func main() {
 
 	formPattern := router.Group("/api/form/pattern")
 	{
-		formPattern.POST("/create", formPatternController.CreateFormPattern)
-		formPattern.GET("/get/:patternId", formPatternController.GetFormPattern)
+		formPattern.POST("/create", formPatternController.CreatePattern)
+		formPattern.GET("/get/:patternId", formPatternController.GetPattern)
 	}
 
 	fileGroup := router.Group("/api/file")
 	{
 		fileGroup.POST("/upload", fileController.UploadFile)
+		fileGroup.GET("/download/:fileId", fileController.DownloadFile)
 	}
 
 	if err := router.Run(); err != nil {

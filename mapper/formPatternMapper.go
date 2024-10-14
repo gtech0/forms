@@ -6,19 +6,19 @@ import (
 	"hedgehog-forms/model/form/section"
 )
 
-type FormPatternMapper struct {
+type PatternMapper struct {
 	subjectMapper *SubjectMapper
 	sectionMapper *SectionMapper
 }
 
-func NewFormPatternMapper() *FormPatternMapper {
-	return &FormPatternMapper{
+func NewPatternMapper() *PatternMapper {
+	return &PatternMapper{
 		subjectMapper: NewSubjectMapper(),
 		sectionMapper: NewSectionMapper(),
 	}
 }
 
-func (f *FormPatternMapper) ToDto(formPattern form.FormPattern) (get.FormPatternDto, error) {
+func (f *PatternMapper) ToDto(formPattern form.FormPattern) (get.FormPatternDto, error) {
 	var formPatternDto get.FormPatternDto
 	formPatternDto.Id = formPattern.Id
 	formPatternDto.Title = formPattern.Title
@@ -33,7 +33,7 @@ func (f *FormPatternMapper) ToDto(formPattern form.FormPattern) (get.FormPattern
 	return formPatternDto, nil
 }
 
-func (f *FormPatternMapper) sectionsToDto(sections []section.Section) ([]get.SectionDto, error) {
+func (f *PatternMapper) sectionsToDto(sections []section.Section) ([]get.SectionDto, error) {
 	mappedSections := make([]get.SectionDto, 0)
 	for _, currentSection := range sections {
 		mappedSection, err := f.sectionMapper.toDto(currentSection)

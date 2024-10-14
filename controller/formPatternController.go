@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"hedgehog-forms/database"
@@ -8,22 +9,25 @@ import (
 	"hedgehog-forms/factory"
 	"hedgehog-forms/mapper"
 	"hedgehog-forms/model/form"
+	"hedgehog-forms/service"
 	"net/http"
 )
 
 type FormPatternController struct {
-	formPatternFactory *factory.FormPatternFactory
-	formPatternMapper  *mapper.FormPatternMapper
+	patternFactory    *factory.PatternFactory
+	patternMapper     *mapper.PatternMapper
+	attachmentService *service.AttachmentService
 }
 
 func NewFormPatternController() *FormPatternController {
 	return &FormPatternController{
-		formPatternFactory: factory.NewFormPatternFactory(),
-		formPatternMapper:  mapper.NewFormPatternMapper(),
+		patternFactory:    factory.NewPatternFactory(),
+		patternMapper:     mapper.NewPatternMapper(),
+		attachmentService: service.NewAttachmentService(),
 	}
 }
 
-func (f *FormPatternController) CreateFormPattern(ctx *gin.Context) {
+func (f *FormPatternController) CreatePattern(ctx *gin.Context) {
 	body := create.FormPatternDto{}
 	if err := ctx.Bind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -32,10 +36,25 @@ func (f *FormPatternController) CreateFormPattern(ctx *gin.Context) {
 		return
 	}
 
-	formPattern, err := f.formPatternFactory.BuildFormPattern(&body)
+	formPattern, err := f.patternFactory.BuildPattern(&body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+		})
+		return
+	}
+
+	attachmentIds, err := f.attachmentService.ValidatePatternAttachments(formPattern)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if len(attachmentIds) > 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": fmt.Sprintf("incorrect attachment ids: %v", attachmentIds),
 		})
 		return
 	}
@@ -50,7 +69,7 @@ func (f *FormPatternController) CreateFormPattern(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
-func (f *FormPatternController) GetFormPattern(ctx *gin.Context) {
+func (f *FormPatternController) GetPattern(ctx *gin.Context) {
 	patternId := ctx.Param("patternId")
 	if patternId == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -79,7 +98,7 @@ func (f *FormPatternController) GetFormPattern(ctx *gin.Context) {
 		return
 	}
 
-	dto, err := f.formPatternMapper.ToDto(formPattern)
+	dto, err := f.patternMapper.ToDto(formPattern)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

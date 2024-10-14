@@ -28,9 +28,9 @@ type MatchingDefinition struct {
 
 type MatchingPoint struct {
 	model.BaseModel
-	CorrectAnswer int
-	Points        int
-	MatchingId    uuid.UUID `gorm:"type:uuid"`
+	CorrectAnswers int
+	Points         int
+	MatchingId     uuid.UUID `gorm:"type:uuid"`
 }
 
 type MatchingSlice []*Matching
