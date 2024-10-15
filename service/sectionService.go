@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/database"
-	"hedgehog-forms/model/form/section"
+	"hedgehog-forms/model/form/pattern/section"
 )
 
 type SectionService struct{}

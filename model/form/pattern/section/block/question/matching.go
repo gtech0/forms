@@ -13,21 +13,21 @@ type Matching struct {
 }
 
 type MatchingTerm struct {
-	model.BaseModel
+	model.Base
 	Text                 string
 	MatchingId           uuid.UUID `gorm:"type:uuid"`
 	MatchingDefinitionId uuid.UUID `gorm:"type:uuid"`
 }
 
 type MatchingDefinition struct {
-	model.BaseModel
+	model.Base
 	Text       string
 	MatchingId uuid.UUID `gorm:"type:uuid"`
 	Term       MatchingTerm
 }
 
 type MatchingPoint struct {
-	model.BaseModel
+	model.Base
 	CorrectAnswers int
 	Points         int
 	MatchingId     uuid.UUID `gorm:"type:uuid"`

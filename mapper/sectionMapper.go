@@ -2,7 +2,8 @@ package mapper
 
 import (
 	"hedgehog-forms/dto/get"
-	"hedgehog-forms/model/form/section"
+	"hedgehog-forms/model/form/generated"
+	"hedgehog-forms/model/form/pattern/section"
 )
 
 type SectionMapper struct {
@@ -40,4 +41,10 @@ func (s *SectionMapper) blocksToDto(sectionObj section.Section) ([]get.IBlockDto
 		mappedBlocks = append(mappedBlocks, mappedBlock)
 	}
 	return mappedBlocks, nil
+}
+
+func (s *SectionMapper) build(newSection []section.Section) []generated.Section {
+	var generatedSections []generated.Section
+	//TODO
+	return generatedSections
 }

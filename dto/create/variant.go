@@ -3,7 +3,7 @@ package create
 import (
 	"encoding/json"
 	"fmt"
-	"hedgehog-forms/model/form/section/block/question"
+	"hedgehog-forms/model/form"
 )
 
 type UpdateVariantDto struct {
@@ -30,15 +30,15 @@ func (c *UpdateVariantDto) UnmarshalJSON(b []byte) error {
 
 		var questionI any
 		switch questionDto.Type {
-		case question.EXISTING:
+		case form.EXISTING:
 			questionI = &QuestionOnExistingDto{}
-		case question.MATCHING:
+		case form.MATCHING:
 			questionI = &MatchingQuestionDto{}
-		case question.MULTIPLE_CHOICE:
+		case form.MULTIPLE_CHOICE:
 			questionI = &MultipleChoiceQuestionDto{}
-		case question.SINGLE_CHOICE:
+		case form.SINGLE_CHOICE:
 			questionI = &SingleChoiceQuestionDto{}
-		case question.TEXT_INPUT:
+		case form.TEXT_INPUT:
 			questionI = &TextQuestionDto{}
 		default:
 			return fmt.Errorf("unknown question type: %s", questionDto.Type)

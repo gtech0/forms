@@ -13,7 +13,7 @@ type TextInput struct {
 }
 
 type TextInputAnswer struct {
-	model.BaseModel
+	model.Base
 	Answer      string
 	TextInputId uuid.UUID `gorm:"type:uuid"`
 }

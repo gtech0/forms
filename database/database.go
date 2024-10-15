@@ -7,10 +7,12 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"hedgehog-forms/model"
-	"hedgehog-forms/model/form"
-	"hedgehog-forms/model/form/section"
-	"hedgehog-forms/model/form/section/block"
-	"hedgehog-forms/model/form/section/block/question"
+	"hedgehog-forms/model/form/generated"
+	"hedgehog-forms/model/form/pattern"
+	"hedgehog-forms/model/form/pattern/section"
+	block "hedgehog-forms/model/form/pattern/section/block"
+	question "hedgehog-forms/model/form/pattern/section/block/question"
+	"hedgehog-forms/model/form/published"
 	"log"
 	"os"
 )
@@ -47,21 +49,19 @@ func ConvertToDSN() string {
 
 func Sync() {
 	err := DB.AutoMigrate(
-		&form.FormPattern{},
-		&form.FormPublished{},
-		&form.MarkConfiguration{},
-		&form.FormGenerated{},
-		&form.FormPublishedGroup{},
-		&form.FormPublishedUser{},
+		&pattern.FormPattern{},
+		&published.FormPublished{},
+		&published.MarkConfiguration{},
+		&generated.FormGenerated{},
+		&published.FormPublishedGroup{},
+		&published.FormPublishedUser{},
 
 		&section.Section{},
 
-		//&block.Block{},
 		&block.StaticBlock{},
 		&block.DynamicBlock{},
 		&block.Variant{},
 
-		//&question.Question{},
 		&question.Attachment{},
 		&model.File{},
 

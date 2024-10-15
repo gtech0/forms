@@ -1,6 +1,6 @@
 package model
 
 type Subject struct {
-	BaseModel
+	Base
 	Name string
 }

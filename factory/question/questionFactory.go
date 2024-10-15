@@ -3,8 +3,8 @@ package question
 import (
 	"errors"
 	"hedgehog-forms/dto/create"
-	"hedgehog-forms/model/form/section/block"
-	"hedgehog-forms/model/form/section/block/question"
+	"hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
 type QuestionFactory struct {

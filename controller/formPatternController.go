@@ -8,7 +8,7 @@ import (
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/factory"
 	"hedgehog-forms/mapper"
-	"hedgehog-forms/model/form"
+	"hedgehog-forms/model/form/pattern"
 	"hedgehog-forms/service"
 	"net/http"
 )
@@ -86,8 +86,8 @@ func (f *FormPatternController) GetPattern(ctx *gin.Context) {
 		return
 	}
 
-	var formPattern form.FormPattern
-	if err = database.DB.Model(&form.FormPattern{}).
+	var formPattern pattern.FormPattern
+	if err = database.DB.Model(&pattern.FormPattern{}).
 		Preload("Subject").
 		Preload("Sections.DynamicBlocks.~~~as~~~.~~~as~~~.~~~as~~~").
 		Preload("Sections.StaticBlocks.Variants.~~~as~~~.~~~as~~~.~~~as~~~").

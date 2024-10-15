@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"hedgehog-forms/model/form/section"
-	"hedgehog-forms/model/form/section/block"
+	"hedgehog-forms/model/form/pattern/section"
+	"hedgehog-forms/model/form/pattern/section/block"
 )
 
 type SectionDto struct {

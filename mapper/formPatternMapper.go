@@ -2,8 +2,8 @@ package mapper
 
 import (
 	"hedgehog-forms/dto/get"
-	"hedgehog-forms/model/form"
-	"hedgehog-forms/model/form/section"
+	"hedgehog-forms/model/form/pattern"
+	"hedgehog-forms/model/form/pattern/section"
 )
 
 type PatternMapper struct {
@@ -18,7 +18,7 @@ func NewPatternMapper() *PatternMapper {
 	}
 }
 
-func (f *PatternMapper) ToDto(formPattern form.FormPattern) (get.FormPatternDto, error) {
+func (f *PatternMapper) ToDto(formPattern pattern.FormPattern) (get.FormPatternDto, error) {
 	var formPatternDto get.FormPatternDto
 	formPatternDto.Id = formPattern.Id
 	formPatternDto.Title = formPattern.Title

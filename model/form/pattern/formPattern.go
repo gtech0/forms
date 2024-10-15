@@ -1,13 +1,13 @@
-package form
+package pattern
 
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/model"
-	"hedgehog-forms/model/form/section"
+	"hedgehog-forms/model/form/pattern/section"
 )
 
 type FormPattern struct {
-	model.BaseModel
+	model.Base
 	Title       string
 	Description string
 	OwnerId     uuid.NullUUID `gorm:"type:uuid"`

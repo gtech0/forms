@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/database"
 	"hedgehog-forms/model"
-	"hedgehog-forms/model/form"
+	"hedgehog-forms/model/form/pattern"
 )
 
 type AttachmentService struct {
@@ -17,7 +17,7 @@ func NewAttachmentService() *AttachmentService {
 	}
 }
 
-func (f *AttachmentService) ValidatePatternAttachments(pattern form.FormPattern) ([]uuid.UUID, error) {
+func (f *AttachmentService) ValidatePatternAttachments(pattern pattern.FormPattern) ([]uuid.UUID, error) {
 	questions := f.patternService.ExtractQuestionsFromPattern(pattern)
 	attachmentIds := make([]uuid.UUID, 0)
 	for _, iQuestion := range questions {

@@ -4,12 +4,12 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"hedgehog-forms/model"
-	"hedgehog-forms/model/form/section/block"
+	"hedgehog-forms/model/form/pattern/section/block"
 	"slices"
 )
 
 type Section struct {
-	model.BaseModel
+	model.Base
 	Title           string
 	Description     string
 	Order           int

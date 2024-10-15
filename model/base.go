@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type BaseModel struct {
+type Base struct {
 	Id        uuid.UUID `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()"`
 	CreatedAt time.Time
 	UpdatedAt time.Time

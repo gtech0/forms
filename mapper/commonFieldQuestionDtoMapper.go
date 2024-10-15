@@ -3,7 +3,7 @@ package mapper
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/dto/get"
-	"hedgehog-forms/model/form/section/block/question"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
 type CommonFieldQuestionDtoMapper struct {

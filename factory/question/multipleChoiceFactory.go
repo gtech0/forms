@@ -3,7 +3,7 @@ package question
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/dto/create"
-	"hedgehog-forms/model/form/section/block/question"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 	"slices"
 )
 

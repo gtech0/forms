@@ -12,7 +12,7 @@ type IBlock interface {
 }
 
 type Block struct {
-	model.BaseModel
+	model.Base
 	Title       string
 	Description string
 	Order       int

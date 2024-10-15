@@ -6,6 +6,6 @@ import (
 )
 
 type Attachment struct {
-	model.BaseModel
+	model.Base
 	QuestionId uuid.UUID `gorm:"type:uuid"`
 }

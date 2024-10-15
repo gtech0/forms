@@ -4,8 +4,8 @@ import (
 	"errors"
 	"hedgehog-forms/dto/create"
 	blockF "hedgehog-forms/factory/block"
-	"hedgehog-forms/model/form/section"
-	"hedgehog-forms/model/form/section/block"
+	"hedgehog-forms/model/form/pattern/section"
+	"hedgehog-forms/model/form/pattern/section/block"
 	"hedgehog-forms/service"
 )
 

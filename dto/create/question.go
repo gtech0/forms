@@ -2,11 +2,11 @@ package create
 
 import (
 	"github.com/google/uuid"
-	"hedgehog-forms/model/form/section/block/question"
+	"hedgehog-forms/model/form"
 )
 
 type QuestionDto struct {
-	Type question.QuestionType `json:"type"`
+	Type form.QuestionType `json:"type"`
 }
 
 type QuestionOnExistingDto struct {

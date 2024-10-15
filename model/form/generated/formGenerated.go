@@ -1,18 +1,18 @@
-package form
+package generated
 
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/model"
-	"hedgehog-forms/model/form/section"
+	"hedgehog-forms/model/form"
 	"time"
 )
 
 type FormGenerated struct {
-	model.BaseModel
-	Status          FormStatus
+	model.Base
+	Status          form.FormStatus
 	FormPublishedID uuid.UUID `gorm:"type:uuid"`
 	UserId          uuid.UUID `gorm:"type:uuid"`
-	Sections        []section.Section
+	Sections        []Section `gorm:"type:jsonb;serializer:json"`
 	Points          int
 	Mark            string
 	SubmitTime      time.Time

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"hedgehog-forms/model/form/section"
+	"hedgehog-forms/model/form/pattern/section"
 )
 
 type FormPatternDto struct {

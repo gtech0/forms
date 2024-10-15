@@ -9,6 +9,7 @@ import (
 	"hedgehog-forms/dto/get"
 	"hedgehog-forms/file"
 	"hedgehog-forms/model"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -116,5 +117,14 @@ func (f *FileController) DownloadFile(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, stat)
+	ctx.Header("Content-Disposition", stat.Metadata.Get("Content-Disposition"))
+	ctx.Header("Content-Type", stat.Metadata.Get("Content-Type"))
+	if _, err = io.Copy(ctx.Writer, reader); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.Status(http.StatusOK)
 }

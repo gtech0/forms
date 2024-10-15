@@ -12,7 +12,7 @@ type SingleChoice struct {
 }
 
 type SingleChoiceOption struct {
-	model.BaseModel
+	model.Base
 	Text           string
 	Order          int
 	IsAnswer       bool

@@ -1,7 +1,7 @@
 package model
 
 type File struct {
-	BaseModel
+	Base
 	Bucket string
 	Size   int64
 }

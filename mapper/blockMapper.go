@@ -3,8 +3,8 @@ package mapper
 import (
 	"errors"
 	"hedgehog-forms/dto/get"
-	"hedgehog-forms/model/form/section/block"
-	"hedgehog-forms/model/form/section/block/question"
+	"hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
 type BlockMapper struct {

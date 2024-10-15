@@ -1,9 +1,9 @@
 package service
 
 import (
-	"hedgehog-forms/model/form"
-	"hedgehog-forms/model/form/section/block"
-	"hedgehog-forms/model/form/section/block/question"
+	"hedgehog-forms/model/form/pattern"
+	"hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 	"slices"
 )
 
@@ -13,7 +13,7 @@ func NewPatternService() *PatternService {
 	return &PatternService{}
 }
 
-func (f *PatternService) ExtractQuestionsFromPattern(pattern form.FormPattern) []question.IQuestion {
+func (f *PatternService) ExtractQuestionsFromPattern(pattern pattern.FormPattern) []question.IQuestion {
 	questions := make([]question.IQuestion, 0)
 	for _, currSection := range pattern.Sections {
 		blocks := currSection.Blocks
