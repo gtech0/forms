@@ -3,7 +3,7 @@ package block
 import (
 	"errors"
 	"hedgehog-forms/dto/create"
-	block2 "hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block"
 	"hedgehog-forms/service"
 )
 
@@ -19,7 +19,7 @@ func NewBlockFactory() *BlockFactory {
 	}
 }
 
-func (b *BlockFactory) BuildFromDto(blockDto any) (block2.IBlock, error) {
+func (b *BlockFactory) BuildFromDto(blockDto any) (block.IBlock, error) {
 	switch bl := blockDto.(type) {
 	case *create.DynamicBlockDto:
 		return b.dynamicFactory.buildFromDto(bl)
@@ -32,18 +32,18 @@ func (b *BlockFactory) BuildFromDto(blockDto any) (block2.IBlock, error) {
 	}
 }
 
-func (b *BlockFactory) buildFromObject(blockObj block2.IBlock) (block2.IBlock, error) {
+func (b *BlockFactory) buildFromObject(blockObj block.IBlock) (block.IBlock, error) {
 	switch bl := blockObj.(type) {
-	case *block2.DynamicBlock:
+	case *block.DynamicBlock:
 		return b.dynamicFactory.buildFromObj(bl)
-	case *block2.StaticBlock:
+	case *block.StaticBlock:
 		return b.staticFactory.buildFromObj(bl)
 	default:
 		return nil, errors.New("unidentified block object type")
 	}
 }
 
-func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (block2.IBlock, error) {
+func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (block.IBlock, error) {
 	blockObj, err := service.NewBlockService().GetBlockObjectById(dto.BlockId)
 	if err != nil {
 		return nil, err

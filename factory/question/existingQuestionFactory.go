@@ -5,7 +5,7 @@ import (
 	"hedgehog-forms/database"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form"
-	question2 "hedgehog-forms/model/form/pattern/section/block/question"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
 type ExistingQuestionFactory struct {
@@ -15,9 +15,9 @@ func NewExistingQuestionFactory() *ExistingQuestionFactory {
 	return &ExistingQuestionFactory{}
 }
 
-func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExistingDto) (question2.IQuestion, error) {
-	var questionObj question2.IQuestion
-	if err := database.DB.Model(&question2.Question{}).
+func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExistingDto) (question.IQuestion, error) {
+	var questionObj question.IQuestion
+	if err := database.DB.Model(&question.Question{}).
 		Where("id = ?", existingDto.QuestionId).
 		First(&questionObj).Error; err != nil {
 		return nil, err
@@ -25,13 +25,13 @@ func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExi
 
 	switch questionObj.GetType() {
 	case form.MATCHING:
-		return NewMatchingFactory().BuildFromObj(questionObj.(*question2.Matching)), nil
+		return NewMatchingFactory().BuildFromObj(questionObj.(*question.Matching)), nil
 	case form.TEXT_INPUT:
-		return NewTextInputFactory().BuildFromObj(questionObj.(*question2.TextInput)), nil
+		return NewTextInputFactory().BuildFromObj(questionObj.(*question.TextInput)), nil
 	case form.SINGLE_CHOICE:
-		return NewSingleChoiceFactory().BuildFromObj(questionObj.(*question2.SingleChoice)), nil
+		return NewSingleChoiceFactory().BuildFromObj(questionObj.(*question.SingleChoice)), nil
 	case form.MULTIPLE_CHOICE:
-		return NewMultipleChoiceFactory().BuildFromObj(questionObj.(*question2.MultipleChoice)), nil
+		return NewMultipleChoiceFactory().BuildFromObj(questionObj.(*question.MultipleChoice)), nil
 	default:
 		return nil, fmt.Errorf("unknown question type")
 	}

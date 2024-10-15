@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 	"hedgehog-forms/model"
 	"hedgehog-forms/model/form"
-	question2 "hedgehog-forms/model/form/pattern/section/block/question"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 	"slices"
 )
 
@@ -13,25 +13,25 @@ type Variant struct {
 	model.Base
 	Title          string
 	Description    string
-	StaticBlockID  uuid.UUID             `gorm:"type:uuid"`
-	Questions      []question2.IQuestion `gorm:"-"`
-	MultipleChoice question2.MultipleChoiceSlice
-	TextInput      question2.TextInputSlice
-	SingleChoice   question2.SingleChoiceSlice
-	Matching       question2.MatchingSlice
+	StaticBlockID  uuid.UUID            `gorm:"type:uuid"`
+	Questions      []question.IQuestion `gorm:"-"`
+	MultipleChoice question.MultipleChoiceSlice
+	TextInput      question.TextInputSlice
+	SingleChoice   question.SingleChoiceSlice
+	Matching       question.MatchingSlice
 }
 
 func (v *Variant) BeforeSave(*gorm.DB) error {
 	for _, iQuestion := range v.Questions {
 		switch iQuestion.GetType() {
 		case form.MULTIPLE_CHOICE:
-			v.MultipleChoice = append(v.MultipleChoice, iQuestion.(*question2.MultipleChoice))
+			v.MultipleChoice = append(v.MultipleChoice, iQuestion.(*question.MultipleChoice))
 		case form.SINGLE_CHOICE:
-			v.SingleChoice = append(v.SingleChoice, iQuestion.(*question2.SingleChoice))
+			v.SingleChoice = append(v.SingleChoice, iQuestion.(*question.SingleChoice))
 		case form.MATCHING:
-			v.Matching = append(v.Matching, iQuestion.(*question2.Matching))
+			v.Matching = append(v.Matching, iQuestion.(*question.Matching))
 		case form.TEXT_INPUT:
-			v.TextInput = append(v.TextInput, iQuestion.(*question2.TextInput))
+			v.TextInput = append(v.TextInput, iQuestion.(*question.TextInput))
 		}
 	}
 	return nil

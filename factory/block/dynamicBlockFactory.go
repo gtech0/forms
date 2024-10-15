@@ -3,7 +3,7 @@ package block
 import (
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/factory/question"
-	block2 "hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block"
 )
 
 type DynamicBlockFactory struct {
@@ -16,8 +16,8 @@ func NewDynamicBlockFactory() *DynamicBlockFactory {
 	}
 }
 
-func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (*block2.DynamicBlock, error) {
-	blockObj := new(block2.DynamicBlock)
+func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (*block.DynamicBlock, error) {
+	blockObj := new(block.DynamicBlock)
 	questions, err := d.questionFactory.BuildQuestionDtoForDynamicBlock(dynamicDto.Questions, blockObj)
 	if err != nil {
 		return nil, err
@@ -25,13 +25,13 @@ func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (
 
 	blockObj.Title = dynamicDto.Title
 	blockObj.Description = dynamicDto.Description
-	blockObj.Type = block2.DYNAMIC
+	blockObj.Type = block.DYNAMIC
 	blockObj.Questions = questions
 	return blockObj, nil
 }
 
-func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block2.DynamicBlock) (*block2.DynamicBlock, error) {
-	newBlockObj := new(block2.DynamicBlock)
+func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block.DynamicBlock) (*block.DynamicBlock, error) {
+	newBlockObj := new(block.DynamicBlock)
 	newQuestions, err := d.questionFactory.BuildQuestionObjForDynamicBlock(dynamicBlock.Questions, newBlockObj)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block2.DynamicBlock) (*
 
 	newBlockObj.Title = dynamicBlock.Title
 	newBlockObj.Description = dynamicBlock.Description
-	newBlockObj.Type = block2.DYNAMIC
+	newBlockObj.Type = block.DYNAMIC
 	newBlockObj.Questions = newQuestions
 	return newBlockObj, nil
 }

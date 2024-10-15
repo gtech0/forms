@@ -3,30 +3,30 @@ package block
 import (
 	"gorm.io/gorm"
 	"hedgehog-forms/model/form"
-	question2 "hedgehog-forms/model/form/pattern/section/block/question"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 	"slices"
 )
 
 type DynamicBlock struct {
 	Block
-	Questions      []question2.IQuestion `gorm:"-"`
-	MultipleChoice question2.MultipleChoiceSlice
-	TextInput      question2.TextInputSlice
-	SingleChoice   question2.SingleChoiceSlice
-	Matching       question2.MatchingSlice
+	Questions      []question.IQuestion `gorm:"-"`
+	MultipleChoice question.MultipleChoiceSlice
+	TextInput      question.TextInputSlice
+	SingleChoice   question.SingleChoiceSlice
+	Matching       question.MatchingSlice
 }
 
 func (d *DynamicBlock) BeforeSave(*gorm.DB) error {
 	for _, iQuestion := range d.Questions {
 		switch iQuestion.GetType() {
 		case form.MULTIPLE_CHOICE:
-			d.MultipleChoice = append(d.MultipleChoice, iQuestion.(*question2.MultipleChoice))
+			d.MultipleChoice = append(d.MultipleChoice, iQuestion.(*question.MultipleChoice))
 		case form.SINGLE_CHOICE:
-			d.SingleChoice = append(d.SingleChoice, iQuestion.(*question2.SingleChoice))
+			d.SingleChoice = append(d.SingleChoice, iQuestion.(*question.SingleChoice))
 		case form.MATCHING:
-			d.Matching = append(d.Matching, iQuestion.(*question2.Matching))
+			d.Matching = append(d.Matching, iQuestion.(*question.Matching))
 		case form.TEXT_INPUT:
-			d.TextInput = append(d.TextInput, iQuestion.(*question2.TextInput))
+			d.TextInput = append(d.TextInput, iQuestion.(*question.TextInput))
 		}
 	}
 	return nil

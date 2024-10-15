@@ -3,7 +3,7 @@ package block
 import (
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/factory/question"
-	block2 "hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block"
 )
 
 type StaticBlockFactory struct {
@@ -18,8 +18,8 @@ func NewStaticBlockFactory() *StaticBlockFactory {
 	}
 }
 
-func (s *StaticBlockFactory) buildFromDto(blockDto *create.StaticBlockDto) (*block2.StaticBlock, error) {
-	blockObj := new(block2.StaticBlock)
+func (s *StaticBlockFactory) buildFromDto(blockDto *create.StaticBlockDto) (*block.StaticBlock, error) {
+	blockObj := new(block.StaticBlock)
 	variants, err := s.variantFactory.buildFromDtos(blockDto.Variants, blockObj)
 	if err != nil {
 		return nil, err
@@ -27,13 +27,13 @@ func (s *StaticBlockFactory) buildFromDto(blockDto *create.StaticBlockDto) (*blo
 
 	blockObj.Title = blockDto.Title
 	blockObj.Description = blockDto.Description
-	blockObj.Type = block2.STATIC
+	blockObj.Type = block.STATIC
 	blockObj.Variants = variants
 	return blockObj, nil
 }
 
-func (s *StaticBlockFactory) buildFromObj(blockObj *block2.StaticBlock) (*block2.StaticBlock, error) {
-	newBlock := new(block2.StaticBlock)
+func (s *StaticBlockFactory) buildFromObj(blockObj *block.StaticBlock) (*block.StaticBlock, error) {
+	newBlock := new(block.StaticBlock)
 	newVariants, err := s.variantFactory.buildFromObjs(blockObj.Variants, newBlock)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (s *StaticBlockFactory) buildFromObj(blockObj *block2.StaticBlock) (*block2
 
 	newBlock.Title = blockObj.Title
 	newBlock.Description = blockObj.Description
-	newBlock.Type = block2.STATIC
+	newBlock.Type = block.STATIC
 	newBlock.Variants = newVariants
 	return newBlock, nil
 }
