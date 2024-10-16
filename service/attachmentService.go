@@ -32,14 +32,14 @@ func (f *AttachmentService) ValidatePatternAttachments(pattern pattern.FormPatte
 func (f *AttachmentService) validateAttachments(attachmentIds []uuid.UUID) ([]uuid.UUID, error) {
 	nonexistentAttachmentIds := make([]uuid.UUID, 0)
 	for _, attachmentId := range attachmentIds {
-		var exists bool
+		var attachment model.File
 		if err := database.DB.Model(&model.File{}).
 			Where("id = ?", attachmentId).
-			Find(&exists).Error; err != nil {
+			Find(&attachment).Error; err != nil {
 			return nil, err
 		}
 
-		if !exists {
+		if attachment.Id == uuid.Nil {
 			nonexistentAttachmentIds = append(nonexistentAttachmentIds, attachmentId)
 		}
 	}

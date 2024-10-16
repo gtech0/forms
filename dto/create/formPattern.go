@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"hedgehog-forms/model/form/pattern/section"
+	"hedgehog-forms/util"
 )
 
 type FormPatternDto struct {
@@ -55,15 +56,11 @@ func (c *FormPatternDto) UnmarshalJSON(b []byte) error {
 func (c *FormPatternDto) MarshalJSON() ([]byte, error) {
 	type patternDto FormPatternDto
 
-	if c.Sections != nil {
-		for _, sectionDto := range c.Sections {
-			rawSection, err := json.Marshal(sectionDto)
-			if err != nil {
-				return nil, err
-			}
-			c.RawSections = append(c.RawSections, rawSection)
-		}
+	rawMessage, err := util.CommonMarshal(c.Sections)
+	if err != nil {
+		return nil, err
 	}
+	c.RawSections = rawMessage
 
 	return json.Marshal((*patternDto)(c))
 }

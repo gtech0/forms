@@ -4,7 +4,6 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"hedgehog-forms/model"
-	"hedgehog-forms/model/form"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 	"slices"
 )
@@ -24,13 +23,13 @@ type Variant struct {
 func (v *Variant) BeforeSave(*gorm.DB) error {
 	for _, iQuestion := range v.Questions {
 		switch iQuestion.GetType() {
-		case form.MULTIPLE_CHOICE:
+		case question.MULTIPLE_CHOICE:
 			v.MultipleChoice = append(v.MultipleChoice, iQuestion.(*question.MultipleChoice))
-		case form.SINGLE_CHOICE:
+		case question.SINGLE_CHOICE:
 			v.SingleChoice = append(v.SingleChoice, iQuestion.(*question.SingleChoice))
-		case form.MATCHING:
+		case question.MATCHING:
 			v.Matching = append(v.Matching, iQuestion.(*question.Matching))
-		case form.TEXT_INPUT:
+		case question.TEXT_INPUT:
 			v.TextInput = append(v.TextInput, iQuestion.(*question.TextInput))
 		}
 	}

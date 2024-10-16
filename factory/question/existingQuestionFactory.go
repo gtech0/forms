@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"hedgehog-forms/database"
 	"hedgehog-forms/dto/create"
-	"hedgehog-forms/model/form"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
@@ -24,13 +23,13 @@ func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExi
 	}
 
 	switch questionObj.GetType() {
-	case form.MATCHING:
+	case question.MATCHING:
 		return NewMatchingFactory().BuildFromObj(questionObj.(*question.Matching)), nil
-	case form.TEXT_INPUT:
+	case question.TEXT_INPUT:
 		return NewTextInputFactory().BuildFromObj(questionObj.(*question.TextInput)), nil
-	case form.SINGLE_CHOICE:
+	case question.SINGLE_CHOICE:
 		return NewSingleChoiceFactory().BuildFromObj(questionObj.(*question.SingleChoice)), nil
-	case form.MULTIPLE_CHOICE:
+	case question.MULTIPLE_CHOICE:
 		return NewMultipleChoiceFactory().BuildFromObj(questionObj.(*question.MultipleChoice)), nil
 	default:
 		return nil, fmt.Errorf("unknown question type")

@@ -17,8 +17,8 @@ func NewBlockMapper() *BlockMapper {
 	}
 }
 
-func (b *BlockMapper) toDto(blockObj block.IBlock) (get.IBlockDto, error) {
-	switch assertedBlock := blockObj.(type) {
+func (b *BlockMapper) toDto(iBlock block.IBlock) (get.IBlockDto, error) {
+	switch assertedBlock := iBlock.(type) {
 	case *block.DynamicBlock:
 		return b.dynamicToDto(assertedBlock)
 	case *block.StaticBlock:

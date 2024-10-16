@@ -3,7 +3,6 @@ package question
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/model"
-	"hedgehog-forms/model/form"
 )
 
 type IQuestion interface {
@@ -17,8 +16,8 @@ type IQuestion interface {
 
 	GetOwnerId() uuid.NullUUID
 
-	GetType() form.QuestionType
-	SetType(form.QuestionType)
+	GetType() QuestionType
+	SetType(QuestionType)
 
 	GetAttachments() []Attachment
 	SetAttachments([]Attachment)
@@ -37,7 +36,7 @@ type Question struct {
 	Description        string
 	Order              int
 	OwnerId            uuid.NullUUID `gorm:"type:uuid"`
-	Type               form.QuestionType
+	Type               QuestionType
 	Attachments        []Attachment
 	VariantId          uuid.NullUUID `gorm:"type:uuid"`
 	DynamicBlockId     uuid.NullUUID `gorm:"type:uuid"`
@@ -70,11 +69,11 @@ func (q *Question) GetOwnerId() uuid.NullUUID {
 	return q.OwnerId
 }
 
-func (q *Question) GetType() form.QuestionType {
+func (q *Question) GetType() QuestionType {
 	return q.Type
 }
 
-func (q *Question) SetType(t form.QuestionType) {
+func (q *Question) SetType(t QuestionType) {
 	q.Type = t
 }
 

@@ -2,13 +2,13 @@ package block
 
 import (
 	"gorm.io/gorm"
-	"hedgehog-forms/model/form"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 	"slices"
 )
 
 type DynamicBlock struct {
 	Block
+	QuestionCount  int
 	Questions      []question.IQuestion `gorm:"-"`
 	MultipleChoice question.MultipleChoiceSlice
 	TextInput      question.TextInputSlice
@@ -19,13 +19,13 @@ type DynamicBlock struct {
 func (d *DynamicBlock) BeforeSave(*gorm.DB) error {
 	for _, iQuestion := range d.Questions {
 		switch iQuestion.GetType() {
-		case form.MULTIPLE_CHOICE:
+		case question.MULTIPLE_CHOICE:
 			d.MultipleChoice = append(d.MultipleChoice, iQuestion.(*question.MultipleChoice))
-		case form.SINGLE_CHOICE:
+		case question.SINGLE_CHOICE:
 			d.SingleChoice = append(d.SingleChoice, iQuestion.(*question.SingleChoice))
-		case form.MATCHING:
+		case question.MATCHING:
 			d.Matching = append(d.Matching, iQuestion.(*question.Matching))
-		case form.TEXT_INPUT:
+		case question.TEXT_INPUT:
 			d.TextInput = append(d.TextInput, iQuestion.(*question.TextInput))
 		}
 	}

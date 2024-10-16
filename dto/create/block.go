@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"hedgehog-forms/model/form"
 	"hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block/question"
+	"hedgehog-forms/util"
 )
 
 type BlockDto struct {
@@ -30,8 +31,9 @@ type StaticBlockDto struct {
 
 type DynamicBlockDto struct {
 	NewBlockDto
-	Questions    []any             `json:"-"`
-	RawQuestions []json.RawMessage `json:"questions"`
+	QuestionCount int               `json:"questionCount"`
+	Questions     []any             `json:"-"`
+	RawQuestions  []json.RawMessage `json:"questions"`
 }
 
 func (c *DynamicBlockDto) UnmarshalJSON(b []byte) error {
@@ -51,15 +53,15 @@ func (c *DynamicBlockDto) UnmarshalJSON(b []byte) error {
 
 		var questionI any
 		switch questionDto.Type {
-		case form.EXISTING:
+		case question.EXISTING:
 			questionI = &QuestionOnExistingDto{}
-		case form.MATCHING:
+		case question.MATCHING:
 			questionI = &MatchingQuestionDto{}
-		case form.MULTIPLE_CHOICE:
+		case question.MULTIPLE_CHOICE:
 			questionI = &MultipleChoiceQuestionDto{}
-		case form.SINGLE_CHOICE:
+		case question.SINGLE_CHOICE:
 			questionI = &SingleChoiceQuestionDto{}
-		case form.TEXT_INPUT:
+		case question.TEXT_INPUT:
 			questionI = &TextQuestionDto{}
 		default:
 			return fmt.Errorf("unknown question type: %s", questionDto.Type)
@@ -79,15 +81,11 @@ func (c *DynamicBlockDto) UnmarshalJSON(b []byte) error {
 func (c *DynamicBlockDto) MarshalJSON() ([]byte, error) {
 	type blockDto DynamicBlockDto
 
-	if c.Questions != nil {
-		for _, questionDto := range c.Questions {
-			rawQuestion, err := json.Marshal(questionDto)
-			if err != nil {
-				return nil, err
-			}
-			c.RawQuestions = append(c.RawQuestions, rawQuestion)
-		}
+	rawMessage, err := util.CommonMarshal(c.Questions)
+	if err != nil {
+		return nil, err
 	}
+	c.RawQuestions = rawMessage
 
 	return json.Marshal((*blockDto)(c))
 }

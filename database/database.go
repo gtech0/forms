@@ -49,12 +49,14 @@ func ConvertToDSN() string {
 
 func Sync() {
 	err := DB.AutoMigrate(
-		&pattern.FormPattern{},
 		&published.FormPublished{},
 		&published.MarkConfiguration{},
-		&generated.FormGenerated{},
 		&published.FormPublishedGroup{},
 		&published.FormPublishedUser{},
+
+		&generated.FormGenerated{},
+
+		&pattern.FormPattern{},
 
 		&section.Section{},
 

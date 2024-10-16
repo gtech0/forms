@@ -1,6 +1,6 @@
 package generated
 
-type GeneratedTextInput struct {
+type TextInput struct {
 	Question
 	EnteredAnswer string
 }

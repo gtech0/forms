@@ -18,7 +18,7 @@ func NewSingleChoiceFactory() *SingleChoiceFactory {
 
 func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuestionDto) (*question.SingleChoice, error) {
 	questionObj := new(question.SingleChoice)
-	s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj)
+	s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, &questionObj.Question)
 	questionObj.Points = questionDto.Points
 
 	optionNames := questionDto.Options
@@ -27,23 +27,23 @@ func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuest
 		option := s.buildOptionFromDto(questionDto, order, questionObj.Id)
 		options = append(options, option)
 	}
-	questionObj.SingleChoiceOptions = options
+	questionObj.Options = options
 	return questionObj, nil
 }
 
 func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.SingleChoice) *question.SingleChoice {
 	newQuestionObj := new(question.SingleChoice)
-	s.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj)
+	s.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question)
 	newQuestionObj.Points = questionObj.Points
 
 	options := make([]question.SingleChoiceOption, 0)
-	for _, option := range questionObj.SingleChoiceOptions {
+	for _, option := range questionObj.Options {
 		var newOption question.SingleChoiceOption
 		newOption.Text = option.Text
 		newOption.Order = option.Order
 		newOption.IsAnswer = option.IsAnswer
 	}
-	newQuestionObj.SingleChoiceOptions = options
+	newQuestionObj.Options = options
 	return newQuestionObj
 }
 

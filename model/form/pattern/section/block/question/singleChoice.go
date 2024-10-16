@@ -7,8 +7,8 @@ import (
 
 type SingleChoice struct {
 	Question
-	Points              int
-	SingleChoiceOptions []SingleChoiceOption
+	Points  int
+	Options []SingleChoiceOption
 }
 
 type SingleChoiceOption struct {

@@ -1,4 +1,4 @@
-package form
+package question
 
 type QuestionType string
 

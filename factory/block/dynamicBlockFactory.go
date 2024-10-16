@@ -26,6 +26,7 @@ func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (
 	blockObj.Title = dynamicDto.Title
 	blockObj.Description = dynamicDto.Description
 	blockObj.Type = block.DYNAMIC
+	blockObj.QuestionCount = dynamicDto.QuestionCount
 	blockObj.Questions = questions
 	return blockObj, nil
 }
@@ -40,6 +41,7 @@ func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block.DynamicBlock) (*b
 	newBlockObj.Title = dynamicBlock.Title
 	newBlockObj.Description = dynamicBlock.Description
 	newBlockObj.Type = block.DYNAMIC
+	newBlockObj.QuestionCount = dynamicBlock.QuestionCount
 	newBlockObj.Questions = newQuestions
 	return newBlockObj, nil
 }

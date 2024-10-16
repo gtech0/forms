@@ -18,7 +18,7 @@ func NewMatchingFactory() *MatchingFactory {
 
 func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*question.Matching, error) {
 	questionObj := new(question.Matching)
-	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, questionObj)
+	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, &questionObj.Question)
 
 	terms := make([]question.MatchingTerm, 0)
 	definitions := make([]question.MatchingDefinition, 0)
@@ -54,7 +54,7 @@ func (m *MatchingFactory) BuildFromObj(questionObj *question.Matching) *question
 	newQuestionObj.Terms = terms
 	newQuestionObj.Definitions = definitions
 
-	m.commonMapper.MapCommonFieldsObj(questionObj.Question, newQuestionObj)
+	m.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question)
 
 	return newQuestionObj
 }
