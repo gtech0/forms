@@ -8,12 +8,12 @@ import (
 )
 
 type AttachmentService struct {
-	patternService *PatternService
+	patternService *FormPatternService
 }
 
 func NewAttachmentService() *AttachmentService {
 	return &AttachmentService{
-		patternService: NewPatternService(),
+		patternService: NewFormPatternService(),
 	}
 }
 

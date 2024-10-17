@@ -1,18 +1,17 @@
-package block
+package factory
 
 import (
 	"hedgehog-forms/dto/create"
-	"hedgehog-forms/factory/question"
 	"hedgehog-forms/model/form/pattern/section/block"
 )
 
 type VariantFactory struct {
-	questionFactory *question.QuestionFactory
+	questionFactory *QuestionFactory
 }
 
 func NewVariantFactory() *VariantFactory {
 	return &VariantFactory{
-		questionFactory: question.NewQuestionFactory(),
+		questionFactory: NewQuestionFactory(),
 	}
 }
 

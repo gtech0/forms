@@ -1,4 +1,4 @@
-package block
+package factory
 
 import (
 	"errors"

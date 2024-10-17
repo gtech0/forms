@@ -15,7 +15,7 @@ type Block struct {
 	Title        string            `json:"title"`
 	Description  string            `json:"description"`
 	Variant      Variant           `json:"variant"`
-	Questions    []any             `json:"-"`
+	Questions    []IQuestion       `json:"-"`
 	RawQuestions []json.RawMessage `json:"questions"`
 }
 
@@ -34,7 +34,7 @@ func (c *Block) UnmarshalJSON(b []byte) error {
 			return err
 		}
 
-		var questionI any
+		var questionI IQuestion
 		switch generatedQuestion.Type {
 		case question.MATCHING:
 			questionI = &Matching{}

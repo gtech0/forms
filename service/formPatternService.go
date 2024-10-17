@@ -7,13 +7,13 @@ import (
 	"slices"
 )
 
-type PatternService struct{}
+type FormPatternService struct{}
 
-func NewPatternService() *PatternService {
-	return &PatternService{}
+func NewFormPatternService() *FormPatternService {
+	return &FormPatternService{}
 }
 
-func (f *PatternService) ExtractQuestionsFromPattern(pattern pattern.FormPattern) []question.IQuestion {
+func (f *FormPatternService) ExtractQuestionsFromPattern(pattern pattern.FormPattern) []question.IQuestion {
 	questions := make([]question.IQuestion, 0)
 	for _, currSection := range pattern.Sections {
 		blocks := currSection.Blocks

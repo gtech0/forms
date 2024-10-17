@@ -12,7 +12,7 @@ type Variant struct {
 	Id           uuid.UUID         `json:"id"`
 	Title        string            `json:"title"`
 	Description  string            `json:"description"`
-	Questions    []any             `json:"-"`
+	Questions    []IQuestion       `json:"-"`
 	RawQuestions []json.RawMessage `json:"questions"`
 }
 
@@ -31,7 +31,7 @@ func (c *Variant) UnmarshalJSON(b []byte) error {
 			return err
 		}
 
-		var questionI any
+		var questionI IQuestion
 		switch generatedQuestion.Type {
 		case question.MATCHING:
 			questionI = &Matching{}
