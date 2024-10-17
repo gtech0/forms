@@ -18,7 +18,7 @@ func NewAttachmentService() *AttachmentService {
 }
 
 func (f *AttachmentService) ValidatePatternAttachments(pattern pattern.FormPattern) ([]uuid.UUID, error) {
-	questions := f.patternService.ExtractQuestionsFromPattern(pattern)
+	questions := f.patternService.extractQuestionsFromPattern(pattern)
 	attachmentIds := make([]uuid.UUID, 0)
 	for _, iQuestion := range questions {
 		for _, attachment := range iQuestion.GetAttachments() {

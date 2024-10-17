@@ -6,17 +6,17 @@ import (
 	"hedgehog-forms/model/form/pattern/section"
 )
 
-type PatternFactory struct {
+type FormPatternFactory struct {
 	sectionFactory *SectionFactory
 }
 
-func NewPatternFactory() *PatternFactory {
-	return &PatternFactory{
+func NewPatternFactory() *FormPatternFactory {
+	return &FormPatternFactory{
 		sectionFactory: NewSectionFactory(),
 	}
 }
 
-func (f *PatternFactory) BuildPattern(dto *create.FormPatternDto) (pattern.FormPattern, error) {
+func (f *FormPatternFactory) BuildPattern(dto *create.FormPatternDto) (pattern.FormPattern, error) {
 	var formPattern pattern.FormPattern
 	formPattern.Title = dto.Title
 	formPattern.Description = dto.Description
@@ -30,7 +30,7 @@ func (f *PatternFactory) BuildPattern(dto *create.FormPatternDto) (pattern.FormP
 	return formPattern, nil
 }
 
-func (f *PatternFactory) buildAndAddSections(
+func (f *FormPatternFactory) buildAndAddSections(
 	sectionDtos []any,
 	formPattern pattern.FormPattern,
 ) ([]section.Section, error) {

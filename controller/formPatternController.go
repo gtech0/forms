@@ -14,16 +14,16 @@ import (
 )
 
 type FormPatternController struct {
-	patternFactory    *factory.PatternFactory
-	patternMapper     *mapper.PatternMapper
-	attachmentService *service.AttachmentService
+	formPatternFactory *factory.FormPatternFactory
+	formPatternMapper  *mapper.FormPatternMapper
+	attachmentService  *service.AttachmentService
 }
 
 func NewFormPatternController() *FormPatternController {
 	return &FormPatternController{
-		patternFactory:    factory.NewPatternFactory(),
-		patternMapper:     mapper.NewPatternMapper(),
-		attachmentService: service.NewAttachmentService(),
+		formPatternFactory: factory.NewPatternFactory(),
+		formPatternMapper:  mapper.NewFormPatternMapper(),
+		attachmentService:  service.NewAttachmentService(),
 	}
 }
 
@@ -36,7 +36,7 @@ func (f *FormPatternController) CreatePattern(ctx *gin.Context) {
 		return
 	}
 
-	formPattern, err := f.patternFactory.BuildPattern(&body)
+	formPattern, err := f.formPatternFactory.BuildPattern(&body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -98,7 +98,7 @@ func (f *FormPatternController) GetPattern(ctx *gin.Context) {
 		return
 	}
 
-	dto, err := f.patternMapper.ToDto(formPattern)
+	dto, err := f.formPatternMapper.ToDto(formPattern)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

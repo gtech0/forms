@@ -14,7 +14,7 @@ type FormPublished struct {
 	Duration          time.Duration
 	HideScore         bool
 	PostModeration    bool
-	MarkConfiguration MarkConfiguration
+	MarkConfiguration []MarkConfiguration
 	Groups            []FormPublishedGroup
 	Users             []FormPublishedUser
 	FormPattern       pattern.FormPattern

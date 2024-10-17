@@ -18,7 +18,7 @@ func NewFormGeneratedService() *FormGeneratedService {
 	}
 }
 
-func (f *FormGeneratedService) getGeneratedForm(id uuid.UUID) (generated.FormGenerated, error) {
+func (f *FormGeneratedService) getForm(id uuid.UUID) (generated.FormGenerated, error) {
 	var formGenerated generated.FormGenerated
 	if err := database.DB.Model(&generated.FormGenerated{}).
 		Where("id = ?", id).
