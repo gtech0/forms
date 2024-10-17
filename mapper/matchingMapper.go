@@ -36,8 +36,8 @@ func (m *MatchingMapper) termsAndDefinitionsToDto(
 		termAndDefinition.Definition = definition
 
 		var term get.MatchingOptionDto
-		term.Id = definitionObj.Term.Id
-		term.Text = definitionObj.Term.Text
+		term.Id = definitionObj.MatchingTerm.Id
+		term.Text = definitionObj.MatchingTerm.Text
 		termAndDefinition.Term = term
 
 		termDefinitionDtos = append(termDefinitionDtos, termAndDefinition)

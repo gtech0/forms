@@ -1,7 +1,8 @@
 package mapper
 
 import (
-	"hedgehog-forms/dto/create"
+	"github.com/google/uuid"
+	"hedgehog-forms/dto/get"
 	"hedgehog-forms/model/form/published"
 )
 
@@ -15,8 +16,54 @@ func NewFormPublishedMapper() *FormPublishedMapper {
 	}
 }
 
-func (f *FormPublishedMapper) toBaseDto(publishedForm published.FormPublished) create.FormPublishedBaseDto {
-	var publishedBaseDto create.FormPublishedBaseDto
-	//TODO
+func (f *FormPublishedMapper) ToBaseDto(publishedForm published.FormPublished) get.FormPublishedBaseDto {
+	var publishedBaseDto get.FormPublishedBaseDto
+	publishedBaseDto.Id = publishedForm.Id
+	publishedBaseDto.FormPatternId = publishedForm.FormPatternId
+	publishedBaseDto.HideScore = publishedForm.HideScore
+	publishedBaseDto.Deadline = publishedForm.Deadline
+	publishedBaseDto.Duration = publishedForm.Duration
+	groups := make([]uuid.UUID, 0)
+	for _, publishedGroup := range publishedForm.Groups {
+		groups = append(groups, publishedGroup.GroupId)
+	}
+	publishedBaseDto.GroupIds = groups
+
+	users := make([]uuid.UUID, 0)
+	for _, publishedUser := range publishedForm.Users {
+		users = append(users, publishedUser.UserId)
+	}
+	publishedBaseDto.UserIds = users
+
+	markConfig := make(map[string]int)
+	for _, markConfiguration := range publishedForm.MarkConfiguration {
+		markConfig[markConfiguration.Mark] = markConfiguration.MinPoints
+	}
+	publishedBaseDto.MarkConfiguration = markConfig
 	return publishedBaseDto
+}
+
+func (f *FormPublishedMapper) ToDto(publishedForm published.FormPublished) (get.FormPublishedDto, error) {
+	var publishedDto get.FormPublishedDto
+	formPattern, err := f.formPatternMapper.ToDto(publishedForm.FormPattern)
+	if err != nil {
+		return get.FormPublishedDto{}, err
+	}
+	publishedDto.Id = publishedForm.Id
+	publishedDto.FormPattern = formPattern
+	publishedDto.HideScore = publishedForm.HideScore
+	publishedDto.Deadline = publishedForm.Deadline
+	publishedDto.Duration = publishedForm.Duration
+	groups := make([]uuid.UUID, 0)
+	for _, publishedGroup := range publishedForm.Groups {
+		groups = append(groups, publishedGroup.GroupId)
+	}
+	publishedDto.GroupIds = groups
+
+	users := make([]uuid.UUID, 0)
+	for _, publishedUser := range publishedForm.Users {
+		users = append(users, publishedUser.UserId)
+	}
+	publishedDto.UserIds = users
+	return publishedDto, nil
 }

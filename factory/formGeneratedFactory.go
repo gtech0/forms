@@ -9,25 +9,39 @@ import (
 
 type FormGeneratedFactory struct {
 	sectionGeneratedFactory *SectionGeneratedFactory
+	formGeneratedFactory    *FormGeneratedFactory
 }
 
 func NewFormGeneratedFactory() *FormGeneratedFactory {
 	return &FormGeneratedFactory{
 		sectionGeneratedFactory: NewSectionGeneratedFactory(),
+		formGeneratedFactory:    NewFormGeneratedFactory(),
 	}
 }
 
-func (s *FormGeneratedFactory) BuildForm(published published.FormPublished, userId uuid.UUID) (generated.FormGenerated, error) {
+func (f *FormGeneratedFactory) BuildForm(published published.FormPublished, userId uuid.UUID) (generated.FormGenerated, error) {
 	var generatedForm generated.FormGenerated
 	generatedForm.Id = uuid.New()
 	generatedForm.Status = form.NEW
 	generatedForm.FormPublishedID = published.Id
 	generatedForm.UserId = userId
-	sections, err := s.sectionGeneratedFactory.buildSections(published.FormPattern.Sections)
+	sections, err := f.sectionGeneratedFactory.buildSections(published.FormPattern.Sections)
 	if err != nil {
 		return generatedForm, err
 	}
 
 	generatedForm.Sections = sections
+	return generatedForm, nil
+}
+
+func (f *FormGeneratedFactory) buildAndCreate(
+	formPublished published.FormPublished,
+	userId uuid.UUID,
+) (generated.FormGenerated, error) {
+	generatedForm, err := f.formGeneratedFactory.BuildForm(formPublished, userId)
+	if err != nil {
+		return generated.FormGenerated{}, err
+	}
+
 	return generatedForm, nil
 }

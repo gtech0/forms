@@ -3,19 +3,13 @@ package service
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/database"
-	"hedgehog-forms/factory"
 	"hedgehog-forms/model/form/generated"
-	"hedgehog-forms/model/form/published"
 )
 
-type FormGeneratedService struct {
-	formGeneratedFactory *factory.FormGeneratedFactory
-}
+type FormGeneratedService struct{}
 
 func NewFormGeneratedService() *FormGeneratedService {
-	return &FormGeneratedService{
-		formGeneratedFactory: factory.NewFormGeneratedFactory(),
-	}
+	return &FormGeneratedService{}
 }
 
 func (f *FormGeneratedService) getForm(id uuid.UUID) (generated.FormGenerated, error) {
@@ -27,16 +21,4 @@ func (f *FormGeneratedService) getForm(id uuid.UUID) (generated.FormGenerated, e
 		return generated.FormGenerated{}, err
 	}
 	return formGenerated, nil
-}
-
-func (f *FormGeneratedService) buildAndCreate(
-	formPublished published.FormPublished,
-	userId uuid.UUID,
-) (generated.FormGenerated, error) {
-	generatedForm, err := f.formGeneratedFactory.BuildForm(formPublished, userId)
-	if err != nil {
-		return generated.FormGenerated{}, err
-	}
-
-	return generatedForm, nil
 }

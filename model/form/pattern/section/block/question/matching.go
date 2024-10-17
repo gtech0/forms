@@ -21,9 +21,9 @@ type MatchingTerm struct {
 
 type MatchingDefinition struct {
 	model.Base
-	Text       string
-	MatchingId uuid.UUID `gorm:"type:uuid"`
-	Term       MatchingTerm
+	Text         string
+	MatchingId   uuid.UUID `gorm:"type:uuid"`
+	MatchingTerm MatchingTerm
 }
 
 type MatchingPoint struct {

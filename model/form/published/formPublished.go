@@ -23,6 +23,7 @@ type FormPublished struct {
 }
 
 type MarkConfiguration struct {
+	model.Base
 	Mark            string
 	MinPoints       int
 	FormPublishedId uuid.UUID `gorm:"type:uuid"`

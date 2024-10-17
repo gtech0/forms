@@ -20,12 +20,7 @@ func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*questi
 	questionObj := new(question.Matching)
 	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, &questionObj.Question)
 
-	terms := make([]question.MatchingTerm, 0)
-	definitions := make([]question.MatchingDefinition, 0)
-
-	m.buildTermsAndDefinitions(dto.TermsAndDefinitions, terms, definitions, questionObj.Id)
-
-	questionObj.Terms = terms
+	definitions := m.buildTermsAndDefinitions(dto.TermsAndDefinitions, questionObj.Id)
 	questionObj.Definitions = definitions
 	for answer, value := range dto.Points {
 		var pointObj question.MatchingPoint
@@ -83,20 +78,22 @@ func (m *MatchingFactory) buildDefinitionFromEntity(
 
 func (m *MatchingFactory) buildTermsAndDefinitions(
 	matchingMap map[string]string,
-	terms []question.MatchingTerm,
-	definitions []question.MatchingDefinition,
 	questionId uuid.UUID,
-) {
+) []question.MatchingDefinition {
+	definitions := make([]question.MatchingDefinition, 0)
 	for key, value := range matchingMap {
 		var definition question.MatchingDefinition
+		definition.Id = uuid.New()
 		definition.Text = value
 		definition.MatchingId = questionId
-		definitions = append(definitions, definition)
 
 		var term question.MatchingTerm
 		term.Text = key
-		term.MatchingDefinitionId = definition.Id
 		term.MatchingId = questionId
-		terms = append(terms, term)
+		term.MatchingDefinitionId = definition.Id
+
+		definition.MatchingTerm = term
+		definitions = append(definitions, definition)
 	}
+	return definitions
 }

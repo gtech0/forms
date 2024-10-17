@@ -91,7 +91,7 @@ func (f *FormPatternController) GetPattern(ctx *gin.Context) {
 		Preload("Subject").
 		Preload("Sections.DynamicBlocks.~~~as~~~.~~~as~~~.~~~as~~~").
 		Preload("Sections.StaticBlocks.Variants.~~~as~~~.~~~as~~~.~~~as~~~").
-		First(&formPattern, "form_patterns.id = ?", parsedPatternId).Error; err != nil {
+		First(&formPattern, "form_pattern.id = ?", parsedPatternId).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})

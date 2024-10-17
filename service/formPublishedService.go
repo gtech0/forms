@@ -12,9 +12,10 @@ func NewFormPublishedService() *FormPublishedService {
 	return &FormPublishedService{}
 }
 
-func (i *FormPublishedService) getForm(id uuid.UUID) (published.FormPublished, error) {
+func (i *FormPublishedService) GetForm(id uuid.UUID) (published.FormPublished, error) {
 	var publishedForm published.FormPublished
-	if err := database.DB.Model(&publishedForm).
+	if err := database.DB.Preload("~~~as~~~.~~~as~~~.~~~as~~~.~~~as~~~.~~~as~~~.~~~as~~~.~~~as~~~").
+		Model(&published.FormPublished{}).
 		Where("id = ?", id).
 		First(&publishedForm).
 		Error; err != nil {

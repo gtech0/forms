@@ -25,12 +25,19 @@ func main() {
 	router.Use(cors.New(corsConfig))
 
 	formPatternController := controller.NewFormPatternController()
+	formPublishedController := controller.NewFormPublishedController()
 	fileController := controller.NewFileController()
 
 	formPattern := router.Group("/api/form/pattern")
 	{
 		formPattern.POST("/create", formPatternController.CreatePattern)
 		formPattern.GET("/get/:patternId", formPatternController.GetPattern)
+	}
+
+	formPublished := router.Group("/api/form/published")
+	{
+		formPublished.POST("/create", formPublishedController.PublishForm)
+		formPublished.GET("/get/:formId", formPublishedController.GetForm)
 	}
 
 	fileGroup := router.Group("/api/file")
