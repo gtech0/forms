@@ -6,6 +6,7 @@ import (
 	"hedgehog-forms/controller"
 	"hedgehog-forms/database"
 	"hedgehog-forms/enviroment"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/file"
 	"log"
 )
@@ -23,6 +24,7 @@ func main() {
 	corsConfig.AllowAllOrigins = true
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
 	router.Use(cors.New(corsConfig))
+	router.Use(errs.ErrorHandler)
 
 	formPatternController := controller.NewFormPatternController()
 	formPublishedController := controller.NewFormPublishedController()
@@ -30,8 +32,8 @@ func main() {
 
 	formPattern := router.Group("/api/form/pattern")
 	{
-		formPattern.POST("/create", formPatternController.CreatePattern)
-		formPattern.GET("/get/:patternId", formPatternController.GetPattern)
+		formPattern.POST("/create", formPatternController.CreateForm)
+		formPattern.GET("/get/:patternId", formPatternController.GetForm)
 	}
 
 	formPublished := router.Group("/api/form/published")

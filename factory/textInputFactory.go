@@ -17,7 +17,9 @@ func NewTextInputFactory() *TextInputFactory {
 
 func (t *TextInputFactory) BuildFromDto(questionDto *create.TextQuestionDto) (*question.TextInput, error) {
 	questionObj := new(question.TextInput)
-	t.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, &questionObj.Question)
+	if err := t.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, &questionObj.Question); err != nil {
+		return nil, err
+	}
 
 	questionObj.Points = questionDto.Points
 	questionObj.IsCaseSensitive = questionDto.IsCaseSensitive
@@ -32,12 +34,14 @@ func (t *TextInputFactory) BuildFromDto(questionDto *create.TextQuestionDto) (*q
 	return questionObj, nil
 }
 
-func (t *TextInputFactory) BuildFromObj(questionObj *question.TextInput) *question.TextInput {
+func (t *TextInputFactory) BuildFromObj(questionObj *question.TextInput) (*question.TextInput, error) {
 	newQuestionObj := new(question.TextInput)
-	t.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question)
+	if err := t.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question); err != nil {
+		return nil, err
+	}
 
 	newQuestionObj.Points = questionObj.Points
 	newQuestionObj.IsCaseSensitive = questionObj.IsCaseSensitive
 	newQuestionObj.Answers = questionObj.Answers
-	return newQuestionObj
+	return newQuestionObj, nil
 }

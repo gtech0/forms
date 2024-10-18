@@ -2,6 +2,7 @@ package util
 
 import (
 	"encoding/json"
+	"hedgehog-forms/errs"
 )
 
 func commonUnmarshal() {
@@ -14,7 +15,7 @@ func CommonMarshal[T any](data []T) ([]json.RawMessage, error) {
 		for _, dto := range data {
 			raw, err := json.Marshal(dto)
 			if err != nil {
-				return nil, err
+				return nil, errs.New(err.Error(), 500)
 			}
 			rawMessage = append(rawMessage, raw)
 		}

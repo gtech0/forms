@@ -1,8 +1,8 @@
 package factory
 
 import (
-	"errors"
 	"github.com/google/uuid"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 )
@@ -37,7 +37,7 @@ func (q *QuestionGeneratedFactory) buildQuestion(iQuestion question.IQuestion) (
 	case *question.Matching:
 		return q.buildMatching(assertedQuestion), nil
 	default:
-		return nil, errors.New("unsupported question type")
+		return nil, errs.New("unsupported question type", 400)
 	}
 }
 

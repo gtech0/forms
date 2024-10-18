@@ -1,33 +1,44 @@
 package factory
 
 import (
-	"errors"
 	"hedgehog-forms/dto/create"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
 type QuestionFactory struct {
+	existingQuestionFactory *ExistingQuestionFactory
+	matchingFactory         *MatchingFactory
+	textInputFactory        *TextInputFactory
+	singleChoiceFactory     *SingleChoiceFactory
+	multipleChoiceFactory   *MultipleChoiceFactory
 }
 
 func NewQuestionFactory() *QuestionFactory {
-	return &QuestionFactory{}
+	return &QuestionFactory{
+		existingQuestionFactory: NewExistingQuestionFactory(),
+		matchingFactory:         NewMatchingFactory(),
+		textInputFactory:        NewTextInputFactory(),
+		singleChoiceFactory:     NewSingleChoiceFactory(),
+		multipleChoiceFactory:   NewMultipleChoiceFactory(),
+	}
 }
 
 func (q *QuestionFactory) buildQuestionFromDto(questionDto any) (question.IQuestion, error) {
 	switch questionTyped := questionDto.(type) {
 	case *create.QuestionOnExistingDto:
-		return NewExistingQuestionFactory().BuildFromDto(questionTyped)
+		return q.existingQuestionFactory.BuildFromDto(questionTyped)
 	case *create.MatchingQuestionDto:
-		return NewMatchingFactory().BuildFromDto(questionTyped)
+		return q.matchingFactory.BuildFromDto(questionTyped)
 	case *create.TextQuestionDto:
-		return NewTextInputFactory().BuildFromDto(questionTyped)
+		return q.textInputFactory.BuildFromDto(questionTyped)
 	case *create.SingleChoiceQuestionDto:
-		return NewSingleChoiceFactory().BuildFromDto(questionTyped)
+		return q.singleChoiceFactory.BuildFromDto(questionTyped)
 	case *create.MultipleChoiceQuestionDto:
-		return NewMultipleChoiceFactory().BuildFromDto(questionTyped)
+		return q.multipleChoiceFactory.BuildFromDto(questionTyped)
 	default:
-		return nil, errors.New("unknown question type")
+		return nil, errs.New("invalid question type", 400)
 	}
 }
 

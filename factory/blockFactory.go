@@ -1,10 +1,10 @@
 package factory
 
 import (
-	"errors"
+	"hedgehog-forms/database"
 	"hedgehog-forms/dto/create"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block"
-	"hedgehog-forms/service"
 )
 
 type BlockFactory struct {
@@ -28,7 +28,7 @@ func (b *BlockFactory) BuildFromDto(blockDto any) (block.IBlock, error) {
 	case *create.BlockOnExistingDto:
 		return b.buildFromExisting(bl)
 	default:
-		return nil, errors.New("unidentified block dto type")
+		return nil, errs.New("invalid block dto type", 400)
 	}
 }
 
@@ -39,14 +39,16 @@ func (b *BlockFactory) buildFromObject(blockObj block.IBlock) (block.IBlock, err
 	case *block.StaticBlock:
 		return b.staticFactory.buildFromObj(bl)
 	default:
-		return nil, errors.New("unidentified block object type")
+		return nil, errs.New("invalid block object type", 400)
 	}
 }
 
 func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (block.IBlock, error) {
-	blockObj, err := service.NewBlockService().GetBlockObjectById(dto.BlockId)
-	if err != nil {
-		return nil, err
+	blockObj := new(block.Block)
+	if err := database.DB.Model(&block.Block{}).
+		Where("id = ?", dto.BlockId).
+		First(blockObj).Error; err != nil {
+		return nil, errs.New(err.Error(), 500)
 	}
 
 	return b.buildFromObject(blockObj)

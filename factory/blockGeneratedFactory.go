@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"errors"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern/section/block"
 	"math/rand"
@@ -40,7 +40,7 @@ func (b *BlockGeneratedFactory) buildBlock(iBlock block.IBlock) (generated.Block
 	case *block.StaticBlock:
 		return b.buildStaticBlock(assertedBlock)
 	default:
-		return generated.Block{}, errors.New("unsupported block type")
+		return generated.Block{}, errs.New("unsupported block type", 400)
 	}
 }
 

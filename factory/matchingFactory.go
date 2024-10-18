@@ -18,7 +18,9 @@ func NewMatchingFactory() *MatchingFactory {
 
 func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*question.Matching, error) {
 	questionObj := new(question.Matching)
-	m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, &questionObj.Question)
+	if err := m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, &questionObj.Question); err != nil {
+		return nil, err
+	}
 
 	definitions := m.buildTermsAndDefinitions(dto.TermsAndDefinitions, questionObj.Id)
 	questionObj.Definitions = definitions
@@ -32,7 +34,7 @@ func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*questi
 	return questionObj, nil
 }
 
-func (m *MatchingFactory) BuildFromObj(questionObj *question.Matching) *question.Matching {
+func (m *MatchingFactory) BuildFromObj(questionObj *question.Matching) (*question.Matching, error) {
 	newQuestionObj := new(question.Matching)
 	terms := make([]question.MatchingTerm, 0)
 	definitions := make([]question.MatchingDefinition, 0)
@@ -49,9 +51,11 @@ func (m *MatchingFactory) BuildFromObj(questionObj *question.Matching) *question
 	newQuestionObj.Terms = terms
 	newQuestionObj.Definitions = definitions
 
-	m.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question)
+	if err := m.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question); err != nil {
+		return nil, err
+	}
 
-	return newQuestionObj
+	return newQuestionObj, nil
 }
 
 func (m *MatchingFactory) buildTermFromEntity(

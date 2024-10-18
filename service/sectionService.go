@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/database"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section"
 )
 
@@ -17,7 +18,7 @@ func (b *SectionService) GetSectionObjectById(id uuid.UUID) (section.Section, er
 	if err := database.DB.Model(&section.Section{}).
 		Where("id = ?", id).
 		First(&sectionObj).Error; err != nil {
-		return section.Section{}, err
+		return section.Section{}, errs.New(err.Error(), 500)
 	}
 
 	return sectionObj, nil

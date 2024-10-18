@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/database"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block"
 )
 
@@ -17,7 +18,7 @@ func (b *BlockService) GetBlockObjectById(id uuid.UUID) (*block.Block, error) {
 	if err := database.DB.Model(&block.Block{}).
 		Where("id = ?", id).
 		First(blockObj).Error; err != nil {
-		return nil, err
+		return nil, errs.New(err.Error(), 500)
 	}
 
 	return blockObj, nil

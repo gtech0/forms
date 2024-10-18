@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"errors"
 	"hedgehog-forms/dto/get"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 )
@@ -24,7 +24,7 @@ func (b *BlockMapper) toDto(iBlock block.IBlock) (get.IBlockDto, error) {
 	case *block.StaticBlock:
 		return b.staticToDto(assertedBlock)
 	default:
-		return nil, errors.New("block type not found")
+		return nil, errs.New("invalid block type", 400)
 	}
 }
 

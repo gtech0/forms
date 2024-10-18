@@ -10,7 +10,7 @@ type FormPatternFactory struct {
 	sectionFactory *SectionFactory
 }
 
-func NewPatternFactory() *FormPatternFactory {
+func NewFormPatternFactory() *FormPatternFactory {
 	return &FormPatternFactory{
 		sectionFactory: NewSectionFactory(),
 	}

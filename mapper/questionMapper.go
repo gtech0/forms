@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"errors"
 	"hedgehog-forms/dto/get"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
@@ -33,6 +33,6 @@ func (q *QuestionMapper) toDto(questionObj question.IQuestion) (get.IQuestionDto
 	case *question.Matching:
 		return q.matchingMapper.toDto(assertedQuestion)
 	default:
-		return nil, errors.New("invalid question type")
+		return nil, errs.New("invalid question type", 400)
 	}
 }

@@ -19,7 +19,9 @@ func NewMultipleChoiceFactory() *MultipleChoiceFactory {
 
 func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQuestionDto) (*question.MultipleChoice, error) {
 	questionObj := new(question.MultipleChoice)
-	m.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, &questionObj.Question)
+	if err := m.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, &questionObj.Question); err != nil {
+		return nil, err
+	}
 
 	optionNames := questionDto.Options
 	options := make([]question.MultipleChoiceOption, 0)
@@ -54,11 +56,13 @@ func (m *MultipleChoiceFactory) buildOptionFromDto(
 	return option
 }
 
-func (m *MultipleChoiceFactory) BuildFromObj(questionObj *question.MultipleChoice) *question.MultipleChoice {
+func (m *MultipleChoiceFactory) BuildFromObj(questionObj *question.MultipleChoice) (*question.MultipleChoice, error) {
 	newQuestionObj := new(question.MultipleChoice)
 	options := make([]question.MultipleChoiceOption, 0)
 	newQuestionObj.Points = questionObj.Points
-	m.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question)
+	if err := m.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question); err != nil {
+		return nil, err
+	}
 
 	for _, option := range questionObj.Options {
 		m.buildOptionFromEntity(&option, newQuestionObj.Id)
@@ -66,7 +70,7 @@ func (m *MultipleChoiceFactory) BuildFromObj(questionObj *question.MultipleChoic
 	}
 
 	newQuestionObj.Options = options
-	return newQuestionObj
+	return newQuestionObj, nil
 }
 
 func (m *MultipleChoiceFactory) buildOptionFromEntity(

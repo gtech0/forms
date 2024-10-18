@@ -1,17 +1,26 @@
 package factory
 
 import (
-	"fmt"
 	"hedgehog-forms/database"
 	"hedgehog-forms/dto/create"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
 type ExistingQuestionFactory struct {
+	matchingFactory       *MatchingFactory
+	textInputFactory      *TextInputFactory
+	singleChoiceFactory   *SingleChoiceFactory
+	multipleChoiceFactory *MultipleChoiceFactory
 }
 
 func NewExistingQuestionFactory() *ExistingQuestionFactory {
-	return &ExistingQuestionFactory{}
+	return &ExistingQuestionFactory{
+		matchingFactory:       NewMatchingFactory(),
+		textInputFactory:      NewTextInputFactory(),
+		singleChoiceFactory:   NewSingleChoiceFactory(),
+		multipleChoiceFactory: NewMultipleChoiceFactory(),
+	}
 }
 
 func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExistingDto) (question.IQuestion, error) {
@@ -19,19 +28,19 @@ func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExi
 	if err := database.DB.Model(&question.Question{}).
 		Where("id = ?", existingDto.QuestionId).
 		First(&questionObj).Error; err != nil {
-		return nil, err
+		return nil, errs.New(err.Error(), 500)
 	}
 
 	switch questionObj.GetType() {
 	case question.MATCHING:
-		return NewMatchingFactory().BuildFromObj(questionObj.(*question.Matching)), nil
+		return e.matchingFactory.BuildFromObj(questionObj.(*question.Matching))
 	case question.TEXT_INPUT:
-		return NewTextInputFactory().BuildFromObj(questionObj.(*question.TextInput)), nil
+		return e.textInputFactory.BuildFromObj(questionObj.(*question.TextInput))
 	case question.SINGLE_CHOICE:
-		return NewSingleChoiceFactory().BuildFromObj(questionObj.(*question.SingleChoice)), nil
+		return e.singleChoiceFactory.BuildFromObj(questionObj.(*question.SingleChoice))
 	case question.MULTIPLE_CHOICE:
-		return NewMultipleChoiceFactory().BuildFromObj(questionObj.(*question.MultipleChoice)), nil
+		return e.multipleChoiceFactory.BuildFromObj(questionObj.(*question.MultipleChoice))
 	default:
-		return nil, fmt.Errorf("unknown question type")
+		return nil, errs.New("invalid question type", 400)
 	}
 }
