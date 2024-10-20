@@ -31,7 +31,7 @@ func (f *FormPatternController) CreateForm(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, dto)
+	ctx.JSON(http.StatusOK, *dto)
 }
 
 func (f *FormPatternController) GetForm(ctx *gin.Context) {
@@ -41,5 +41,5 @@ func (f *FormPatternController) GetForm(ctx *gin.Context) {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(http.StatusOK, dto)
+	ctx.JSON(http.StatusOK, *dto)
 }

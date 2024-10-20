@@ -34,7 +34,7 @@ func (f *FormPublishedController) PublishForm(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, formPublished)
+	ctx.JSON(http.StatusOK, *formPublished)
 }
 
 func (f *FormPublishedController) GetForm(ctx *gin.Context) {
@@ -46,5 +46,5 @@ func (f *FormPublishedController) GetForm(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, formPublished)
+	ctx.JSON(http.StatusOK, *formPublished)
 }

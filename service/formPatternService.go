@@ -12,69 +12,73 @@ import (
 	"hedgehog-forms/model/form/pattern"
 	"hedgehog-forms/model/form/pattern/section/block"
 	"hedgehog-forms/model/form/pattern/section/block/question"
+	"hedgehog-forms/repository"
 	"slices"
 )
 
 type FormPatternService struct {
-	formPatternFactory *factory.FormPatternFactory
-	formPatternMapper  *mapper.FormPatternMapper
-	attachmentService  *AttachmentService
+	formPatternRepository *repository.FormPatternRepository
+	formPatternFactory    *factory.FormPatternFactory
+	formPatternMapper     *mapper.FormPatternMapper
+	attachmentService     *AttachmentService
 }
 
 func NewFormPatternService() *FormPatternService {
 	return &FormPatternService{
-		formPatternFactory: factory.NewFormPatternFactory(),
-		formPatternMapper:  mapper.NewFormPatternMapper(),
-		attachmentService:  NewAttachmentService(),
+		formPatternRepository: repository.NewFormPatternRepository(),
+		formPatternFactory:    factory.NewFormPatternFactory(),
+		formPatternMapper:     mapper.NewFormPatternMapper(),
+		attachmentService:     NewAttachmentService(),
 	}
 }
 
-func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (get.FormPatternDto, error) {
+func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get.FormPatternDto, error) {
 	formPattern, err := f.formPatternFactory.BuildPattern(&body)
 	if err != nil {
-		return get.FormPatternDto{}, err
+		return nil, err
 	}
 
 	attachmentIds, err := f.validatePatternAttachments(formPattern)
 	if err != nil {
-		return get.FormPatternDto{}, err
+		return nil, err
 	}
 
 	if len(attachmentIds) > 0 {
-		return get.FormPatternDto{}, errs.New(
+		return nil, errs.New(
 			fmt.Sprintf("incorrect attachment ids: %v", attachmentIds), 400,
 		)
 	}
 
-	if err = database.DB.Create(&formPattern).Error; err != nil {
-		return get.FormPatternDto{}, errs.New(err.Error(), 500)
-	}
-
-	return f.formPatternMapper.ToDto(formPattern)
-}
-
-func (f *FormPatternService) GetForm(formId string) (get.FormPatternDto, error) {
-	if formId == "" {
-		return get.FormPatternDto{}, errs.New("patternId is required", 400)
-	}
-
-	parsedPatternId, err := uuid.Parse(formId)
-	if err != nil {
-		return get.FormPatternDto{}, errs.New(err.Error(), 400)
-	}
-
-	var formPattern pattern.FormPattern
-	if err = database.DB.Model(&pattern.FormPattern{}).
-		Preload("Subject").
-		Preload("Sections.DynamicBlocks.~~~as~~~.~~~as~~~.~~~as~~~").
-		Preload("Sections.StaticBlocks.Variants.~~~as~~~.~~~as~~~.~~~as~~~").
-		First(&formPattern, "form_pattern.id = ?", parsedPatternId).Error; err != nil {
-		return get.FormPatternDto{}, errs.New(err.Error(), 500)
+	if err = f.formPatternRepository.Create(formPattern); err != nil {
+		return nil, err
 	}
 
 	dto, err := f.formPatternMapper.ToDto(formPattern)
 	if err != nil {
-		return get.FormPatternDto{}, err
+		return nil, err
+	}
+
+	return dto, nil
+}
+
+func (f *FormPatternService) GetForm(patternId string) (*get.FormPatternDto, error) {
+	if patternId == "" {
+		return nil, errs.New("patternId is required", 400)
+	}
+
+	parsedPatternId, err := uuid.Parse(patternId)
+	if err != nil {
+		return nil, errs.New(err.Error(), 400)
+	}
+
+	formPattern, err := f.formPatternRepository.FindById(parsedPatternId)
+	if err != nil {
+		return nil, err
+	}
+
+	dto, err := f.formPatternMapper.ToDto(formPattern)
+	if err != nil {
+		return nil, err
 	}
 
 	return dto, nil
@@ -91,7 +95,7 @@ func (f *FormPatternService) getFormId(id uuid.UUID) (uuid.UUID, error) {
 	return formPattern.Id, nil
 }
 
-func (f *FormPatternService) extractQuestionsFromPattern(pattern pattern.FormPattern) []question.IQuestion {
+func (f *FormPatternService) extractQuestionsFromPattern(pattern *pattern.FormPattern) []question.IQuestion {
 	questions := make([]question.IQuestion, 0)
 	for _, currSection := range pattern.Sections {
 		blocks := currSection.Blocks
@@ -109,7 +113,7 @@ func (f *FormPatternService) extractQuestionsFromPattern(pattern pattern.FormPat
 	return questions
 }
 
-func (f *FormPatternService) validatePatternAttachments(pattern pattern.FormPattern) ([]uuid.UUID, error) {
+func (f *FormPatternService) validatePatternAttachments(pattern *pattern.FormPattern) ([]uuid.UUID, error) {
 	questions := f.extractQuestionsFromPattern(pattern)
 	attachmentIds := make([]uuid.UUID, 0)
 	for _, iQuestion := range questions {

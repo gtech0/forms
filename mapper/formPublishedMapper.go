@@ -16,8 +16,8 @@ func NewFormPublishedMapper() *FormPublishedMapper {
 	}
 }
 
-func (f *FormPublishedMapper) ToBaseDto(publishedForm published.FormPublished) get.FormPublishedBaseDto {
-	var publishedBaseDto get.FormPublishedBaseDto
+func (f *FormPublishedMapper) ToBaseDto(publishedForm published.FormPublished) *get.FormPublishedBaseDto {
+	publishedBaseDto := new(get.FormPublishedBaseDto)
 	publishedBaseDto.Id = publishedForm.Id
 	publishedBaseDto.FormPatternId = publishedForm.FormPatternId
 	publishedBaseDto.HideScore = publishedForm.HideScore
@@ -43,14 +43,14 @@ func (f *FormPublishedMapper) ToBaseDto(publishedForm published.FormPublished) g
 	return publishedBaseDto
 }
 
-func (f *FormPublishedMapper) ToDto(publishedForm published.FormPublished) (get.FormPublishedDto, error) {
-	var publishedDto get.FormPublishedDto
-	formPattern, err := f.formPatternMapper.ToDto(publishedForm.FormPattern)
+func (f *FormPublishedMapper) ToDto(publishedForm *published.FormPublished) (*get.FormPublishedDto, error) {
+	publishedDto := new(get.FormPublishedDto)
+	formPattern, err := f.formPatternMapper.ToDto(&publishedForm.FormPattern)
 	if err != nil {
-		return get.FormPublishedDto{}, err
+		return nil, err
 	}
 	publishedDto.Id = publishedForm.Id
-	publishedDto.FormPattern = formPattern
+	publishedDto.FormPattern = *formPattern
 	publishedDto.HideScore = publishedForm.HideScore
 	publishedDto.Deadline = publishedForm.Deadline
 	publishedDto.Duration = publishedForm.Duration

@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"github.com/google/uuid"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/pattern"
 	"hedgehog-forms/model/form/pattern/section"
@@ -16,14 +17,15 @@ func NewFormPatternFactory() *FormPatternFactory {
 	}
 }
 
-func (f *FormPatternFactory) BuildPattern(dto *create.FormPatternDto) (pattern.FormPattern, error) {
-	var formPattern pattern.FormPattern
+func (f *FormPatternFactory) BuildPattern(dto *create.FormPatternDto) (*pattern.FormPattern, error) {
+	formPattern := new(pattern.FormPattern)
+	formPattern.Id = uuid.New()
 	formPattern.Title = dto.Title
 	formPattern.Description = dto.Description
 	formPattern.SubjectId = dto.SubjectId
-	sections, err := f.buildAndAddSections(dto.Sections, formPattern)
+	sections, err := f.buildAndAddSections(dto.Sections, formPattern.Id)
 	if err != nil {
-		return pattern.FormPattern{}, err
+		return nil, err
 	}
 
 	formPattern.Sections = sections
@@ -32,7 +34,7 @@ func (f *FormPatternFactory) BuildPattern(dto *create.FormPatternDto) (pattern.F
 
 func (f *FormPatternFactory) buildAndAddSections(
 	sectionDtos []any,
-	formPattern pattern.FormPattern,
+	formPatternId uuid.UUID,
 ) ([]section.Section, error) {
 	sections := make([]section.Section, 0)
 	for order, sectionDto := range sectionDtos {
@@ -40,7 +42,7 @@ func (f *FormPatternFactory) buildAndAddSections(
 		if err != nil {
 			return nil, err
 		}
-		sectionObj.FormPatternId = formPattern.Id
+		sectionObj.FormPatternId = formPatternId
 		sectionObj.Order = order
 		sections = append(sections, sectionObj)
 	}

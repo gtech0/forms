@@ -27,6 +27,6 @@ func (q *CommonFieldQuestionDtoMapper) commonFieldsToDto(source question.Questio
 	}
 	target.SetAttachments(attachments)
 	if source.Subject.Name != "" {
-		target.SetSubject(q.subjectMapper.toDto(source.Subject))
+		target.SetSubject(*q.subjectMapper.ToDto(source.Subject))
 	}
 }

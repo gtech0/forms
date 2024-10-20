@@ -29,6 +29,7 @@ func main() {
 	formPatternController := controller.NewFormPatternController()
 	formPublishedController := controller.NewFormPublishedController()
 	fileController := controller.NewFileController()
+	subjectController := controller.NewSubjectController()
 
 	formPattern := router.Group("/api/form/pattern")
 	{
@@ -46,6 +47,11 @@ func main() {
 	{
 		fileGroup.POST("/upload", fileController.UploadFile)
 		fileGroup.GET("/download/:fileId", fileController.DownloadFile)
+	}
+
+	subject := router.Group("/api/subject")
+	{
+		subject.POST("/create", subjectController.Create)
 	}
 
 	if err := router.Run(); err != nil {
