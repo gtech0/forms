@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 	"hedgehog-forms/database"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern"
@@ -23,11 +25,29 @@ func (f *FormPatternRepository) Create(formPattern *pattern.FormPattern) error {
 func (f *FormPatternRepository) FindById(id uuid.UUID) (*pattern.FormPattern, error) {
 	formPattern := new(pattern.FormPattern)
 	if err := database.DB.Model(&pattern.FormPattern{}).
-		Preload("Subject").
-		Preload("Sections.DynamicBlocks.~~~as~~~.~~~as~~~.~~~as~~~").
-		Preload("Sections.StaticBlocks.Variants.~~~as~~~.~~~as~~~.~~~as~~~").
+		Preload(clause.Associations, preload).
 		First(formPattern, "form_pattern.id = ?", id).Error; err != nil {
 		return nil, errs.New(err.Error(), 500)
 	}
 	return formPattern, nil
+}
+
+func (f *FormPatternRepository) FindAndPaginate(
+	name string,
+	clauses []clause.Expression,
+	page int,
+	size int,
+) ([]pattern.FormPattern, error) {
+	formPatterns := make([]pattern.FormPattern, 0)
+	if err := database.DB.
+		Preload(clause.Associations, preload).
+		Model(&pattern.FormPattern{}).
+		Clauses(clauses...).
+		Where("title LIKE ?", fmt.Sprintf("%%%s%%", name)).
+		Scopes(paginate(page, size)).
+		Find(&formPatterns).
+		Error; err != nil {
+		return nil, errs.New(err.Error(), 500)
+	}
+	return formPatterns, nil
 }

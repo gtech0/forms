@@ -6,6 +6,7 @@ import (
 	"hedgehog-forms/factory"
 	"hedgehog-forms/mapper"
 	"hedgehog-forms/repository"
+	"hedgehog-forms/util"
 )
 
 type SubjectService struct {
@@ -22,10 +23,52 @@ func NewSubjectService() *SubjectService {
 	}
 }
 
-func (s *SubjectService) Create(dto create.SubjectDto) (*get.SubjectDto, error) {
+func (s *SubjectService) CreateSubject(dto create.SubjectDto) (*get.SubjectDto, error) {
 	subject := s.subjectFactory.Build(dto)
 	if err := s.subjectRepository.Create(subject); err != nil {
 		return nil, err
 	}
 	return s.subjectMapper.ToDto(subject), nil
+}
+
+func (s *SubjectService) GetSubject(subjectId string) (*get.SubjectDto, error) {
+	parsedSubjectId, err := util.IdCheckAndParse(subjectId)
+	if err != nil {
+		return nil, err
+	}
+
+	subject, err := s.subjectRepository.GetById(parsedSubjectId)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.subjectMapper.ToDto(*subject), nil
+}
+
+func (s *SubjectService) UpdateSubject(subjectId string, name string) (*get.SubjectDto, error) {
+	parsedSubjectId, err := util.IdCheckAndParse(subjectId)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = s.subjectRepository.Update(parsedSubjectId, name); err != nil {
+		return nil, err
+	}
+
+	return &get.SubjectDto{
+		Id:   parsedSubjectId,
+		Name: name,
+	}, err
+}
+
+func (s *SubjectService) DeleteSubject(subjectId string) error {
+	parsedSubjectId, err := util.IdCheckAndParse(subjectId)
+	if err != nil {
+		return err
+	}
+
+	if err = s.subjectRepository.Delete(parsedSubjectId); err != nil {
+		return err
+	}
+	return nil
 }

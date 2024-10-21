@@ -48,3 +48,14 @@ func (f *FormPublishedController) GetForm(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, *formPublished)
 }
+
+func (f *FormPublishedController) GetForms(ctx *gin.Context) {
+	query := ctx.Request.URL.Query()
+	forms, err := f.formPublishedService.GetForms(query)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *forms)
+}

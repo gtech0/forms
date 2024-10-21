@@ -43,3 +43,14 @@ func (f *FormPatternController) GetForm(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, *dto)
 }
+
+func (f *FormPatternController) GetForms(ctx *gin.Context) {
+	query := ctx.Request.URL.Query()
+	forms, err := f.formPatternService.GetForms(query)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *forms)
+}

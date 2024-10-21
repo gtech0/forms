@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"hedgehog-forms/database"
+	"gorm.io/gorm/clause"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/dto/get"
 	"hedgehog-forms/errs"
@@ -13,7 +13,10 @@ import (
 	"hedgehog-forms/model/form/pattern/section/block"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 	"hedgehog-forms/repository"
+	"hedgehog-forms/util"
+	"net/url"
 	"slices"
+	"strconv"
 )
 
 type FormPatternService struct {
@@ -44,9 +47,7 @@ func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get.For
 	}
 
 	if len(attachmentIds) > 0 {
-		return nil, errs.New(
-			fmt.Sprintf("incorrect attachment ids: %v", attachmentIds), 400,
-		)
+		return nil, errs.New(fmt.Sprintf("incorrect attachment ids: %v", attachmentIds), 400)
 	}
 
 	if err = f.formPatternRepository.Create(formPattern); err != nil {
@@ -62,16 +63,12 @@ func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get.For
 }
 
 func (f *FormPatternService) GetForm(patternId string) (*get.FormPatternDto, error) {
-	if patternId == "" {
-		return nil, errs.New("patternId is required", 400)
-	}
-
-	parsedPatternId, err := uuid.Parse(patternId)
+	id, err := util.IdCheckAndParse(patternId)
 	if err != nil {
-		return nil, errs.New(err.Error(), 400)
+		return nil, err
 	}
 
-	formPattern, err := f.formPatternRepository.FindById(parsedPatternId)
+	formPattern, err := f.formPatternRepository.FindById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -84,15 +81,55 @@ func (f *FormPatternService) GetForm(patternId string) (*get.FormPatternDto, err
 	return dto, nil
 }
 
-func (f *FormPatternService) getFormId(id uuid.UUID) (uuid.UUID, error) {
-	var formPattern pattern.FormPattern
-	if err := database.DB.Model(&pattern.FormPattern{}).
-		Where("id = ?", id).
-		First(&formPattern).
-		Error; err != nil {
-		return uuid.Nil, errs.New(err.Error(), 500)
+func (f *FormPatternService) GetForms(query url.Values) (*get.PaginationResponse[get.FormPatternBaseDto], error) {
+	name := query.Get("name")
+	page, _ := strconv.Atoi(query.Get("page"))
+	if page <= 0 {
+		page = 1
 	}
-	return formPattern.Id, nil
+
+	size, _ := strconv.Atoi(query.Get("size"))
+	switch {
+	case size > 50:
+		size = 50
+	case size <= 0:
+		size = 5
+	}
+
+	clauses := make([]clause.Expression, 0)
+	subjectId := query.Get("subjectId")
+	if subjectId != "" {
+		parsedSubjectId, err := uuid.Parse(subjectId)
+		if err != nil {
+			return nil, errs.New(err.Error(), 400)
+		}
+		clauses = append(clauses, clause.Eq{Column: "subject_id", Value: parsedSubjectId})
+	}
+
+	formsPublished, err := f.formPatternRepository.FindAndPaginate(name, clauses, page, size)
+	if err != nil {
+		return nil, err
+	}
+
+	patternBaseDtos := make([]get.FormPatternBaseDto, 0)
+	for _, formPublished := range formsPublished {
+		patternBaseDto := f.formPatternMapper.ToBaseDto(formPublished)
+		patternBaseDtos = append(patternBaseDtos, *patternBaseDto)
+	}
+
+	return &get.PaginationResponse[get.FormPatternBaseDto]{
+		Page:     page,
+		Size:     size,
+		Elements: patternBaseDtos,
+	}, nil
+}
+
+func (f *FormPatternService) doesFormExist(id uuid.UUID) error {
+	if _, err := f.formPatternRepository.FindById(id); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (f *FormPatternService) extractQuestionsFromPattern(pattern *pattern.FormPattern) []question.IQuestion {

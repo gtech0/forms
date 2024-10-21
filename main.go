@@ -35,12 +35,14 @@ func main() {
 	{
 		formPattern.POST("/create", formPatternController.CreateForm)
 		formPattern.GET("/get/:patternId", formPatternController.GetForm)
+		formPattern.GET("/get", formPatternController.GetForms)
 	}
 
 	formPublished := router.Group("/api/form/published")
 	{
 		formPublished.POST("/create", formPublishedController.PublishForm)
 		formPublished.GET("/get/:formId", formPublishedController.GetForm)
+		formPublished.GET("/get", formPublishedController.GetForms)
 	}
 
 	fileGroup := router.Group("/api/file")
@@ -51,7 +53,10 @@ func main() {
 
 	subject := router.Group("/api/subject")
 	{
-		subject.POST("/create", subjectController.Create)
+		subject.POST("/create", subjectController.CreateSubject)
+		subject.GET("/get/:subjectId", subjectController.GetSubject)
+		subject.PUT("/update/:subjectId", subjectController.UpdateSubject)
+		subject.DELETE("/delete/:subjectId", subjectController.DeleteSubject)
 	}
 
 	if err := router.Run(); err != nil {
