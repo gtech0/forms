@@ -1,41 +1,43 @@
 package factory
 
 import (
-	"hedgehog-forms/database"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section"
 	"hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/repository"
 )
 
 type SectionFactory struct {
-	blockFactory *BlockFactory
+	blockFactory      *BlockFactory
+	sectionRepository *repository.SectionRepository
 }
 
 func NewSectionFactory() *SectionFactory {
 	return &SectionFactory{
-		blockFactory: NewBlockFactory(),
+		blockFactory:      NewBlockFactory(),
+		sectionRepository: repository.NewSectionRepository(),
 	}
 }
 
-func (s *SectionFactory) buildSection(sectionDto any) (section.Section, error) {
+func (s *SectionFactory) buildSection(sectionDto any) (*section.Section, error) {
 	switch sect := sectionDto.(type) {
 	case *create.NewSectionDto:
 		return s.buildSectionNew(sect)
 	case *create.SectionOnExistingDto:
 		return s.buildSectionExisting(sect)
 	default:
-		return section.Section{}, errs.New("invalid section type", 400)
+		return nil, errs.New("invalid section type", 400)
 	}
 }
 
-func (s *SectionFactory) buildSectionNew(sectionDto *create.NewSectionDto) (section.Section, error) {
-	var sectionObj section.Section
+func (s *SectionFactory) buildSectionNew(sectionDto *create.NewSectionDto) (*section.Section, error) {
+	sectionObj := new(section.Section)
 	sectionObj.Title = sectionDto.Title
 	sectionObj.Description = sectionDto.Description
-	err := s.buildAndAddBlocksFromDto(sectionDto.Blocks, &sectionObj)
+	err := s.buildAndAddBlocksFromDto(sectionDto.Blocks, sectionObj)
 	if err != nil {
-		return section.Section{}, err
+		return nil, err
 	}
 	return sectionObj, nil
 }
@@ -61,18 +63,16 @@ func (s *SectionFactory) buildAndAddBlocksFromDto(blockDtos []any, sectionObj *s
 	return nil
 }
 
-func (s *SectionFactory) buildSectionExisting(sectionDto *create.SectionOnExistingDto) (section.Section, error) {
-	var sectObj section.Section
-	if err := database.DB.Model(&section.Section{}).
-		Where("id = ?", sectionDto.SectionId).
-		First(&sectObj).Error; err != nil {
-		return section.Section{}, errs.New(err.Error(), 500)
+func (s *SectionFactory) buildSectionExisting(sectionDto *create.SectionOnExistingDto) (*section.Section, error) {
+	sectObj, err := s.sectionRepository.GetById(sectionDto.SectionId)
+	if err != nil {
+		return nil, err
 	}
 
-	var sectionObj section.Section
+	sectionObj := new(section.Section)
 	sectionObj.Title = sectObj.Title
 	sectionObj.Description = sectObj.Description
-	s.buildAndAddBlocksFromObj(sectObj.Blocks, &sectionObj)
+	s.buildAndAddBlocksFromObj(sectObj.Blocks, sectionObj)
 	return sectionObj, nil
 }
 

@@ -28,6 +28,7 @@ func main() {
 
 	formPatternController := controller.NewFormPatternController()
 	formPublishedController := controller.NewFormPublishedController()
+	formGeneratedController := controller.NewFormGeneratedController()
 	fileController := controller.NewFileController()
 	subjectController := controller.NewSubjectController()
 
@@ -43,6 +44,11 @@ func main() {
 		formPublished.POST("/create", formPublishedController.PublishForm)
 		formPublished.GET("/get/:formId", formPublishedController.GetForm)
 		formPublished.GET("/get", formPublishedController.GetForms)
+	}
+
+	formGenerated := router.Group("/api/form/generated")
+	{
+		formGenerated.GET("/get/:publishedId", formGeneratedController.GetMyForm)
 	}
 
 	fileGroup := router.Group("/api/file")

@@ -21,7 +21,7 @@ func (s *SubjectRepository) Create(subject model.Subject) error {
 	return nil
 }
 
-func (s *SubjectRepository) GetById(id uuid.UUID) (*model.Subject, error) {
+func (s *SubjectRepository) FindById(id uuid.UUID) (*model.Subject, error) {
 	subject := new(model.Subject)
 	if err := database.DB.Model(&model.Subject{}).
 		First(subject, "id = ?", id).Error; err != nil {
@@ -30,7 +30,7 @@ func (s *SubjectRepository) GetById(id uuid.UUID) (*model.Subject, error) {
 	return subject, nil
 }
 
-func (s *SubjectRepository) GetByName(name string) ([]model.Subject, error) {
+func (s *SubjectRepository) FindByName(name string) ([]model.Subject, error) {
 	subjects := make([]model.Subject, 0)
 	if err := database.DB.Model(&model.Subject{}).
 		Find(&subjects, "name LIKE ?", fmt.Sprintf("%%%s%%", name)).

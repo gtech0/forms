@@ -5,17 +5,22 @@ import (
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/repository"
 )
 
 type BlockFactory struct {
-	dynamicFactory *DynamicBlockFactory
-	staticFactory  *StaticBlockFactory
+	dynamicFactory    *DynamicBlockFactory
+	dynamicRepository *repository.DynamicBlockRepository
+	staticFactory     *StaticBlockFactory
+	staticRepository  *repository.StaticBlockRepository
 }
 
 func NewBlockFactory() *BlockFactory {
 	return &BlockFactory{
-		dynamicFactory: NewDynamicBlockFactory(),
-		staticFactory:  NewStaticBlockFactory(),
+		dynamicFactory:    NewDynamicBlockFactory(),
+		dynamicRepository: repository.NewDynamicBlockRepository(),
+		staticFactory:     NewStaticBlockFactory(),
+		staticRepository:  repository.NewStaticBlockRepository(),
 	}
 }
 
@@ -44,7 +49,22 @@ func (b *BlockFactory) buildFromObject(blockObj block.IBlock) (block.IBlock, err
 }
 
 func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (block.IBlock, error) {
-	blockObj := new(block.Block)
+	var blockObj block.IBlock
+	switch dto.Type {
+	case block.STATIC:
+		staticBlock, err := b.staticRepository.GetById(dto.BlockId)
+		if err != nil {
+			return nil, err
+		}
+		blockObj = staticBlock
+	case block.DYNAMIC:
+		dynamicBlock, err := b.dynamicRepository.GetById(dto.BlockId)
+		if err != nil {
+			return nil, err
+		}
+		blockObj = dynamicBlock
+	}
+
 	if err := database.DB.Model(&block.Block{}).
 		Where("id = ?", dto.BlockId).
 		First(blockObj).Error; err != nil {

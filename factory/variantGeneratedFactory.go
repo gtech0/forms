@@ -16,15 +16,15 @@ func NewVariantGeneratedFactory() *VariantGeneratedFactory {
 	}
 }
 
-func (v *VariantGeneratedFactory) buildVariant(variants []block.Variant) (generated.Variant, error) {
+func (v *VariantGeneratedFactory) buildVariant(variants []block.Variant) (*generated.Variant, error) {
 	randomIndex := rand.Intn(len(variants))
 	variant := variants[randomIndex]
 	questions, err := v.questionGeneratedFactory.buildQuestions(variant.Questions)
 	if err != nil {
-		return generated.Variant{}, err
+		return nil, err
 	}
 
-	return generated.Variant{
+	return &generated.Variant{
 		Id:          variant.Id,
 		Title:       variant.Title,
 		Description: variant.Description,

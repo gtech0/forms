@@ -6,11 +6,11 @@ import (
 
 type MultipleChoice struct {
 	Question
-	Options        []MultipleChoiceOption
-	EnteredAnswers []uuid.UUID
+	Options        []MultipleChoiceOption `json:"options"`
+	EnteredAnswers []uuid.UUID            `json:"enteredAnswers"`
 }
 
 type MultipleChoiceOption struct {
-	Id   uuid.UUID
-	Text string
+	Id   uuid.UUID `json:"id"`
+	Text string    `json:"text"`
 }

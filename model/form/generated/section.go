@@ -5,8 +5,8 @@ import (
 )
 
 type Section struct {
-	Id          uuid.UUID
-	Title       string
-	Description string
-	Blocks      []Block
+	Id          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Blocks      []Block   `json:"blocks"`
 }

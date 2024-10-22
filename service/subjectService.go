@@ -37,7 +37,7 @@ func (s *SubjectService) GetSubject(subjectId string) (*get.SubjectDto, error) {
 		return nil, err
 	}
 
-	subject, err := s.subjectRepository.GetById(parsedSubjectId)
+	subject, err := s.subjectRepository.FindById(parsedSubjectId)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (s *SubjectService) GetSubject(subjectId string) (*get.SubjectDto, error) {
 }
 
 func (s *SubjectService) GetSubjects(name string) ([]get.SubjectDto, error) {
-	subjects, err := s.subjectRepository.GetByName(name)
+	subjects, err := s.subjectRepository.FindByName(name)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ type Block struct {
 	Type         block.BlockType   `json:"type"`
 	Title        string            `json:"title"`
 	Description  string            `json:"description"`
-	Variant      Variant           `json:"variant"`
+	Variant      *Variant          `json:"variant"`
 	Questions    []IQuestion       `json:"-"`
 	RawQuestions []json.RawMessage `json:"questions"`
 }
