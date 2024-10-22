@@ -55,6 +55,7 @@ func main() {
 	{
 		subject.POST("/create", subjectController.CreateSubject)
 		subject.GET("/get/:subjectId", subjectController.GetSubject)
+		subject.GET("/get", subjectController.GetSubjects)
 		subject.PUT("/update/:subjectId", subjectController.UpdateSubject)
 		subject.DELETE("/delete/:subjectId", subjectController.DeleteSubject)
 	}

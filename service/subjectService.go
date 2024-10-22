@@ -45,6 +45,21 @@ func (s *SubjectService) GetSubject(subjectId string) (*get.SubjectDto, error) {
 	return s.subjectMapper.ToDto(*subject), nil
 }
 
+func (s *SubjectService) GetSubjects(name string) ([]get.SubjectDto, error) {
+	subjects, err := s.subjectRepository.GetByName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	subjectDtos := make([]get.SubjectDto, 0)
+	for _, subject := range subjects {
+		subjectDto := s.subjectMapper.ToDto(subject)
+		subjectDtos = append(subjectDtos, *subjectDto)
+	}
+
+	return subjectDtos, nil
+}
+
 func (s *SubjectService) UpdateSubject(subjectId string, name string) (*get.SubjectDto, error) {
 	parsedSubjectId, err := util.IdCheckAndParse(subjectId)
 	if err != nil {

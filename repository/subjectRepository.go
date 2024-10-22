@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"hedgehog-forms/database"
 	"hedgehog-forms/errs"
@@ -27,6 +28,16 @@ func (s *SubjectRepository) GetById(id uuid.UUID) (*model.Subject, error) {
 		return nil, errs.New(err.Error(), 500)
 	}
 	return subject, nil
+}
+
+func (s *SubjectRepository) GetByName(name string) ([]model.Subject, error) {
+	subjects := make([]model.Subject, 0)
+	if err := database.DB.Model(&model.Subject{}).
+		Find(&subjects, "name LIKE ?", fmt.Sprintf("%%%s%%", name)).
+		Order("name desc").Error; err != nil {
+		return nil, errs.New(err.Error(), 500)
+	}
+	return subjects, nil
 }
 
 func (s *SubjectRepository) Update(id uuid.UUID, name string) error {

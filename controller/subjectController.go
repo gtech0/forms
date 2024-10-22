@@ -46,7 +46,14 @@ func (s *SubjectController) GetSubject(ctx *gin.Context) {
 }
 
 func (s *SubjectController) GetSubjects(ctx *gin.Context) {
-	//TODO
+	name := ctx.Request.URL.Query().Get("name")
+	subjects, err := s.subjectService.GetSubjects(name)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, subjects)
 }
 
 func (s *SubjectController) UpdateSubject(ctx *gin.Context) {
