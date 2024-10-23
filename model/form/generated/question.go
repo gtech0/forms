@@ -7,6 +7,7 @@ import (
 
 type IQuestion interface {
 	GetType() question.QuestionType
+	GetId() uuid.UUID
 }
 
 type Question struct {
@@ -19,4 +20,8 @@ type Question struct {
 
 func (q *Question) GetType() question.QuestionType {
 	return q.Type
+}
+
+func (q *Question) GetId() uuid.UUID {
+	return q.Id
 }

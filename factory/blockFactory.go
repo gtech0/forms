@@ -1,7 +1,6 @@
 package factory
 
 import (
-	"hedgehog-forms/database"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block"
@@ -63,12 +62,6 @@ func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (block.
 			return nil, err
 		}
 		blockObj = dynamicBlock
-	}
-
-	if err := database.DB.Model(&block.Block{}).
-		Where("id = ?", dto.BlockId).
-		First(blockObj).Error; err != nil {
-		return nil, errs.New(err.Error(), 500)
 	}
 
 	return b.buildFromObject(blockObj)

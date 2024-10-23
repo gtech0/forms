@@ -16,17 +16,17 @@ func NewCommonFieldQuestionDtoMapper() *CommonFieldQuestionDtoMapper {
 	}
 }
 
-func (q *CommonFieldQuestionDtoMapper) commonFieldsToDto(source question.Question, target get.IQuestionDto) {
-	target.SetId(source.Id)
-	target.SetDescription(source.Description)
-	target.SetOwnerId(source.OwnerId)
-	target.SetType(source.Type)
+func (q *CommonFieldQuestionDtoMapper) commonFieldsToDto(source question.IQuestion, target get.IQuestionDto) {
+	target.SetId(source.GetId())
+	target.SetDescription(source.GetDescription())
+	target.SetOwnerId(source.GetOwnerId())
+	target.SetType(source.GetType())
 	attachments := make([]uuid.UUID, 0)
-	for _, attachment := range source.Attachments {
+	for _, attachment := range source.GetAttachments() {
 		attachments = append(attachments, attachment.Id)
 	}
 	target.SetAttachments(attachments)
-	if source.Subject.Name != "" {
-		target.SetSubject(*q.subjectMapper.ToDto(source.Subject))
+	if source.GetSubject().Name != "" {
+		target.SetSubject(*q.subjectMapper.ToDto(source.GetSubject()))
 	}
 }

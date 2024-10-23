@@ -3,8 +3,10 @@ package processor
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"hedgehog-forms/dto/get"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/generated"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 	"slices"
 )
 
@@ -12,6 +14,88 @@ type MatchingProcessor struct{}
 
 func NewMatchingProcessor() *MatchingProcessor {
 	return &MatchingProcessor{}
+}
+
+func (m *MatchingProcessor) markAnswers(questions []*generated.Matching, answersDto get.AnswerDto) error {
+	matchingQuestions := filterQuestions[*generated.Matching](questions, question.MATCHING)
+	for questionId, termsAndDefinitions := range answersDto.Matching {
+		matchingQuestion, err := findQuestion[*generated.Matching](matchingQuestions, questionId)
+		if err != nil {
+			return err
+		}
+
+		if err = m.markAnswer(questionId, termsAndDefinitions, matchingQuestion); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m *MatchingProcessor) markAndCalculatePoints(
+	questions []*generated.Matching,
+	questionObjs []*question.Matching,
+	answersDto get.AnswerDto,
+) (int, error) {
+	var points int
+	matchingQuestions := filterQuestions[*generated.Matching](questions, question.MATCHING)
+	matchingObjs := filterQuestionObjs[*question.Matching](questionObjs, question.MATCHING)
+
+	for questionId, termsAndDefinitions := range answersDto.Matching {
+		matchingQuestion, err := findQuestion[*generated.Matching](matchingQuestions, questionId)
+		if err != nil {
+			return 0, err
+		}
+
+		if err = m.markAnswer(questionId, termsAndDefinitions, matchingQuestion); err != nil {
+			return 0, err
+		}
+
+		matchingQuestionObj, err := findQuestionObj[*question.Matching](matchingObjs, questionId)
+		if err != nil {
+			return 0, err
+		}
+
+		points += m.calculateAndSetPoints(matchingQuestion, matchingQuestionObj)
+	}
+
+	return points, nil
+}
+
+func (m *MatchingProcessor) calculateAndSetPoints(
+	matching *generated.Matching,
+	matchingObj *question.Matching,
+) int {
+	termsAndDefinitions := m.extractTermDefinitionPairs(matchingObj)
+
+	var correctAnswers int
+	for _, enteredAnswer := range matching.EnteredAnswers {
+		if slices.Contains(termsAndDefinitions, enteredAnswer) {
+			correctAnswers++
+		}
+	}
+
+	return m.calculatePoints(matchingObj.Points, correctAnswers)
+}
+
+func (m *MatchingProcessor) calculatePoints(matchingPoints []question.MatchingPoint, correctAnswers int) int {
+	for _, matchingPoint := range matchingPoints {
+		if matchingPoint.CorrectAnswers == correctAnswers {
+			return matchingPoint.Points
+		}
+	}
+
+	return 0
+}
+
+func (m *MatchingProcessor) extractTermDefinitionPairs(matchingObj *question.Matching) []generated.EnteredMatchingPair {
+	pairs := make([]generated.EnteredMatchingPair, 0)
+	for _, matchingTerm := range matchingObj.Terms {
+		var pair generated.EnteredMatchingPair
+		pair.TermId = matchingTerm.Id
+		pair.DefinitionId = matchingTerm.MatchingDefinitionId
+		pairs = append(pairs, pair)
+	}
+	return pairs
 }
 
 // TODO
@@ -54,11 +138,4 @@ func (m *MatchingProcessor) markAnswer(
 
 	matching.EnteredAnswers = enteredAnswers
 	return nil
-}
-
-func (m *MatchingProcessor) checkIdExisting(ids []uuid.UUID, id uuid.UUID, questionId uuid.UUID) bool {
-	if slices.Contains(ids, id) {
-		return true
-	}
-	return false
 }
