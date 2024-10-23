@@ -16,8 +16,7 @@ func NewMatchingProcessor() *MatchingProcessor {
 	return &MatchingProcessor{}
 }
 
-func (m *MatchingProcessor) markAnswers(questions []*generated.Matching, answersDto get.AnswerDto) error {
-	matchingQuestions := filterQuestions[*generated.Matching](questions, question.MATCHING)
+func (m *MatchingProcessor) markAnswers(matchingQuestions []*generated.Matching, answersDto get.AnswerDto) error {
 	for questionId, termsAndDefinitions := range answersDto.Matching {
 		matchingQuestion, err := findQuestion[*generated.Matching](matchingQuestions, questionId)
 		if err != nil {
@@ -32,14 +31,11 @@ func (m *MatchingProcessor) markAnswers(questions []*generated.Matching, answers
 }
 
 func (m *MatchingProcessor) markAndCalculatePoints(
-	questions []*generated.Matching,
-	questionObjs []*question.Matching,
+	matchingQuestions []*generated.Matching,
+	matchingObjs []*question.Matching,
 	answersDto get.AnswerDto,
 ) (int, error) {
 	var points int
-	matchingQuestions := filterQuestions[*generated.Matching](questions, question.MATCHING)
-	matchingObjs := filterQuestionObjs[*question.Matching](questionObjs, question.MATCHING)
-
 	for questionId, termsAndDefinitions := range answersDto.Matching {
 		matchingQuestion, err := findQuestion[*generated.Matching](matchingQuestions, questionId)
 		if err != nil {
@@ -98,7 +94,6 @@ func (m *MatchingProcessor) extractTermDefinitionPairs(matchingObj *question.Mat
 	return pairs
 }
 
-// TODO
 func (m *MatchingProcessor) markAnswer(
 	questionId uuid.UUID,
 	termsAndDefinitions []generated.EnteredMatchingPair,
