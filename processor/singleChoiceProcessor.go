@@ -82,7 +82,7 @@ func (s *SingleChoiceProcessor) getSingleOptionObj(singleChoiceObj *question.Sin
 			return &singleChoiceOption, nil
 		}
 	}
-	return nil, errs.New(fmt.Sprintf("answer for question %v doesn't exist", singleChoiceObj.Id), 500)
+	return nil, errs.New(fmt.Sprintf("answer for sinlge choice question %v doesn't exist", singleChoiceObj.Id), 500)
 }
 
 func (s *SingleChoiceProcessor) markAnswer(singleChoice *generated.SingleChoice, optionId uuid.UUID) error {

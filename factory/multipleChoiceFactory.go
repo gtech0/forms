@@ -33,7 +33,7 @@ func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQ
 	points := make([]question.MultipleChoicePoints, 0)
 	for answer, point := range questionDto.Points {
 		var pointsObj question.MultipleChoicePoints
-		pointsObj.CorrectAnswer = answer
+		pointsObj.CorrectAnswers = answer
 		pointsObj.Points = point
 		points = append(points, pointsObj)
 	}

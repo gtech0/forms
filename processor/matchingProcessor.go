@@ -74,13 +74,14 @@ func (m *MatchingProcessor) calculateAndSetPoints(
 }
 
 func (m *MatchingProcessor) calculatePoints(matchingPoints []question.MatchingPoint, correctAnswers int) int {
+	var points int
 	for _, matchingPoint := range matchingPoints {
-		if matchingPoint.CorrectAnswers == correctAnswers {
-			return matchingPoint.Points
+		if matchingPoint.CorrectAnswers > points && matchingPoint.CorrectAnswers <= correctAnswers {
+			points = matchingPoint.CorrectAnswers
 		}
 	}
 
-	return 0
+	return points
 }
 
 func (m *MatchingProcessor) extractTermDefinitionPairs(matchingObj *question.Matching) []generated.EnteredMatchingPair {

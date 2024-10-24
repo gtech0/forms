@@ -26,7 +26,7 @@ func (m *MultipleChoiceMapper) toDto(multipleChoiceObj *question.MultipleChoice)
 func (m *MultipleChoiceMapper) pointsToDto(pointsObj []question.MultipleChoicePoints) map[int]int {
 	points := make(map[int]int)
 	for _, pointObj := range pointsObj {
-		points[pointObj.CorrectAnswer] = pointObj.Points
+		points[pointObj.CorrectAnswers] = pointObj.Points
 	}
 	return points
 }
