@@ -3,7 +3,6 @@ package processor
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"hedgehog-forms/dto/get"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern/section/block/question"
@@ -16,44 +15,16 @@ func NewMatchingProcessor() *MatchingProcessor {
 	return &MatchingProcessor{}
 }
 
-func (m *MatchingProcessor) markAnswers(matchingQuestions []*generated.Matching, answersDto get.AnswerDto) error {
-	for questionId, termsAndDefinitions := range answersDto.Matching {
-		matchingQuestion, err := findQuestion[*generated.Matching](matchingQuestions, questionId)
-		if err != nil {
-			return err
-		}
-
-		if err = m.markAnswer(questionId, termsAndDefinitions, matchingQuestion); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (m *MatchingProcessor) markAndCalculatePoints(
-	matchingQuestions []*generated.Matching,
-	matchingObjs []*question.Matching,
-	answersDto get.AnswerDto,
+func (m *MatchingProcessor) markAnswerAndCalculatePoints(
+	matchingQuestion *generated.Matching,
+	matchingQuestionObj *question.Matching,
+	pairs []generated.EnteredMatchingPair,
 ) (int, error) {
-	var points int
-	for questionId, termsAndDefinitions := range answersDto.Matching {
-		matchingQuestion, err := findQuestion[*generated.Matching](matchingQuestions, questionId)
-		if err != nil {
-			return 0, err
-		}
-
-		if err = m.markAnswer(questionId, termsAndDefinitions, matchingQuestion); err != nil {
-			return 0, err
-		}
-
-		matchingQuestionObj, err := findQuestionObj[*question.Matching](matchingObjs, questionId)
-		if err != nil {
-			return 0, err
-		}
-
-		points += m.calculateAndSetPoints(matchingQuestion, matchingQuestionObj)
+	if err := m.markAnswer(matchingQuestion, pairs, matchingQuestion.GetId()); err != nil {
+		return 0, err
 	}
 
+	points := m.calculateAndSetPoints(matchingQuestion, matchingQuestionObj)
 	return points, nil
 }
 
@@ -96,9 +67,9 @@ func (m *MatchingProcessor) extractTermDefinitionPairs(matchingObj *question.Mat
 }
 
 func (m *MatchingProcessor) markAnswer(
-	questionId uuid.UUID,
-	termsAndDefinitions []generated.EnteredMatchingPair,
 	matching *generated.Matching,
+	termsAndDefinitions []generated.EnteredMatchingPair,
+	questionId uuid.UUID,
 ) error {
 	enteredAnswers := make([]generated.EnteredMatchingPair, 0)
 	termIds := make([]uuid.UUID, 0)

@@ -8,6 +8,9 @@ import (
 type IQuestion interface {
 	GetType() question.QuestionType
 	GetId() uuid.UUID
+
+	GetPoints() int
+	SetPoints(int)
 }
 
 type Question struct {
@@ -24,4 +27,12 @@ func (q *Question) GetType() question.QuestionType {
 
 func (q *Question) GetId() uuid.UUID {
 	return q.Id
+}
+
+func (q *Question) GetPoints() int {
+	return q.Points
+}
+
+func (q *Question) SetPoints(points int) {
+	q.Points = points
 }

@@ -6,7 +6,6 @@ import (
 	"hedgehog-forms/errs"
 	"hedgehog-forms/factory"
 	"hedgehog-forms/mapper"
-	"hedgehog-forms/model/form"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/published"
 	"hedgehog-forms/repository"
@@ -103,7 +102,7 @@ func (f *FormGeneratedService) checkDeadline(formGenerated *generated.FormGenera
 }
 
 func (f *FormGeneratedService) checkStatus(formGenerated *generated.FormGenerated) error {
-	if formGenerated.Status != form.NEW && formGenerated.Status != form.IN_PROGRESS {
+	if formGenerated.Status != generated.NEW && formGenerated.Status != generated.IN_PROGRESS {
 		return errs.New("Form is already submitted", 400)
 	}
 

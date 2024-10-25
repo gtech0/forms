@@ -1,7 +1,6 @@
 package processor
 
 import (
-	"hedgehog-forms/dto/get"
 	"hedgehog-forms/mapper"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern/section/block/question"
@@ -19,45 +18,16 @@ func NewTextInputProcessor() *TextInputProcessor {
 	}
 }
 
-func (t *TextInputProcessor) markAnswers(textInputQuestions []*generated.TextInput, answersDto get.AnswerDto) error {
-	for questionId, enteredAnswer := range answersDto.TextInput {
-		textInput, err := findQuestion[*generated.TextInput](textInputQuestions, questionId)
-		if err != nil {
-			return err
-		}
-
-		textInput.EnteredAnswer = enteredAnswer
-	}
+func (t *TextInputProcessor) markAnswer(textInput *generated.TextInput, answer string) error {
+	textInput.EnteredAnswer = answer
 	return nil
 }
 
-func (t *TextInputProcessor) markAnswersAndCalculatePoints(
-	textInputQuestions []*generated.TextInput,
-	textInputObjs []*question.TextInput,
-	answersDto get.AnswerDto,
-) (int, error) {
-	var points int
-	for questionId, enteredAnswer := range answersDto.TextInput {
-		textInputQuestion, err := findQuestion[*generated.TextInput](textInputQuestions, questionId)
-		if err != nil {
-			return 0, err
-		}
-
-		textInputObj, err := findQuestionObj[*question.TextInput](textInputObjs, questionId)
-		if err != nil {
-			return 0, err
-		}
-
-		points += t.calculateAndSetPoints(textInputQuestion, textInputObj, enteredAnswer)
-	}
-	return points, nil
-}
-
-func (t *TextInputProcessor) calculateAndSetPoints(
+func (t *TextInputProcessor) markAnswerAndCalculatePoints(
 	textInput *generated.TextInput,
 	textInputObj *question.TextInput,
 	enteredAnswer string,
-) int {
+) (int, error) {
 	textInput.EnteredAnswer = enteredAnswer
 
 	answers := t.textInputMapper.AnswersToDto(textInputObj.Answers)
@@ -76,5 +46,5 @@ func (t *TextInputProcessor) calculateAndSetPoints(
 		textInput.Points = textInputObj.Points
 	}
 
-	return textInput.Points
+	return textInput.Points, nil
 }

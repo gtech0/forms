@@ -3,7 +3,6 @@ package processor
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"hedgehog-forms/dto/get"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern/section/block/question"
@@ -16,51 +15,20 @@ func NewMultipleChoiceProcessor() *MultipleChoiceProcessor {
 	return &MultipleChoiceProcessor{}
 }
 
-func (m *MultipleChoiceProcessor) markAnswers(
-	multipleChoiceQuestions []*generated.MultipleChoice,
-	answersDto get.AnswerDto,
-) error {
-	for questionId, enteredAnswers := range answersDto.MultipleChoice {
-		multipleChoice, err := findQuestion[*generated.MultipleChoice](multipleChoiceQuestions, questionId)
-		if err != nil {
-			return err
-		}
-
-		if err = m.markAnswer(multipleChoice, enteredAnswers); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (m *MultipleChoiceProcessor) markAnswersAndCalculatePoints(
-	multipleChoiceQuestions []*generated.MultipleChoice,
-	multipleChoiceObjs []*question.MultipleChoice,
-	answersDto get.AnswerDto,
+func (m *MultipleChoiceProcessor) markAnswerAndCalculatePoints(
+	multipleChoice *generated.MultipleChoice,
+	multipleChoiceObj *question.MultipleChoice,
+	enteredAnswers []uuid.UUID,
 ) (int, error) {
-	var points int
-	for questionId, enteredAnswers := range answersDto.MultipleChoice {
-		multipleChoice, err := findQuestion[*generated.MultipleChoice](multipleChoiceQuestions, questionId)
-		if err != nil {
-			return 0, err
-		}
-
-		multipleChoiceObj, err := findQuestionObj[*question.MultipleChoice](multipleChoiceObjs, questionId)
-		if err != nil {
-			return 0, err
-		}
-
-		if err = m.markAnswer(multipleChoice, enteredAnswers); err != nil {
-			return 0, err
-		}
-
-		calculatedPoints, err := m.calculateAndSetPoints(multipleChoice, multipleChoiceObj)
-		if err != nil {
-			return 0, err
-		}
-
-		points += calculatedPoints
+	if err := m.markAnswer(multipleChoice, enteredAnswers); err != nil {
+		return 0, err
 	}
+
+	points, err := m.calculateAndSetPoints(multipleChoice, multipleChoiceObj)
+	if err != nil {
+		return 0, err
+	}
+
 	return points, nil
 }
 

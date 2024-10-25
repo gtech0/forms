@@ -3,7 +3,6 @@ package processor
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"hedgehog-forms/dto/get"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern/section/block/question"
@@ -15,48 +14,20 @@ func NewSingleChoiceProcessor() *SingleChoiceProcessor {
 	return &SingleChoiceProcessor{}
 }
 
-func (s *SingleChoiceProcessor) markAnswers(singleChoiceQuestions []*generated.SingleChoice, answers get.AnswerDto) error {
-	for questionId, optionId := range answers.SingleChoice {
-		singleChoice, err := findQuestion[*generated.SingleChoice](singleChoiceQuestions, questionId)
-		if err != nil {
-			return err
-		}
-
-		if err = s.markAnswer(singleChoice, optionId); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (s *SingleChoiceProcessor) markAnswersAndCalculatePoints(
-	singleChoiceQuestions []*generated.SingleChoice,
-	singleChoiceObjs []*question.SingleChoice,
-	answers get.AnswerDto,
+func (s *SingleChoiceProcessor) markAnswerAndCalculatePoints(
+	singleChoice *generated.SingleChoice,
+	singleChoiceObj *question.SingleChoice,
+	optionId uuid.UUID,
 ) (int, error) {
-	var points int
-	for questionId, optionId := range answers.SingleChoice {
-		singleChoice, err := findQuestion[*generated.SingleChoice](singleChoiceQuestions, questionId)
-		if err != nil {
-			return 0, err
-		}
-
-		singleChoiceObj, err := findQuestionObj[*question.SingleChoice](singleChoiceObjs, questionId)
-		if err != nil {
-			return 0, err
-		}
-
-		if err = s.markAnswer(singleChoice, optionId); err != nil {
-			return 0, err
-		}
-
-		calculatedPoints, err := s.calculateAndSetPoints(singleChoice, singleChoiceObj)
-		if err != nil {
-			return 0, err
-		}
-
-		points += calculatedPoints
+	if err := s.markAnswer(singleChoice, optionId); err != nil {
+		return 0, err
 	}
+
+	points, err := s.calculateAndSetPoints(singleChoice, singleChoiceObj)
+	if err != nil {
+		return 0, err
+	}
+
 	return points, nil
 }
 

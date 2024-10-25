@@ -1,4 +1,4 @@
-package form
+package generated
 
 type FormStatus string
 

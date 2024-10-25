@@ -20,8 +20,8 @@ func NewBlockGeneratedFactory() *BlockGeneratedFactory {
 	}
 }
 
-func (b *BlockGeneratedFactory) buildBlocks(iBlocks []block.IBlock) ([]generated.Block, error) {
-	var generatedBlocks []generated.Block
+func (b *BlockGeneratedFactory) buildBlocks(iBlocks []block.IBlock) ([]*generated.Block, error) {
+	generatedBlocks := make([]*generated.Block, 0)
 	for _, iBlock := range iBlocks {
 		newBlock, err := b.buildBlock(iBlock)
 		if err != nil {
@@ -33,18 +33,18 @@ func (b *BlockGeneratedFactory) buildBlocks(iBlocks []block.IBlock) ([]generated
 	return generatedBlocks, nil
 }
 
-func (b *BlockGeneratedFactory) buildBlock(iBlock block.IBlock) (generated.Block, error) {
+func (b *BlockGeneratedFactory) buildBlock(iBlock block.IBlock) (*generated.Block, error) {
 	switch assertedBlock := iBlock.(type) {
 	case *block.DynamicBlock:
 		return b.buildDynamicBlock(assertedBlock)
 	case *block.StaticBlock:
 		return b.buildStaticBlock(assertedBlock)
 	default:
-		return generated.Block{}, errs.New("unsupported block type", 400)
+		return nil, errs.New("unsupported block type", 400)
 	}
 }
 
-func (b *BlockGeneratedFactory) buildDynamicBlock(dynamicBlock *block.DynamicBlock) (generated.Block, error) {
+func (b *BlockGeneratedFactory) buildDynamicBlock(dynamicBlock *block.DynamicBlock) (*generated.Block, error) {
 	questionCount := dynamicBlock.QuestionCount
 	questions := dynamicBlock.Questions
 	questionsForBlock := make([]generated.IQuestion, 0, questionCount)
@@ -53,29 +53,29 @@ func (b *BlockGeneratedFactory) buildDynamicBlock(dynamicBlock *block.DynamicBlo
 		randomQuestion := questions[randomIndex]
 		generatedQuestion, err := b.questionGeneratedFactory.buildQuestion(randomQuestion)
 		if err != nil {
-			return generated.Block{}, err
+			return nil, err
 		}
 
 		questions = slices.Delete(questions, randomIndex, randomIndex+1)
 		questionsForBlock = append(questionsForBlock, generatedQuestion)
 	}
 
-	var generatedBlock generated.Block
-	generatedBlock.Id = dynamicBlock.Id
-	generatedBlock.Type = dynamicBlock.Type
-	generatedBlock.Title = dynamicBlock.Title
-	generatedBlock.Description = dynamicBlock.Description
-	generatedBlock.Questions = questionsForBlock
-	return generatedBlock, nil
+	return &generated.Block{
+		Id:          dynamicBlock.Id,
+		Type:        dynamicBlock.Type,
+		Title:       dynamicBlock.Title,
+		Description: dynamicBlock.Description,
+		Questions:   questionsForBlock,
+	}, nil
 }
 
-func (b *BlockGeneratedFactory) buildStaticBlock(staticBlock *block.StaticBlock) (generated.Block, error) {
+func (b *BlockGeneratedFactory) buildStaticBlock(staticBlock *block.StaticBlock) (*generated.Block, error) {
 	variant, err := b.variantGeneratedFactory.buildVariant(staticBlock.Variants)
 	if err != nil {
-		return generated.Block{}, err
+		return nil, err
 	}
 
-	return generated.Block{
+	return &generated.Block{
 		Id:          staticBlock.Id,
 		Type:        staticBlock.Type,
 		Title:       staticBlock.Title,
