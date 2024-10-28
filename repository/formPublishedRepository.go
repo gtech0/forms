@@ -15,8 +15,8 @@ func NewFormPublishedRepository() *FormPublishedRepository {
 	return &FormPublishedRepository{}
 }
 
-func (f *FormPublishedRepository) Create(formPublished *published.FormPublished) error {
-	if err := database.DB.Create(formPublished).Error; err != nil {
+func (f *FormPublishedRepository) Save(formPublished *published.FormPublished) error {
+	if err := database.DB.Save(formPublished).Error; err != nil {
 		return errs.New(err.Error(), 500)
 	}
 	return nil
@@ -35,7 +35,7 @@ func (f *FormPublishedRepository) FindById(id uuid.UUID) (*published.FormPublish
 	return formPublished, nil
 }
 
-func (f *FormPublishedRepository) FindAndPaginate(name string, page int, size int) ([]published.FormPublished, error) {
+func (f *FormPublishedRepository) FindByNameAndPaginate(name string, page int, size int) ([]published.FormPublished, error) {
 	formsPublished := make([]published.FormPublished, 0)
 	if err := database.DB.
 		Preload(clause.Associations, preload).

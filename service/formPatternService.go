@@ -50,7 +50,7 @@ func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get.For
 		return nil, errs.New(fmt.Sprintf("incorrect attachment ids: %v", attachmentIds), 400)
 	}
 
-	if err = f.formPatternRepository.Create(formPattern); err != nil {
+	if err = f.formPatternRepository.Save(formPattern); err != nil {
 		return nil, err
 	}
 

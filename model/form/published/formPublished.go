@@ -22,6 +22,14 @@ type FormPublished struct {
 	FormsGenerated    []generated.FormGenerated
 }
 
+func (m *FormPublished) GetMarkConfigMap() map[string]int {
+	config := make(map[string]int)
+	for _, markConfiguration := range m.MarkConfiguration {
+		config[markConfiguration.Mark] = markConfiguration.MinPoints
+	}
+	return config
+}
+
 type MarkConfiguration struct {
 	model.Base
 	Mark            string

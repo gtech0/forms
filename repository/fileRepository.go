@@ -12,8 +12,8 @@ func NewFileRepository() *FileRepository {
 	return &FileRepository{}
 }
 
-func (f *FileRepository) Create(fileModel *model.File) error {
-	if err := database.DB.Create(fileModel).Error; err != nil {
+func (f *FileRepository) Save(fileModel *model.File) error {
+	if err := database.DB.Save(fileModel).Error; err != nil {
 		return errs.New(err.Error(), 500)
 	}
 	return nil

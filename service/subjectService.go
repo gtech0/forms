@@ -25,7 +25,7 @@ func NewSubjectService() *SubjectService {
 
 func (s *SubjectService) CreateSubject(dto create.SubjectDto) (*get.SubjectDto, error) {
 	subject := s.subjectFactory.Build(dto)
-	if err := s.subjectRepository.Create(subject); err != nil {
+	if err := s.subjectRepository.Save(subject); err != nil {
 		return nil, err
 	}
 	return s.subjectMapper.ToDto(subject), nil

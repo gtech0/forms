@@ -33,7 +33,7 @@ func (f *FormPublishedService) PublishForm(publishDto create.FormPublishDto) (*g
 	}
 
 	formPublished := f.formPublishedFactory.Build(publishDto)
-	if err := f.formPublishedRepository.Create(&formPublished); err != nil {
+	if err := f.formPublishedRepository.Save(&formPublished); err != nil {
 		return nil, err
 	}
 
@@ -74,7 +74,7 @@ func (f *FormPublishedService) GetForms(query url.Values) (*get.PaginationRespon
 		size = 5
 	}
 
-	formsPublished, err := f.formPublishedRepository.FindAndPaginate(name, page, size)
+	formsPublished, err := f.formPublishedRepository.FindByNameAndPaginate(name, page, size)
 	if err != nil {
 		return nil, err
 	}

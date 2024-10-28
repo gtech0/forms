@@ -15,8 +15,7 @@ type MatchingQuestionDto struct {
 
 func (m *MatchingPoints) UnmarshalJSON(bytes []byte) error {
 	raw := make(map[string]int)
-	err := json.Unmarshal(bytes, &raw)
-	if err != nil {
+	if err := json.Unmarshal(bytes, &raw); err != nil {
 		return err
 	}
 

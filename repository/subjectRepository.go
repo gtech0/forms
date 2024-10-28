@@ -14,8 +14,8 @@ func NewSubjectRepository() *SubjectRepository {
 	return &SubjectRepository{}
 }
 
-func (s *SubjectRepository) Create(subject model.Subject) error {
-	if err := database.DB.Create(&subject).Error; err != nil {
+func (s *SubjectRepository) Save(subject model.Subject) error {
+	if err := database.DB.Save(&subject).Error; err != nil {
 		return errs.New(err.Error(), 500)
 	}
 	return nil

@@ -4,6 +4,7 @@ import (
 	"hedgehog-forms/dto/get"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/repository"
+	"time"
 )
 
 type FormGeneratedMapper struct {
@@ -18,7 +19,7 @@ func NewFormGeneratedMapper() *FormGeneratedMapper {
 	}
 }
 
-func (f *FormGeneratedMapper) ToDto(formGenerated generated.FormGenerated) (*get.FormGeneratedDto, error) {
+func (f *FormGeneratedMapper) ToDto(formGenerated *generated.FormGenerated) (*get.FormGeneratedDto, error) {
 	formGeneratedDto := new(get.FormGeneratedDto)
 	formGeneratedDto.Id = formGenerated.Id
 	formGeneratedDto.Status = formGenerated.Status
@@ -30,4 +31,36 @@ func (f *FormGeneratedMapper) ToDto(formGenerated generated.FormGenerated) (*get
 	formGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(*formPublished)
 	formGeneratedDto.Sections = formGenerated.Sections
 	return formGeneratedDto, nil
+}
+
+func (f *FormGeneratedMapper) ToMyDto(formGenerated *generated.FormGenerated) (*get.MyGeneratedDto, error) {
+	myGeneratedDto := new(get.MyGeneratedDto)
+	myGeneratedDto.Id = formGenerated.Id
+	myGeneratedDto.Status = formGenerated.Status
+	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedID)
+	if err != nil {
+		return nil, err
+	}
+
+	myGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(*formPublished)
+	myGeneratedDto.SubmitTime = formGenerated.SubmitTime
+	myGeneratedDto.Mark = formGenerated.Mark
+
+	hideScore := myGeneratedDto.FormPublished.HideScore
+	isAfterDeadline := myGeneratedDto.FormPublished.Deadline.After(time.Now())
+	if hideScore && isAfterDeadline {
+		myGeneratedDto.Points = 0
+		myGeneratedDto.Mark = ""
+	}
+
+	return myGeneratedDto, nil
+}
+
+func (f *FormGeneratedMapper) ToSubmittedDto(formGenerated generated.FormGenerated) *get.SubmittedDto {
+	submittedDto := new(get.SubmittedDto)
+	submittedDto.Status = formGenerated.Status
+	submittedDto.Points = formGenerated.Points
+	submittedDto.Mark = formGenerated.Mark
+	submittedDto.SubmitTime = formGenerated.SubmitTime
+	return submittedDto
 }

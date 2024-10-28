@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 	"hedgehog-forms/util"
@@ -64,7 +65,7 @@ func (c *DynamicBlockDto) UnmarshalJSON(b []byte) error {
 		case question.TEXT_INPUT:
 			questionI = &TextQuestionDto{}
 		default:
-			return fmt.Errorf("unknown question type: %s", questionDto.Type)
+			return errs.New(fmt.Sprintf("invalid question type: %s", questionDto.Type), 400)
 		}
 
 		err = json.Unmarshal(rawQuestion, questionI)

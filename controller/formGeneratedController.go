@@ -25,3 +25,6 @@ func (f *FormGeneratedController) GetMyForm(ctx *gin.Context) {
 
 	ctx.JSON(200, *formGeneratedDto)
 }
+
+func (f *FormGeneratedController) SaveAnswers(ctx *gin.Context) {
+}

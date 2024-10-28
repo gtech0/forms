@@ -52,7 +52,7 @@ func (f *FileService) UploadFile(fileDto get.FileDto, bucket string) (*minio.Upl
 		return nil, errs.New(err.Error(), 500)
 	}
 
-	if err = f.fileRepository.Create(fileModel); err != nil {
+	if err = f.fileRepository.Save(fileModel); err != nil {
 		return nil, err
 	}
 
