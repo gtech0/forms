@@ -51,8 +51,8 @@ func (m *MultipleChoiceProcessor) calculateAndSetPoints(
 	incorrectAnswers := len(multipleChoice.EnteredAnswers) - correctAnswers
 	correctAnswers = correctAnswers - incorrectAnswers
 
-	points := m.calculatePoints(multipleChoiceObj.Points, correctAnswers)
-	return points, nil
+	multipleChoice.Points = m.calculatePoints(multipleChoiceObj.Points, correctAnswers)
+	return multipleChoice.Points, nil
 }
 
 func (m *MultipleChoiceProcessor) getMultipleOptionObj(

@@ -89,10 +89,10 @@ func (q *QuestionGeneratedFactory) buildMatching(matching *question.Matching) *g
 	generatedMatching.Terms = terms
 
 	definitions := make([]generated.Definition, 0)
-	for _, term := range matching.Terms {
+	for _, definition := range matching.Definitions {
 		var generatedDefinition generated.Definition
-		generatedDefinition.Id = term.Id
-		generatedDefinition.Text = term.Text
+		generatedDefinition.Id = definition.Id
+		generatedDefinition.Text = definition.Text
 		definitions = append(definitions, generatedDefinition)
 	}
 	generatedMatching.Definitions = definitions

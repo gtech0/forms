@@ -31,14 +31,14 @@ func NewFormGeneratedProcessor() *FormGeneratedProcessor {
 	}
 }
 
-func (f *FormGeneratedProcessor) MarkAnswers(formGenerated *generated.FormGenerated, answers get.AnswerDto) error {
+func (f *FormGeneratedProcessor) SaveAnswers(formGenerated *generated.FormGenerated, answers get.AnswerDto) error {
 	questions := f.extractQuestionsFromGeneratedForm(formGenerated)
 	for _, iQuestion := range questions {
 		if err := f.checkQuestion(iQuestion.GetId(), iQuestion.GetType(), answers); err != nil {
 			return err
 		}
 
-		if err := f.markAnswer(iQuestion, answers); err != nil {
+		if err := f.saveAnswer(iQuestion, answers); err != nil {
 			return err
 		}
 	}
@@ -46,7 +46,7 @@ func (f *FormGeneratedProcessor) MarkAnswers(formGenerated *generated.FormGenera
 	return nil
 }
 
-func (f *FormGeneratedProcessor) MarkAnswersAndCalculatePoints(
+func (f *FormGeneratedProcessor) CalculatePoints(
 	formGenerated *generated.FormGenerated,
 	formPattern pattern.FormPattern,
 	answers get.AnswerDto,
@@ -159,7 +159,7 @@ func (f *FormGeneratedProcessor) extractQuestionObjs(formPattern pattern.FormPat
 	return questions
 }
 
-func (f *FormGeneratedProcessor) markAnswer(iQuestion generated.IQuestion, answers get.AnswerDto) error {
+func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated.IQuestion, answers get.AnswerDto) error {
 	switch iQuestion.GetType() {
 	case question.SINGLE_CHOICE:
 		option := answers.SingleChoice[iQuestion.GetId()]
@@ -190,55 +190,48 @@ func (f *FormGeneratedProcessor) markAnswer(iQuestion generated.IQuestion, answe
 func (f *FormGeneratedProcessor) markAnswerAndCalculatePoints(
 	iQuestion generated.IQuestion,
 	questionObj question.IQuestion,
-	answers get.AnswerDto) (int, error) {
+	answers get.AnswerDto,
+) (int, error) {
+	var points int
+	var err error
+
 	switch iQuestion.GetType() {
 	case question.SINGLE_CHOICE:
 		option := answers.SingleChoice[iQuestion.GetId()]
-		points, err := f.singleChoiceProcessor.markAnswerAndCalculatePoints(
+		points, err = f.singleChoiceProcessor.markAnswerAndCalculatePoints(
 			iQuestion.(*generated.SingleChoice),
 			questionObj.(*question.SingleChoice),
 			option,
 		)
-		if err != nil {
-			return 0, err
-		}
-		return points, nil
 	case question.MULTIPLE_CHOICE:
 		options := answers.MultipleChoice[iQuestion.GetId()]
-		points, err := f.multipleChoiceProcessor.markAnswerAndCalculatePoints(
+		points, err = f.multipleChoiceProcessor.markAnswerAndCalculatePoints(
 			iQuestion.(*generated.MultipleChoice),
 			questionObj.(*question.MultipleChoice),
 			options,
 		)
-		if err != nil {
-			return 0, err
-		}
-		return points, nil
 	case question.MATCHING:
 		pairs := answers.Matching[iQuestion.GetId()]
-		points, err := f.matchingProcessor.markAnswerAndCalculatePoints(
+		points, err = f.matchingProcessor.markAnswerAndCalculatePoints(
 			iQuestion.(*generated.Matching),
 			questionObj.(*question.Matching),
 			pairs,
 		)
-		if err != nil {
-			return 0, err
-		}
-		return points, nil
 	case question.TEXT_INPUT:
 		answer := answers.TextInput[iQuestion.GetId()]
-		points, err := f.textInputProcessor.markAnswerAndCalculatePoints(
+		points, err = f.textInputProcessor.markAnswerAndCalculatePoints(
 			iQuestion.(*generated.TextInput),
 			questionObj.(*question.TextInput),
 			answer,
 		)
-		if err != nil {
-			return 0, err
-		}
-		return points, nil
 	default:
 		return 0, errs.New(fmt.Sprintf("invalid type %s", iQuestion.GetType()), 400)
 	}
+
+	if err != nil {
+		return 0, err
+	}
+	return points, nil
 }
 
 func (f *FormGeneratedProcessor) checkQuestion(

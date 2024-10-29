@@ -52,7 +52,7 @@ func (f *FormGeneratedRepository) FindBySubjectIdAndPaginate(
 		Model(&generated.FormGenerated{}).
 		Joins("inner join form_published on form_published_id = form_published.id").
 		Joins("inner join form_pattern on form_published.form_pattern_id = form_pattern.id").
-		Where("form_pattern.subjectId = ?", subjectId).
+		Where("form_pattern.subject_id = ?", subjectId).
 		Scopes(paginate(page, size)).
 		Find(&formsGenerated).
 		Error; err != nil {

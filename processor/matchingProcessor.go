@@ -24,8 +24,7 @@ func (m *MatchingProcessor) markAnswerAndCalculatePoints(
 		return 0, err
 	}
 
-	points := m.calculateAndSetPoints(matchingQuestion, matchingQuestionObj)
-	return points, nil
+	return m.calculateAndSetPoints(matchingQuestion, matchingQuestionObj), nil
 }
 
 func (m *MatchingProcessor) calculateAndSetPoints(
@@ -41,14 +40,15 @@ func (m *MatchingProcessor) calculateAndSetPoints(
 		}
 	}
 
-	return m.calculatePoints(matchingObj.Points, correctAnswers)
+	matching.Points = m.calculatePoints(matchingObj.Points, correctAnswers)
+	return matching.Points
 }
 
 func (m *MatchingProcessor) calculatePoints(matchingPoints []question.MatchingPoint, correctAnswers int) int {
 	var points int
 	for _, matchingPoint := range matchingPoints {
-		if matchingPoint.CorrectAnswers > points && matchingPoint.CorrectAnswers <= correctAnswers {
-			points = matchingPoint.CorrectAnswers
+		if matchingPoint.Points > points && matchingPoint.CorrectAnswers <= correctAnswers {
+			points = matchingPoint.Points
 		}
 	}
 

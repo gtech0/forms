@@ -6,8 +6,8 @@ import (
 )
 
 type AnswerDto struct {
-	SingleChoice   map[uuid.UUID]uuid.UUID
-	MultipleChoice map[uuid.UUID][]uuid.UUID
-	TextInput      map[uuid.UUID]string
-	Matching       map[uuid.UUID][]generated.EnteredMatchingPair
+	SingleChoice   map[uuid.UUID]uuid.UUID                       `json:"singleChoice"`
+	MultipleChoice map[uuid.UUID][]uuid.UUID                     `json:"multipleChoice"`
+	TextInput      map[uuid.UUID]string                          `json:"textInput"`
+	Matching       map[uuid.UUID][]generated.EnteredMatchingPair `json:"matching"`
 }

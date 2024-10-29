@@ -36,7 +36,10 @@ func NewFormGeneratedService() *FormGeneratedService {
 	}
 }
 
-func (f *FormGeneratedService) GetMyForm(publishedId string) (*get.FormGeneratedDto, error) {
+func (f *FormGeneratedService) GetMyForm(
+	//userId,
+	publishedId string,
+) (*get.FormGeneratedDto, error) {
 	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
 	if err != nil {
 		return nil, err
@@ -48,11 +51,11 @@ func (f *FormGeneratedService) GetMyForm(publishedId string) (*get.FormGenerated
 	}
 
 	formGenerated, err := f.formGeneratedRepository.FindByPublishedId(parsedPublishedId)
-	if err != nil {
+	if err != nil && err.Error() != "record not found" {
 		return nil, err
 	}
 
-	if formGenerated.Id == uuid.Nil {
+	if formGenerated == nil {
 		formGenerated, err = f.buildAndCreate(*formPublished)
 		if err != nil {
 			return nil, err
@@ -64,7 +67,7 @@ func (f *FormGeneratedService) GetMyForm(publishedId string) (*get.FormGenerated
 
 func (f *FormGeneratedService) buildAndCreate(
 	formPublished published.FormPublished,
-	// userId uuid.UUID,
+	// userId string,
 ) (*generated.FormGenerated, error) {
 	generatedForm, err := f.formGeneratedFactory.BuildForm(formPublished)
 	if err != nil {
@@ -79,10 +82,15 @@ func (f *FormGeneratedService) buildAndCreate(
 }
 
 func (f *FormGeneratedService) SaveAnswers(
-	formGeneratedId uuid.UUID,
+	generatedId string,
 	answers get.AnswerDto,
 ) (*get.FormGeneratedDto, error) {
-	formGenerated, err := f.formGeneratedRepository.FindById(formGeneratedId)
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
 	if err != nil {
 		return nil, err
 	}
@@ -105,22 +113,29 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
-	if err = f.formGeneratedProcessor.MarkAnswers(formGenerated, answers); err != nil {
+	if err = f.formGeneratedProcessor.SaveAnswers(formGenerated, answers); err != nil {
 		return nil, err
 	}
+
 	formGenerated.Status = generated.IN_PROGRESS
 	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
 		return nil, err
 	}
+
 	return f.formGeneratedMapper.ToDto(formGenerated)
 }
 
 func (f *FormGeneratedService) SubmitForm(
-	userId uuid.UUID,
-	generatedFormId uuid.UUID,
+	//userId,
+	generatedId string,
 	answers get.AnswerDto,
 ) (*get.MyGeneratedDto, error) {
-	formGenerated, err := f.formGeneratedRepository.FindById(generatedFormId)
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +157,7 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	if err = f.formGeneratedProcessor.MarkAnswersAndCalculatePoints(formGenerated, formPublished.FormPattern, answers); err != nil {
+	if err = f.formGeneratedProcessor.CalculatePoints(formGenerated, formPublished.FormPattern, answers); err != nil {
 		return nil, err
 	}
 
@@ -166,9 +181,14 @@ func (f *FormGeneratedService) SubmitForm(
 
 func (f *FormGeneratedService) GetMyForms(
 	//userId,
-	subjectId uuid.UUID,
+	subjectId string,
 	query url.Values,
 ) (*get.PaginationResponse[get.MyGeneratedDto], error) {
+	parsedSubjectId, err := util.IdCheckAndParse(subjectId)
+	if err != nil {
+		return nil, err
+	}
+
 	page, _ := strconv.Atoi(query.Get("page"))
 	if page <= 0 {
 		page = 1
@@ -182,7 +202,7 @@ func (f *FormGeneratedService) GetMyForms(
 		size = 5
 	}
 
-	formsGenerated, err := f.formGeneratedRepository.FindBySubjectIdAndPaginate(subjectId, page, size)
+	formsGenerated, err := f.formGeneratedRepository.FindBySubjectIdAndPaginate(parsedSubjectId, page, size)
 	if err != nil {
 		return nil, err
 	}
@@ -204,12 +224,19 @@ func (f *FormGeneratedService) GetMyForms(
 	}, nil
 }
 
-func (f *FormGeneratedService) GetSubmittedTests(
+func (f *FormGeneratedService) GetSubmittedForms(
 	//userId,
-	formPublishedId uuid.UUID,
-	status generated.FormStatus,
+	publishedId string,
 	query url.Values,
 ) (*get.PaginationResponse[get.SubmittedDto], error) {
+	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	status := query.Get("status")
+	formStatus := generated.CheckStatusAndGet(status)
+
 	page, _ := strconv.Atoi(query.Get("page"))
 	if page <= 0 {
 		page = 1
@@ -224,8 +251,8 @@ func (f *FormGeneratedService) GetSubmittedTests(
 	}
 
 	formsGenerated, err := f.formGeneratedRepository.FindByPublishedIdAndStatusAndPaginate(
-		formPublishedId,
-		status,
+		parsedPublishedId,
+		formStatus,
 		page,
 		size,
 	)
@@ -246,8 +273,33 @@ func (f *FormGeneratedService) GetSubmittedTests(
 	}, nil
 }
 
-func (f *FormGeneratedService) VerifyForm(generatedFormId uuid.UUID, checkDto create.CheckDto) (*get.FormGeneratedDto, error) {
-	formGenerated, err := f.formGeneratedRepository.FindById(generatedFormId)
+func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) ([]uuid.UUID, error) {
+	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	//TODO: userIdsWithAccess
+	userIdsWithFormGenerated := make([]uuid.UUID, 0)
+	for _, formGenerated := range formPublished.FormsGenerated {
+		userIdsWithFormGenerated = append(userIdsWithFormGenerated, formGenerated.UserId)
+	}
+	//
+	return userIdsWithFormGenerated, nil
+}
+
+func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.CheckDto) (*get.FormGeneratedDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
 	if err != nil {
 		return nil, err
 	}
