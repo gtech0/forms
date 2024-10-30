@@ -21,42 +21,45 @@ func (f *FormPublishedFactory) Build(publishDto create.FormPublishDto) published
 	formPublished.PostModeration = publishDto.PostModeration
 	formPublished.FormPatternId = publishDto.FormPatternId
 
-	formPublished.Groups = f.buildGroups(publishDto)
-	formPublished.Users = f.buildUsers(publishDto)
-	formPublished.MarkConfiguration = f.buildMarkConfiguration(publishDto)
+	formPublished.Groups = f.BuildGroups(publishDto.GroupIds, formPublished.Id)
+	formPublished.Users = f.BuildUsers(publishDto.UserIds, formPublished.Id)
+	formPublished.MarkConfiguration = f.BuildMarkConfiguration(publishDto.MarkConfiguration, formPublished.Id)
 
 	return formPublished
 }
 
-func (f *FormPublishedFactory) buildGroups(publishDto create.FormPublishDto) []published.FormPublishedGroup {
+func (f *FormPublishedFactory) BuildGroups(groupIds []uuid.UUID, publishedId uuid.UUID) []published.FormPublishedGroup {
 	groups := make([]published.FormPublishedGroup, 0)
-	for _, groupId := range publishDto.GroupIds {
+	for _, groupId := range groupIds {
 		var publishedGroup published.FormPublishedGroup
-		publishedGroup.FormPublishedId = publishDto.FormPatternId
+		publishedGroup.FormPublishedId = publishedId
 		publishedGroup.GroupId = groupId
 		groups = append(groups, publishedGroup)
 	}
 	return groups
 }
 
-func (f *FormPublishedFactory) buildUsers(publishDto create.FormPublishDto) []published.FormPublishedUser {
+func (f *FormPublishedFactory) BuildUsers(userIds []uuid.UUID, publishedId uuid.UUID) []published.FormPublishedUser {
 	users := make([]published.FormPublishedUser, 0)
-	for _, userId := range publishDto.UserIds {
+	for _, userId := range userIds {
 		var publishedUser published.FormPublishedUser
-		publishedUser.FormPublishedId = publishDto.FormPatternId
+		publishedUser.FormPublishedId = publishedId
 		publishedUser.UserId = userId
 		users = append(users, publishedUser)
 	}
 	return users
 }
 
-func (f *FormPublishedFactory) buildMarkConfiguration(publishDto create.FormPublishDto) []published.MarkConfiguration {
+func (f *FormPublishedFactory) BuildMarkConfiguration(
+	marks map[string]int,
+	publishedId uuid.UUID,
+) []published.MarkConfiguration {
 	markConfigs := make([]published.MarkConfiguration, 0)
-	for mark, points := range publishDto.MarkConfiguration {
+	for mark, points := range marks {
 		var markConfig published.MarkConfiguration
 		markConfig.Mark = mark
 		markConfig.MinPoints = points
-		markConfig.FormPublishedId = publishDto.FormPatternId
+		markConfig.FormPublishedId = publishedId
 		markConfigs = append(markConfigs, markConfig)
 	}
 	return markConfigs

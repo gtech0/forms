@@ -5,8 +5,11 @@ import (
 	"hedgehog-forms/dto/get"
 	"hedgehog-forms/factory"
 	"hedgehog-forms/mapper"
+	"hedgehog-forms/model/form/generated"
+	"hedgehog-forms/processor"
 	"hedgehog-forms/repository"
 	"hedgehog-forms/util"
+	"maps"
 	"net/url"
 	"strconv"
 )
@@ -16,6 +19,8 @@ type FormPublishedService struct {
 	formPatternService      *FormPatternService
 	formPublishedMapper     *mapper.FormPublishedMapper
 	formPublishedFactory    *factory.FormPublishedFactory
+	formGeneratedProcessor  *processor.FormGeneratedProcessor
+	formGeneratedRepository *repository.FormGeneratedRepository
 }
 
 func NewFormPublishedService() *FormPublishedService {
@@ -24,6 +29,8 @@ func NewFormPublishedService() *FormPublishedService {
 		formPatternService:      NewFormPatternService(),
 		formPublishedMapper:     mapper.NewFormPublishedMapper(),
 		formPublishedFactory:    factory.NewFormPublishedFactory(),
+		formGeneratedProcessor:  processor.NewFormGeneratedProcessor(),
+		formGeneratedRepository: repository.NewFormGeneratedRepository(),
 	}
 }
 
@@ -40,8 +47,8 @@ func (f *FormPublishedService) PublishForm(publishDto create.FormPublishDto) (*g
 	return f.formPublishedMapper.ToBaseDto(formPublished), nil
 }
 
-func (f *FormPublishedService) GetForm(formId string) (*get.FormPublishedDto, error) {
-	id, err := util.IdCheckAndParse(formId)
+func (f *FormPublishedService) GetForm(publishedId string) (*get.FormPublishedDto, error) {
+	id, err := util.IdCheckAndParse(publishedId)
 	if err != nil {
 		return nil, err
 	}
@@ -90,4 +97,54 @@ func (f *FormPublishedService) GetForms(query url.Values) (*get.PaginationRespon
 		Size:     size,
 		Elements: publishedDtos,
 	}, nil
+}
+
+func (f *FormPublishedService) UpdateForm(
+	publishedId string,
+	formPublishedDto create.UpdateFormPublishedDto,
+) (*get.FormPublishedBaseDto, error) {
+	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formPublished.Deadline = formPublishedDto.Deadline
+	formPublished.Duration = formPublishedDto.Duration
+	formPublished.Groups = f.formPublishedFactory.BuildGroups(formPublishedDto.GroupIds, parsedPublishedId)
+	formPublished.Users = f.formPublishedFactory.BuildUsers(formPublishedDto.UserIds, parsedPublishedId)
+	formPublished.HideScore = formPublishedDto.HideScore
+	formPublished.MarkConfiguration = f.formPublishedFactory.BuildMarkConfiguration(
+		formPublishedDto.MarkConfiguration,
+		parsedPublishedId,
+	)
+
+	if !maps.Equal(formPublished.GetMarkConfigMap(), formPublishedDto.MarkConfiguration) {
+		if err = f.recalculateMarks(formPublished.FormsGenerated, formPublishedDto.MarkConfiguration); err != nil {
+			return nil, err
+		}
+	}
+
+	if err = f.formPublishedRepository.Save(formPublished); err != nil {
+		return nil, err
+	}
+
+	return f.formPublishedMapper.ToBaseDto(*formPublished), nil
+}
+
+func (f *FormPublishedService) recalculateMarks(formsGenerated []generated.FormGenerated, marks map[string]int) error {
+	for _, formGenerated := range formsGenerated {
+		if err := f.formGeneratedProcessor.CalculateMark(&formGenerated, marks); err != nil {
+			return err
+		}
+
+		if err := f.formGeneratedRepository.Save(&formGenerated); err != nil {
+			return err
+		}
+	}
+	return nil
 }

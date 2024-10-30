@@ -38,9 +38,9 @@ func (f *FormPublishedController) PublishForm(ctx *gin.Context) {
 }
 
 func (f *FormPublishedController) GetForm(ctx *gin.Context) {
-	formId := ctx.Param("formId")
+	publishedId := ctx.Param("publishedId")
 
-	formPublished, err := f.formPublishedService.GetForm(formId)
+	formPublished, err := f.formPublishedService.GetForm(publishedId)
 	if err != nil {
 		ctx.Error(err)
 		return
@@ -58,4 +58,21 @@ func (f *FormPublishedController) GetForms(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, *forms)
+}
+
+func (f *FormPublishedController) UpdateForm(ctx *gin.Context) {
+	publishedId := ctx.Param("publishedId")
+	var updateFormPublishedDto create.UpdateFormPublishedDto
+	if err := ctx.Bind(&updateFormPublishedDto); err != nil {
+		ctx.Error(errs.New(err.Error(), 500))
+		return
+	}
+
+	response, err := f.formPublishedService.UpdateForm(publishedId, updateFormPublishedDto)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *response)
 }

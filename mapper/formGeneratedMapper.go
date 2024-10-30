@@ -44,6 +44,7 @@ func (f *FormGeneratedMapper) ToMyDto(formGenerated *generated.FormGenerated) (*
 
 	myGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(*formPublished)
 	myGeneratedDto.SubmitTime = formGenerated.SubmitTime
+	myGeneratedDto.Points = formGenerated.Points
 	myGeneratedDto.Mark = formGenerated.Mark
 
 	hideScore := myGeneratedDto.FormPublished.HideScore

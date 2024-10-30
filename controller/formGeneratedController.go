@@ -64,6 +64,18 @@ func (f *FormGeneratedController) SubmitForm(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *myGeneratedDto)
 }
 
+func (f *FormGeneratedController) UnSubmitForm(ctx *gin.Context) {
+	generatedId := ctx.Param("generatedId")
+
+	myGeneratedDto, err := f.formGeneratedService.UnSubmitForm(generatedId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *myGeneratedDto)
+}
+
 func (f *FormGeneratedController) GetMyForms(ctx *gin.Context) {
 	subjectId := ctx.Param("subjectId")
 	query := ctx.Request.URL.Query()

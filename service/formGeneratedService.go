@@ -179,6 +179,25 @@ func (f *FormGeneratedService) SubmitForm(
 	return f.formGeneratedMapper.ToMyDto(formGenerated)
 }
 
+func (f *FormGeneratedService) UnSubmitForm(generatedId string) (*get.MyGeneratedDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated.Status = generated.IN_PROGRESS
+	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+		return nil, err
+	}
+
+	return f.formGeneratedMapper.ToMyDto(formGenerated)
+}
+
 func (f *FormGeneratedService) GetMyForms(
 	//userId,
 	subjectId string,
@@ -304,11 +323,23 @@ func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.Ch
 		return nil, err
 	}
 
+	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedID)
+	if err != nil {
+		return nil, err
+	}
+
 	if err = f.checkStatusForVerification(formGenerated.Status, checkDto.Status); err != nil {
 		return nil, err
 	}
 
-	f.formGeneratedProcessor.VerifyForm(formGenerated, checkDto)
+	if err = f.formGeneratedProcessor.ReapplyPoints(formGenerated, checkDto); err != nil {
+		return nil, err
+	}
+
+	if err = f.formGeneratedProcessor.CalculateMark(formGenerated, formPublished.GetMarkConfigMap()); err != nil {
+		return nil, err
+	}
+
 	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
 		return nil, err
 	}

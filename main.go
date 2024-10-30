@@ -42,8 +42,9 @@ func main() {
 	formPublished := router.Group("/api/form/published")
 	{
 		formPublished.POST("/create", formPublishedController.PublishForm)
-		formPublished.GET("/get/:formId", formPublishedController.GetForm)
+		formPublished.GET("/get/:publishedId", formPublishedController.GetForm)
 		formPublished.GET("/get", formPublishedController.GetForms)
+		formPublished.PUT("/update/:publishedId", formPublishedController.UpdateForm)
 	}
 
 	formGenerated := router.Group("/api/form/generated")
@@ -51,6 +52,7 @@ func main() {
 		formGenerated.GET("/get/:publishedId", formGeneratedController.GetMyForm)
 		formGenerated.POST("/save/:generatedId", formGeneratedController.SaveAnswers)
 		formGenerated.POST("/submit/:generatedId", formGeneratedController.SubmitForm)
+		formGenerated.POST("/unsubmit/:generatedId", formGeneratedController.UnSubmitForm)
 		formGenerated.GET("/get/all/:subjectId", formGeneratedController.GetMyForms)
 		formGenerated.GET("/get/submitted/:publishedId", formGeneratedController.GetSubmittedForms)
 		formGenerated.GET("/get/unsubmitted/:publishedId", formGeneratedController.GetUsersWithUnsubmittedForms)

@@ -83,29 +83,37 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 	return nil
 }
 
-func (f *FormGeneratedProcessor) VerifyForm(formGenerated *generated.FormGenerated, checkDto create.CheckDto) {
+func (f *FormGeneratedProcessor) ReapplyPoints(formGenerated *generated.FormGenerated, checkDto create.CheckDto) error {
 	questions := f.extractQuestionsFromGeneratedForm(formGenerated)
 	if checkDto.Points != nil {
 		for questionId, points := range checkDto.Points {
-			var generatedQuestion generated.IQuestion
+			var questionGenerated generated.IQuestion
 			for _, iQuestion := range questions {
 				if iQuestion.GetId() == questionId {
-					generatedQuestion = iQuestion
+					questionGenerated = iQuestion
 					break
 				}
 			}
-			f.applyNewPoints(formGenerated, generatedQuestion, points)
+
+			if questionGenerated == nil {
+				return errs.New(fmt.Sprintf("question with id %v not found", questionId), 500)
+			}
+
+			f.applyNewPoints(formGenerated, questionGenerated, points)
 		}
 	}
+
+	formGenerated.Status = checkDto.Status
+	return nil
 }
 
-// FixMe: probably not a correct logic
 func (f *FormGeneratedProcessor) applyNewPoints(formGenerated *generated.FormGenerated,
 	questionGenerated generated.IQuestion,
 	newPoints int,
 ) {
 	difference := questionGenerated.GetPoints() - newPoints
-	questionGenerated.SetPoints(formGenerated.Points - difference)
+	questionGenerated.SetPoints(newPoints)
+	formGenerated.Points = formGenerated.Points - difference
 }
 
 func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGenerated, marks map[string]int) error {
@@ -121,6 +129,7 @@ func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGene
 	if !ok {
 		return errs.New(fmt.Sprintf("mark for %d points is not found", requiredPointsForMark), 500)
 	}
+
 	formGenerated.Mark = mark
 	return nil
 }
