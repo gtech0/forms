@@ -76,3 +76,14 @@ func (f *FormPublishedController) UpdateForm(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, *response)
 }
+
+func (f *FormPublishedController) DeleteForm(ctx *gin.Context) {
+	publishedId := ctx.Param("publishedId")
+	err := f.formPublishedService.DeleteForm(publishedId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+}

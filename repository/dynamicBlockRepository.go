@@ -13,7 +13,7 @@ func NewDynamicBlockRepository() *DynamicBlockRepository {
 	return &DynamicBlockRepository{}
 }
 
-func (b *DynamicBlockRepository) GetById(id uuid.UUID) (*block.DynamicBlock, error) {
+func (b *DynamicBlockRepository) FindById(id uuid.UUID) (*block.DynamicBlock, error) {
 	dynamicBlock := new(block.DynamicBlock)
 	if err := database.DB.Model(&block.DynamicBlock{}).
 		Where("id = ?", id).

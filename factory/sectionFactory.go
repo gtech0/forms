@@ -64,7 +64,7 @@ func (s *SectionFactory) buildAndAddBlocksFromDto(blockDtos []any, sectionObj *s
 }
 
 func (s *SectionFactory) buildSectionExisting(sectionDto *create.SectionOnExistingDto) (*section.Section, error) {
-	sectObj, err := s.sectionRepository.GetById(sectionDto.SectionId)
+	sectObj, err := s.sectionRepository.FindById(sectionDto.SectionId)
 	if err != nil {
 		return nil, err
 	}

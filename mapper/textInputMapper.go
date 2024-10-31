@@ -17,7 +17,7 @@ func NewTextInputMapper() *TextInputMapper {
 
 func (t *TextInputMapper) toDto(textInputObj *question.TextInput) (*get.TextInputDto, error) {
 	textInputDto := new(get.TextInputDto)
-	t.commonMapper.commonFieldsToDto(textInputObj, textInputDto)
+	t.commonMapper.CommonFieldsToDto(textInputObj, textInputDto)
 	textInputDto.Points = textInputObj.Points
 	textInputDto.Answers = t.AnswersToDto(textInputObj.Answers)
 	return textInputDto, nil

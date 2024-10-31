@@ -13,7 +13,7 @@ func NewStaticBlockRepository() *StaticBlockRepository {
 	return &StaticBlockRepository{}
 }
 
-func (b *StaticBlockRepository) GetById(id uuid.UUID) (*block.StaticBlock, error) {
+func (b *StaticBlockRepository) FindById(id uuid.UUID) (*block.StaticBlock, error) {
 	staticBlock := new(block.StaticBlock)
 	if err := database.DB.Model(&block.StaticBlock{}).
 		Where("id = ?", id).

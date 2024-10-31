@@ -26,11 +26,17 @@ func main() {
 	router.Use(cors.New(corsConfig))
 	router.Use(errs.ErrorHandler)
 
+	questionController := controller.NewQuestionController()
 	formPatternController := controller.NewFormPatternController()
 	formPublishedController := controller.NewFormPublishedController()
 	formGeneratedController := controller.NewFormGeneratedController()
 	fileController := controller.NewFileController()
 	subjectController := controller.NewSubjectController()
+
+	questionRouter := router.Group("/api/question")
+	{
+		questionRouter.POST("/create/:subjectId", questionController.CreateQuestion)
+	}
 
 	formPattern := router.Group("/api/form/pattern")
 	{
@@ -45,6 +51,7 @@ func main() {
 		formPublished.GET("/get/:publishedId", formPublishedController.GetForm)
 		formPublished.GET("/get", formPublishedController.GetForms)
 		formPublished.PUT("/update/:publishedId", formPublishedController.UpdateForm)
+		formPublished.DELETE("/delete/:publishedId", formPublishedController.DeleteForm)
 	}
 
 	formGenerated := router.Group("/api/form/generated")

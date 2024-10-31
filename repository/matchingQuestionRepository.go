@@ -13,7 +13,14 @@ func NewMatchingQuestionRepository() *MatchingQuestionRepository {
 	return &MatchingQuestionRepository{}
 }
 
-func (m *MatchingQuestionRepository) GetById(id uuid.UUID) (*question.Matching, error) {
+func (m *MatchingQuestionRepository) Save(matching *question.Matching) error {
+	if err := database.DB.Save(matching).Error; err != nil {
+		return errs.New(err.Error(), 500)
+	}
+	return nil
+}
+
+func (m *MatchingQuestionRepository) FindById(id uuid.UUID) (*question.Matching, error) {
 	var matchingQuestion *question.Matching
 	if err := database.DB.Model(&question.Matching{}).
 		Where("id = ?", id).

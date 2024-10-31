@@ -17,7 +17,7 @@ func NewMultipleChoiceMapper() *MultipleChoiceMapper {
 
 func (m *MultipleChoiceMapper) toDto(multipleChoiceObj *question.MultipleChoice) (*get.MultipleChoiceDto, error) {
 	multipleChoiceDto := new(get.MultipleChoiceDto)
-	m.commonMapper.commonFieldsToDto(multipleChoiceObj, multipleChoiceDto)
+	m.commonMapper.CommonFieldsToDto(multipleChoiceObj, multipleChoiceDto)
 	multipleChoiceDto.Points = m.pointsToDto(multipleChoiceObj.Points)
 	multipleChoiceDto.Options = m.optionsToDto(multipleChoiceObj.Options)
 	return multipleChoiceDto, nil

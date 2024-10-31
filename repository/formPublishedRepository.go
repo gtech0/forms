@@ -49,3 +49,10 @@ func (f *FormPublishedRepository) FindByNameAndPaginate(name string, page int, s
 	}
 	return formsPublished, nil
 }
+
+func (f *FormPublishedRepository) DeleteById(publishedId uuid.UUID) error {
+	if err := database.DB.Delete(&published.FormPublished{}, publishedId).Error; err != nil {
+		return errs.New(err.Error(), 500)
+	}
+	return nil
+}

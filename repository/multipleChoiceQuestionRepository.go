@@ -13,7 +13,14 @@ func NewMultipleChoiceRepository() *MultipleChoiceRepository {
 	return &MultipleChoiceRepository{}
 }
 
-func (m *MultipleChoiceRepository) GetById(id uuid.UUID) (*question.MultipleChoice, error) {
+func (m *MultipleChoiceRepository) Save(multipleChoice *question.MultipleChoice) error {
+	if err := database.DB.Save(multipleChoice).Error; err != nil {
+		return errs.New(err.Error(), 500)
+	}
+	return nil
+}
+
+func (m *MultipleChoiceRepository) FindById(id uuid.UUID) (*question.MultipleChoice, error) {
 	var multipleChoiceQuestion *question.MultipleChoice
 	if err := database.DB.Model(&question.MultipleChoice{}).
 		Where("id = ?", id).

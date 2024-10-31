@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 	"hedgehog-forms/dto/create"
@@ -41,13 +40,8 @@ func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get.For
 		return nil, err
 	}
 
-	attachmentIds, err := f.validatePatternAttachments(formPattern)
-	if err != nil {
+	if err = f.validatePatternAttachments(formPattern); err != nil {
 		return nil, err
-	}
-
-	if len(attachmentIds) > 0 {
-		return nil, errs.New(fmt.Sprintf("incorrect attachment ids: %v", attachmentIds), 400)
 	}
 
 	if err = f.formPatternRepository.Save(formPattern); err != nil {
@@ -150,14 +144,7 @@ func (f *FormPatternService) extractQuestionsFromPattern(pattern *pattern.FormPa
 	return questions
 }
 
-func (f *FormPatternService) validatePatternAttachments(pattern *pattern.FormPattern) ([]uuid.UUID, error) {
+func (f *FormPatternService) validatePatternAttachments(pattern *pattern.FormPattern) error {
 	questions := f.extractQuestionsFromPattern(pattern)
-	attachmentIds := make([]uuid.UUID, 0)
-	for _, iQuestion := range questions {
-		for _, attachment := range iQuestion.GetAttachments() {
-			attachmentIds = append(attachmentIds, attachment.Id)
-		}
-	}
-
-	return f.attachmentService.validateAttachments(attachmentIds)
+	return f.attachmentService.ValidateAttachments(questions...)
 }

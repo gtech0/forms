@@ -16,7 +16,7 @@ func NewCommonFieldQuestionDtoMapper() *CommonFieldQuestionDtoMapper {
 	}
 }
 
-func (q *CommonFieldQuestionDtoMapper) commonFieldsToDto(source question.IQuestion, target get.IQuestionDto) {
+func (q *CommonFieldQuestionDtoMapper) CommonFieldsToDto(source question.IQuestion, target get.IQuestionDto) {
 	target.SetId(source.GetId())
 	target.SetDescription(source.GetDescription())
 	target.SetOwnerId(source.GetOwnerId())

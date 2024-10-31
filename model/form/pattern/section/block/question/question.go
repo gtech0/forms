@@ -27,6 +27,7 @@ type IQuestion interface {
 	SetDynamicBlockId(nullUUID uuid.NullUUID)
 
 	GetSubject() model.Subject
+	SetSubject(model.Subject)
 
 	SetIsQuestionFromBank(bool)
 }
@@ -95,6 +96,10 @@ func (q *Question) SetDynamicBlockId(id uuid.NullUUID) {
 
 func (q *Question) GetSubject() model.Subject {
 	return q.Subject
+}
+
+func (q *Question) SetSubject(subject model.Subject) {
+	q.Subject = subject
 }
 
 func (q *Question) SetIsQuestionFromBank(isQuestionFromBank bool) {

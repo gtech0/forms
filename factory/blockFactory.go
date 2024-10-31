@@ -51,13 +51,13 @@ func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (block.
 	var blockObj block.IBlock
 	switch dto.Type {
 	case block.STATIC:
-		staticBlock, err := b.staticRepository.GetById(dto.BlockId)
+		staticBlock, err := b.staticRepository.FindById(dto.BlockId)
 		if err != nil {
 			return nil, err
 		}
 		blockObj = staticBlock
 	case block.DYNAMIC:
-		dynamicBlock, err := b.dynamicRepository.GetById(dto.BlockId)
+		dynamicBlock, err := b.dynamicRepository.FindById(dto.BlockId)
 		if err != nil {
 			return nil, err
 		}

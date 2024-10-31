@@ -13,7 +13,14 @@ func NewTextInputRepository() *TextInputRepository {
 	return &TextInputRepository{}
 }
 
-func (t *TextInputRepository) GetById(id uuid.UUID) (*question.TextInput, error) {
+func (t *TextInputRepository) Save(textInput *question.TextInput) error {
+	if err := database.DB.Save(textInput).Error; err != nil {
+		return errs.New(err.Error(), 500)
+	}
+	return nil
+}
+
+func (t *TextInputRepository) FindById(id uuid.UUID) (*question.TextInput, error) {
 	var textInputQuestion *question.TextInput
 	if err := database.DB.Model(&question.TextInput{}).
 		Where("id = ?", id).

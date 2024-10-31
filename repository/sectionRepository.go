@@ -13,7 +13,7 @@ func NewSectionRepository() *SectionRepository {
 	return &SectionRepository{}
 }
 
-func (i *SectionRepository) GetById(id uuid.UUID) (*section.Section, error) {
+func (i *SectionRepository) FindById(id uuid.UUID) (*section.Section, error) {
 	sectObj := new(section.Section)
 	if err := database.DB.Model(&section.Section{}).
 		Where("id = ?", id).

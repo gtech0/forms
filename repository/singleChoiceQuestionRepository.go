@@ -13,7 +13,14 @@ func NewSingleChoiceRepository() *SingleChoiceRepository {
 	return &SingleChoiceRepository{}
 }
 
-func (t *SingleChoiceRepository) GetById(id uuid.UUID) (*question.SingleChoice, error) {
+func (t *SingleChoiceRepository) Save(singleChoice *question.SingleChoice) error {
+	if err := database.DB.Save(singleChoice).Error; err != nil {
+		return errs.New(err.Error(), 500)
+	}
+	return nil
+}
+
+func (t *SingleChoiceRepository) FindById(id uuid.UUID) (*question.SingleChoice, error) {
 	var singleChoiceQuestion *question.SingleChoice
 	if err := database.DB.Model(&question.SingleChoice{}).
 		Where("id = ?", id).

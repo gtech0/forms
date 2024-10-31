@@ -25,7 +25,7 @@ func NewQuestionFactory() *QuestionFactory {
 	}
 }
 
-func (q *QuestionFactory) buildQuestionFromDto(questionDto any) (question.IQuestion, error) {
+func (q *QuestionFactory) BuildQuestionFromDto(questionDto any) (question.IQuestion, error) {
 	switch questionTyped := questionDto.(type) {
 	case *create.QuestionOnExistingDto:
 		return q.existingQuestionFactory.BuildFromDto(questionTyped)
@@ -48,7 +48,7 @@ func (q *QuestionFactory) BuildQuestionDtoForDynamicBlock(
 ) ([]question.IQuestion, error) {
 	questionObjs := make([]question.IQuestion, 0)
 	for _, questionDto := range questionDtos {
-		questionObj, err := q.buildQuestionFromDto(questionDto)
+		questionObj, err := q.BuildQuestionFromDto(questionDto)
 		if err != nil {
 			return nil, err
 		}
@@ -84,7 +84,7 @@ func (q *QuestionFactory) BuildQuestionDtoForVariant(
 ) ([]question.IQuestion, error) {
 	questionObjs := make([]question.IQuestion, 0)
 	for order, questionDto := range questionDtos {
-		questionObj, err := q.buildQuestionFromDto(questionDto)
+		questionObj, err := q.BuildQuestionFromDto(questionDto)
 		if err != nil {
 			return nil, err
 		}
@@ -119,7 +119,7 @@ func (q *QuestionFactory) BuildQuestionForVariantObj(
 func (q *QuestionFactory) buildQuestionFromObj(questionObj question.IQuestion) (question.IQuestion, error) {
 	questionDto := new(create.QuestionOnExistingDto)
 	questionDto.QuestionId = questionObj.GetId()
-	result, err := q.buildQuestionFromDto(questionDto)
+	result, err := q.BuildQuestionFromDto(questionDto)
 	if err != nil {
 		return nil, err
 	}

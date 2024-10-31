@@ -17,7 +17,7 @@ func NewMatchingMapper() *MatchingMapper {
 
 func (m *MatchingMapper) toDto(matchingObj *question.Matching) (*get.MatchingDto, error) {
 	matchingDto := new(get.MatchingDto)
-	m.commonMapper.commonFieldsToDto(matchingObj, matchingDto)
+	m.commonMapper.CommonFieldsToDto(matchingObj, matchingDto)
 	matchingDto.TermsAndDefinitions = m.termsAndDefinitionsToDto(matchingObj.Definitions)
 	matchingDto.Points = m.pointsToDto(matchingObj.Points)
 	return matchingDto, nil

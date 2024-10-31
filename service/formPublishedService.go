@@ -148,3 +148,16 @@ func (f *FormPublishedService) recalculateMarks(formsGenerated []generated.FormG
 	}
 	return nil
 }
+
+func (f *FormPublishedService) DeleteForm(publishedId string) error {
+	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+	if err != nil {
+		return err
+	}
+
+	if err = f.formPublishedRepository.DeleteById(parsedPublishedId); err != nil {
+		return err
+	}
+
+	return nil
+}

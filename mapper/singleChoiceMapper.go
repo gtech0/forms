@@ -17,7 +17,7 @@ func NewSingleChoiceMapper() *SingleChoiceMapper {
 
 func (s *SingleChoiceMapper) toDto(singleChoice *question.SingleChoice) (*get.SingleChoiceDto, error) {
 	singleChoiceDto := new(get.SingleChoiceDto)
-	s.commonMapper.commonFieldsToDto(singleChoice, singleChoiceDto)
+	s.commonMapper.CommonFieldsToDto(singleChoice, singleChoiceDto)
 	singleChoiceDto.Points = singleChoice.Points
 	singleChoiceDto.Choices = s.singleOptionToDto(singleChoice.Options)
 	return singleChoiceDto, nil
