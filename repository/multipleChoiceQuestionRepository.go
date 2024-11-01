@@ -13,8 +13,8 @@ func NewMultipleChoiceRepository() *MultipleChoiceRepository {
 	return &MultipleChoiceRepository{}
 }
 
-func (m *MultipleChoiceRepository) Save(multipleChoice *question.MultipleChoice) error {
-	if err := database.DB.Save(multipleChoice).Error; err != nil {
+func (m *MultipleChoiceRepository) Create(multipleChoice *question.MultipleChoice) error {
+	if err := database.DB.Create(multipleChoice).Error; err != nil {
 		return errs.New(err.Error(), 500)
 	}
 	return nil

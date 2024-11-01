@@ -13,8 +13,8 @@ func NewSingleChoiceRepository() *SingleChoiceRepository {
 	return &SingleChoiceRepository{}
 }
 
-func (t *SingleChoiceRepository) Save(singleChoice *question.SingleChoice) error {
-	if err := database.DB.Save(singleChoice).Error; err != nil {
+func (t *SingleChoiceRepository) Create(singleChoice *question.SingleChoice) error {
+	if err := database.DB.Create(singleChoice).Error; err != nil {
 		return errs.New(err.Error(), 500)
 	}
 	return nil

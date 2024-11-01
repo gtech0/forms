@@ -23,18 +23,15 @@ func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQ
 		return nil, err
 	}
 
-	optionNames := questionDto.Options
 	options := make([]question.MultipleChoiceOption, 0)
-	for order := 0; order < len(optionNames); order++ {
-		option := m.buildOptionFromDto(questionDto, order, questionObj.Id)
+	for order := 0; order < len(questionDto.Options); order++ {
+		option := m.buildOptionFromDto(questionDto, order)
 		options = append(options, option)
 	}
 
 	points := make([]question.MultipleChoicePoints, 0)
 	for answer, point := range questionDto.Points {
-		var pointsObj question.MultipleChoicePoints
-		pointsObj.CorrectAnswers = answer
-		pointsObj.Points = point
+		pointsObj := m.buildPointFromDto(answer, point)
 		points = append(points, pointsObj)
 	}
 
@@ -46,14 +43,22 @@ func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQ
 func (m *MultipleChoiceFactory) buildOptionFromDto(
 	questionDto *create.MultipleChoiceQuestionDto,
 	order int,
-	questionId uuid.UUID,
 ) question.MultipleChoiceOption {
 	var option question.MultipleChoiceOption
 	option.Text = questionDto.Options[order]
 	option.Order = order
 	option.IsAnswer = slices.Contains(questionDto.CorrectOptions, order)
-	option.MultipleChoiceId = questionId
 	return option
+}
+
+func (m *MultipleChoiceFactory) buildPointFromDto(
+	answer int,
+	point int,
+) question.MultipleChoicePoints {
+	var pointsObj question.MultipleChoicePoints
+	pointsObj.CorrectAnswers = answer
+	pointsObj.Points = point
+	return pointsObj
 }
 
 func (m *MultipleChoiceFactory) BuildFromObj(questionObj *question.MultipleChoice) (*question.MultipleChoice, error) {

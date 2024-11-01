@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/service"
@@ -20,7 +21,7 @@ func NewQuestionController() *QuestionController {
 func (q *QuestionController) CreateQuestion(ctx *gin.Context) {
 	//TODO: test it!
 	subjectId := ctx.Param("subjectId")
-	var body any
+	var body json.RawMessage
 	if err := ctx.Bind(&body); err != nil {
 		ctx.Error(errs.New(err.Error(), 500))
 		return

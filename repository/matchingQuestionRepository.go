@@ -13,8 +13,8 @@ func NewMatchingQuestionRepository() *MatchingQuestionRepository {
 	return &MatchingQuestionRepository{}
 }
 
-func (m *MatchingQuestionRepository) Save(matching *question.Matching) error {
-	if err := database.DB.Save(matching).Error; err != nil {
+func (m *MatchingQuestionRepository) Create(matching *question.Matching) error {
+	if err := database.DB.Create(matching).Error; err != nil {
 		return errs.New(err.Error(), 500)
 	}
 	return nil

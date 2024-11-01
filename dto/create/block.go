@@ -2,11 +2,8 @@ package create
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
-	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block"
-	"hedgehog-forms/model/form/pattern/section/block/question"
 	"hedgehog-forms/util"
 )
 
@@ -37,56 +34,34 @@ type DynamicBlockDto struct {
 	RawQuestions  []json.RawMessage `json:"questions"`
 }
 
-func (c *DynamicBlockDto) UnmarshalJSON(b []byte) error {
+func (d *DynamicBlockDto) UnmarshalJSON(b []byte) error {
 	type blockDto DynamicBlockDto
 
-	err := json.Unmarshal(b, (*blockDto)(c))
+	err := json.Unmarshal(b, (*blockDto)(d))
 	if err != nil {
 		return err
 	}
 
-	for _, rawQuestion := range c.RawQuestions {
-		var questionDto QuestionDto
-		err = json.Unmarshal(rawQuestion, &questionDto)
+	for _, rawQuestion := range d.RawQuestions {
+		questionI, err := CommonQuestionDtoUnmarshal(rawQuestion)
 		if err != nil {
 			return err
 		}
 
-		var questionI any
-		switch questionDto.Type {
-		case question.EXISTING:
-			questionI = &QuestionOnExistingDto{}
-		case question.MATCHING:
-			questionI = &MatchingQuestionDto{}
-		case question.MULTIPLE_CHOICE:
-			questionI = &MultipleChoiceQuestionDto{}
-		case question.SINGLE_CHOICE:
-			questionI = &SingleChoiceQuestionDto{}
-		case question.TEXT_INPUT:
-			questionI = &TextQuestionDto{}
-		default:
-			return errs.New(fmt.Sprintf("invalid question type: %s", questionDto.Type), 400)
-		}
-
-		err = json.Unmarshal(rawQuestion, questionI)
-		if err != nil {
-			return err
-		}
-
-		c.Questions = append(c.Questions, questionI)
+		d.Questions = append(d.Questions, questionI)
 	}
 
 	return nil
 }
 
-func (c *DynamicBlockDto) MarshalJSON() ([]byte, error) {
+func (d *DynamicBlockDto) MarshalJSON() ([]byte, error) {
 	type blockDto DynamicBlockDto
 
-	rawMessage, err := util.CommonMarshal(c.Questions)
+	rawMessage, err := util.CommonMarshal(d.Questions)
 	if err != nil {
 		return nil, err
 	}
-	c.RawQuestions = rawMessage
+	d.RawQuestions = rawMessage
 
-	return json.Marshal((*blockDto)(c))
+	return json.Marshal((*blockDto)(d))
 }

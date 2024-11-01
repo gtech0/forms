@@ -13,8 +13,8 @@ func NewTextInputRepository() *TextInputRepository {
 	return &TextInputRepository{}
 }
 
-func (t *TextInputRepository) Save(textInput *question.TextInput) error {
-	if err := database.DB.Save(textInput).Error; err != nil {
+func (t *TextInputRepository) Create(textInput *question.TextInput) error {
+	if err := database.DB.Create(textInput).Error; err != nil {
 		return errs.New(err.Error(), 500)
 	}
 	return nil

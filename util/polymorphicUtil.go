@@ -5,10 +5,6 @@ import (
 	"hedgehog-forms/errs"
 )
 
-func commonUnmarshal() {
-	//TODO
-}
-
 func CommonMarshal[T any](data []T) ([]json.RawMessage, error) {
 	rawMessage := make([]json.RawMessage, 0)
 	if data != nil {

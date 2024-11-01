@@ -2,8 +2,6 @@ package create
 
 import (
 	"encoding/json"
-	"fmt"
-	"hedgehog-forms/model/form/pattern/section/block/question"
 	"hedgehog-forms/util"
 )
 
@@ -23,29 +21,7 @@ func (c *UpdateVariantDto) UnmarshalJSON(b []byte) error {
 	}
 
 	for _, rawQuestion := range c.RawQuestions {
-		var questionDto QuestionDto
-		err = json.Unmarshal(rawQuestion, &questionDto)
-		if err != nil {
-			return err
-		}
-
-		var questionI any
-		switch questionDto.Type {
-		case question.EXISTING:
-			questionI = &QuestionOnExistingDto{}
-		case question.MATCHING:
-			questionI = &MatchingQuestionDto{}
-		case question.MULTIPLE_CHOICE:
-			questionI = &MultipleChoiceQuestionDto{}
-		case question.SINGLE_CHOICE:
-			questionI = &SingleChoiceQuestionDto{}
-		case question.TEXT_INPUT:
-			questionI = &TextQuestionDto{}
-		default:
-			return fmt.Errorf("unknown question type: %s", questionDto.Type)
-		}
-
-		err = json.Unmarshal(rawQuestion, questionI)
+		questionI, err := CommonQuestionDtoUnmarshal(rawQuestion)
 		if err != nil {
 			return err
 		}
