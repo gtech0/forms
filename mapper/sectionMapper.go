@@ -15,21 +15,21 @@ func NewSectionMapper() *SectionMapper {
 	}
 }
 
-func (s *SectionMapper) toDto(sectionObj section.Section) (get.SectionDto, error) {
-	var sectionDto get.SectionDto
+func (s *SectionMapper) ToDto(sectionObj *section.Section) (*get.SectionDto, error) {
+	sectionDto := new(get.SectionDto)
 	sectionDto.Id = sectionObj.Id
 	sectionDto.Title = sectionObj.Title
 	sectionDto.Description = sectionObj.Description
 	blocks, err := s.blocksToDto(sectionObj)
 	if err != nil {
-		return get.SectionDto{}, err
+		return nil, err
 	}
 
 	sectionDto.Blocks = blocks
 	return sectionDto, nil
 }
 
-func (s *SectionMapper) blocksToDto(sectionObj section.Section) ([]get.IBlockDto, error) {
+func (s *SectionMapper) blocksToDto(sectionObj *section.Section) ([]get.IBlockDto, error) {
 	mappedBlocks := make([]get.IBlockDto, 0)
 	for _, currentBlock := range sectionObj.Blocks {
 		mappedBlock, err := s.blockMapper.toDto(currentBlock)

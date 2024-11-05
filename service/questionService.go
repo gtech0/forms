@@ -66,3 +66,12 @@ func (q *QuestionService) CreateQuestion(subjectId string, rawQuestionDto json.R
 	q.commonFieldQuestionDtoMapper.CommonFieldsToDto(iQuestion, getQuestionDto)
 	return getQuestionDto, nil
 }
+
+//TODO
+//func (q *QuestionService) DeleteQuestion(questionId string) error {
+//	parsedQuestionId, err := util.IdCheckAndParse(questionId)
+//	if err != nil {
+//		return err
+//	}
+//
+//}

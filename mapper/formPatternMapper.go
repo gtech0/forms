@@ -46,11 +46,11 @@ func (f *FormPatternMapper) ToBaseDto(formPattern pattern.FormPattern) *get.Form
 func (f *FormPatternMapper) sectionsToDto(sections []section.Section) ([]get.SectionDto, error) {
 	mappedSections := make([]get.SectionDto, 0)
 	for _, currentSection := range sections {
-		mappedSection, err := f.sectionMapper.toDto(currentSection)
+		mappedSection, err := f.sectionMapper.ToDto(&currentSection)
 		if err != nil {
 			return nil, err
 		}
-		mappedSections = append(mappedSections, mappedSection)
+		mappedSections = append(mappedSections, *mappedSection)
 	}
 	return mappedSections, nil
 }

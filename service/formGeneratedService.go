@@ -45,13 +45,13 @@ func (f *FormGeneratedService) GetMyForm(
 		return nil, err
 	}
 
-	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
-	if err != nil {
+	formGenerated, err := f.formGeneratedRepository.FindByPublishedId(parsedPublishedId)
+	if err != nil && err.Error() != "record not found" {
 		return nil, err
 	}
 
-	formGenerated, err := f.formGeneratedRepository.FindByPublishedId(parsedPublishedId)
-	if err != nil && err.Error() != "record not found" {
+	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
+	if err != nil {
 		return nil, err
 	}
 

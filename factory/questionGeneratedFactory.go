@@ -103,7 +103,7 @@ func (q *QuestionGeneratedFactory) buildMatching(matching *question.Matching) *g
 func (q *QuestionGeneratedFactory) buildCommonFields(source question.Question, target *generated.Question) {
 	target.Id = source.Id
 	target.Description = source.Description
-	target.Type = source.Type
+	target.Type = source.QuestionType
 	target.Attachments = q.buildAttachments(source.Attachments)
 }
 

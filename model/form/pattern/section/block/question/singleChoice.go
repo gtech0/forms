@@ -6,6 +6,7 @@ import (
 )
 
 type SingleChoice struct {
+	//Question Question `gorm:"polymorphic:Question"`
 	Question
 	Points  int
 	Options []SingleChoiceOption

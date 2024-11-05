@@ -27,6 +27,7 @@ func main() {
 	router.Use(errs.ErrorHandler)
 
 	questionController := controller.NewQuestionController()
+	sectionController := controller.NewSectionController()
 	formPatternController := controller.NewFormPatternController()
 	formPublishedController := controller.NewFormPublishedController()
 	formGeneratedController := controller.NewFormGeneratedController()
@@ -36,6 +37,12 @@ func main() {
 	questionRouter := router.Group("/api/question")
 	{
 		questionRouter.POST("/create/:subjectId", questionController.CreateQuestion)
+	}
+
+	sectionRouter := router.Group("/api/section")
+	{
+		sectionRouter.GET("/get/:sectionId", sectionController.GetSection)
+		sectionRouter.GET("/get", sectionController.GetSections)
 	}
 
 	formPattern := router.Group("/api/form/pattern")

@@ -41,3 +41,27 @@ func (q *QuestionRepository) Create(iQuestion question.IQuestion) error {
 	}
 	return nil
 }
+
+//TODO
+//func (q *QuestionRepository) FindById(id uuid.UUID) (question.IQuestion, error) {
+//	switch iQuestion.GetType() {
+//	case question.MULTIPLE_CHOICE:
+//		question, err := q.multipleChoiceRepository.FindById(id)
+//		if err != nil {
+//
+//		}
+//	case question.SINGLE_CHOICE:
+//		if err := q.singleChoiceRepository.Create(iQuestion.(*question.SingleChoice)); err != nil {
+//			return err
+//		}
+//	case question.MATCHING:
+//		if err := q.matchingQuestionRepository.Create(iQuestion.(*question.Matching)); err != nil {
+//			return err
+//		}
+//	case question.TEXT_INPUT:
+//		if err := q.textInputRepository.Create(iQuestion.(*question.TextInput)); err != nil {
+//			return err
+//		}
+//	}
+//	return nil
+//}

@@ -37,13 +37,14 @@ type Question struct {
 	Description        string
 	Order              int
 	OwnerId            uuid.NullUUID `gorm:"type:uuid"`
-	Type               QuestionType
 	Attachments        []Attachment
 	VariantId          uuid.NullUUID `gorm:"type:uuid"`
 	DynamicBlockId     uuid.NullUUID `gorm:"type:uuid"`
 	Subject            model.Subject
 	SubjectId          uuid.NullUUID `gorm:"type:uuid"`
 	IsQuestionFromBank bool
+	QuestionType       QuestionType
+	//QuestionId         uuid.UUID `gorm:"type:uuid"`
 }
 
 func (q *Question) SetId(id uuid.UUID) {
@@ -71,11 +72,11 @@ func (q *Question) GetOwnerId() uuid.NullUUID {
 }
 
 func (q *Question) GetType() QuestionType {
-	return q.Type
+	return q.QuestionType
 }
 
 func (q *Question) SetType(t QuestionType) {
-	q.Type = t
+	q.QuestionType = t
 }
 
 func (q *Question) GetAttachments() []Attachment {
