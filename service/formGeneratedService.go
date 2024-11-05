@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/dto/get"
+	"hedgehog-forms/dto/verify"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/factory"
 	"hedgehog-forms/mapper"
@@ -19,20 +20,22 @@ import (
 )
 
 type FormGeneratedService struct {
-	formPublishedRepository *repository.FormPublishedRepository
-	formGeneratedRepository *repository.FormGeneratedRepository
-	formGeneratedFactory    *factory.FormGeneratedFactory
-	formGeneratedMapper     *mapper.FormGeneratedMapper
-	formGeneratedProcessor  *processor.FormGeneratedProcessor
+	formPublishedRepository          *repository.FormPublishedRepository
+	formGeneratedRepository          *repository.FormGeneratedRepository
+	formGeneratedFactory             *factory.FormGeneratedFactory
+	formGeneratedVerificationFactory *mapper.FormGeneratedVerificationFactory
+	formGeneratedMapper              *mapper.FormGeneratedMapper
+	formGeneratedProcessor           *processor.FormGeneratedProcessor
 }
 
 func NewFormGeneratedService() *FormGeneratedService {
 	return &FormGeneratedService{
-		formPublishedRepository: repository.NewFormPublishedRepository(),
-		formGeneratedRepository: repository.NewFormGeneratedRepository(),
-		formGeneratedFactory:    factory.NewFormGeneratedFactory(),
-		formGeneratedMapper:     mapper.NewFormGeneratedMapper(),
-		formGeneratedProcessor:  processor.NewFormGeneratedProcessor(),
+		formPublishedRepository:          repository.NewFormPublishedRepository(),
+		formGeneratedRepository:          repository.NewFormGeneratedRepository(),
+		formGeneratedFactory:             factory.NewFormGeneratedFactory(),
+		formGeneratedVerificationFactory: mapper.NewFormGeneratedVerificationFactory(),
+		formGeneratedMapper:              mapper.NewFormGeneratedMapper(),
+		formGeneratedProcessor:           processor.NewFormGeneratedProcessor(),
 	}
 }
 
@@ -310,6 +313,30 @@ func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) (
 	}
 	//
 	return userIdsWithFormGenerated, nil
+}
+
+func (f *FormGeneratedService) GetSubmittedForm(generatedId string) (*verify.FormGenerated, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedID)
+	if err != nil {
+		return nil, err
+	}
+
+	verifiedForm, err := f.formGeneratedVerificationFactory.Build(formGenerated, formPublished.FormPattern)
+	if err != nil {
+		return nil, err
+	}
+
+	return verifiedForm, nil
 }
 
 func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.CheckDto) (*get.FormGeneratedDto, error) {

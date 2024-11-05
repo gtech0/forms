@@ -111,6 +111,17 @@ func (f *FormGeneratedController) GetUsersWithUnsubmittedForms(ctx *gin.Context)
 	ctx.JSON(http.StatusOK, ids)
 }
 
+func (f *FormGeneratedController) GetSubmittedForm(ctx *gin.Context) {
+	generatedId := ctx.Param("generatedId")
+	submittedForm, err := f.formGeneratedService.GetSubmittedForm(generatedId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *submittedForm)
+}
+
 func (f *FormGeneratedController) VerifyForm(ctx *gin.Context) {
 	generatedId := ctx.Param("generatedId")
 	var checkDto create.CheckDto

@@ -8,7 +8,6 @@ import (
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern"
-	"hedgehog-forms/model/form/pattern/section/block"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 	"hedgehog-forms/util"
 	"maps"
@@ -52,7 +51,7 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 	answers get.AnswerDto,
 ) error {
 	questions := f.extractQuestionsFromGeneratedForm(formGenerated)
-	questionObjs := f.extractQuestionObjs(formPattern)
+	questionObjs := util.ExtractQuestionObjs(formPattern)
 
 	for _, iQuestion := range questions {
 		if err := f.checkQuestion(iQuestion.GetId(), iQuestion.GetType(), answers); err != nil {
@@ -143,24 +142,6 @@ func (f *FormGeneratedProcessor) extractQuestionsFromGeneratedForm(formGenerated
 
 				if generatedBlock.Variant != nil {
 					questions = slices.Concat(questions, generatedBlock.Variant.Questions)
-				}
-			}
-		}
-	}
-	return questions
-}
-
-func (f *FormGeneratedProcessor) extractQuestionObjs(formPattern pattern.FormPattern) []question.IQuestion {
-	questions := make([]question.IQuestion, 0)
-	for _, patternSection := range formPattern.Sections {
-		for _, sectionBlock := range patternSection.Blocks {
-			switch assertedBlock := sectionBlock.(type) {
-			case *block.DynamicBlock:
-				questions = slices.Concat(questions, assertedBlock.Questions)
-			case *block.StaticBlock:
-				variants := assertedBlock.Variants
-				for _, variant := range variants {
-					questions = slices.Concat(questions, variant.Questions)
 				}
 			}
 		}
