@@ -6,6 +6,6 @@ import (
 )
 
 type Question struct {
-	QuestionWithCorrectAnswer get.QuestionDto
+	QuestionWithCorrectAnswer get.IQuestionDto
 	QuestionWithStudentAnswer generated.IQuestion
 }

@@ -7,16 +7,44 @@ import (
 	"hedgehog-forms/model/form/generated"
 )
 
-type SectionGeneratedVerificationFactory struct{}
+type SectionGeneratedVerificationFactory struct {
+	blockGeneratedVerificationFactory *BlockGeneratedVerificationFactory
+}
 
 func NewSectionGeneratedVerificationFactory() *SectionGeneratedVerificationFactory {
-	return &SectionGeneratedVerificationFactory{}
+	return &SectionGeneratedVerificationFactory{
+		blockGeneratedVerificationFactory: NewBlockGeneratedVerificationFactory(),
+	}
 }
 
 func (s *SectionGeneratedVerificationFactory) build(
 	sections []generated.Section,
 	questionsWithCorrectAnswers map[uuid.UUID]get.IQuestionDto,
 ) ([]verify.Section, error) {
-	//TODO
-	return nil, nil
+	verifiedSections := make([]verify.Section, 0)
+	for _, currSection := range sections {
+		newSection, err := s.buildSection(currSection, questionsWithCorrectAnswers)
+		if err != nil {
+			return nil, err
+		}
+		verifiedSections = append(verifiedSections, *newSection)
+	}
+	return verifiedSections, nil
+}
+
+func (s *SectionGeneratedVerificationFactory) buildSection(
+	generatedSection generated.Section,
+	questionsWithCorrectAnswers map[uuid.UUID]get.IQuestionDto,
+) (*verify.Section, error) {
+	verifiedBlocks, err := s.blockGeneratedVerificationFactory.build(generatedSection.Blocks, questionsWithCorrectAnswers)
+	if err != nil {
+		return nil, err
+	}
+
+	return &verify.Section{
+		Id:          generatedSection.Id,
+		Name:        generatedSection.Title,
+		Description: generatedSection.Description,
+		Blocks:      verifiedBlocks,
+	}, nil
 }

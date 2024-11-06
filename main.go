@@ -68,8 +68,9 @@ func main() {
 		formGenerated.POST("/submit/:generatedId", formGeneratedController.SubmitForm)
 		formGenerated.POST("/unsubmit/:generatedId", formGeneratedController.UnSubmitForm)
 		formGenerated.GET("/get/all/:subjectId", formGeneratedController.GetMyForms)
-		formGenerated.GET("/get/submitted/:publishedId", formGeneratedController.GetSubmittedForms)
+		formGenerated.GET("/get/submitted/all/:publishedId", formGeneratedController.GetSubmittedForms)
 		formGenerated.GET("/get/unsubmitted/:publishedId", formGeneratedController.GetUsersWithUnsubmittedForms)
+		formGenerated.GET("/get/submitted/:generatedId", formGeneratedController.GetSubmittedForm)
 		formGenerated.POST("/verify/:generatedId", formGeneratedController.VerifyForm)
 	}
 
