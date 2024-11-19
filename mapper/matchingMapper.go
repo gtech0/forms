@@ -15,11 +15,11 @@ func NewMatchingMapper() *MatchingMapper {
 	}
 }
 
-func (m *MatchingMapper) toDto(matchingObj *question.Matching) (*get.MatchingDto, error) {
+func (m *MatchingMapper) toDto(questionEntity *question.Question) (*get.MatchingDto, error) {
 	matchingDto := new(get.MatchingDto)
-	m.commonMapper.CommonFieldsToDto(matchingObj, matchingDto)
-	matchingDto.TermsAndDefinitions = m.termsAndDefinitionsToDto(matchingObj.Definitions)
-	matchingDto.Points = m.pointsToDto(matchingObj.Points)
+	m.commonMapper.CommonFieldsToDto(questionEntity, matchingDto)
+	matchingDto.TermsAndDefinitions = m.termsAndDefinitionsToDto(questionEntity.Matching.Definitions)
+	matchingDto.Points = m.pointsToDto(questionEntity.Matching.Points)
 	return matchingDto, nil
 }
 

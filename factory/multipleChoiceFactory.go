@@ -17,9 +17,10 @@ func NewMultipleChoiceFactory() *MultipleChoiceFactory {
 	}
 }
 
-func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQuestionDto) (*question.MultipleChoice, error) {
-	questionObj := new(question.MultipleChoice)
-	if err := m.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, &questionObj.Question); err != nil {
+func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQuestionDto) (*question.Question, error) {
+	questionObj := new(question.Question)
+	questionObj.MultipleChoice = new(question.MultipleChoice)
+	if err := m.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj); err != nil {
 		return nil, err
 	}
 
@@ -35,8 +36,8 @@ func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQ
 		points = append(points, pointsObj)
 	}
 
-	questionObj.Options = options
-	questionObj.Points = points
+	questionObj.MultipleChoice.Options = options
+	questionObj.MultipleChoice.Points = points
 	return questionObj, nil
 }
 
@@ -61,30 +62,32 @@ func (m *MultipleChoiceFactory) buildPointFromDto(
 	return pointsObj
 }
 
-func (m *MultipleChoiceFactory) BuildFromObj(questionObj *question.MultipleChoice) (*question.MultipleChoice, error) {
-	newQuestionObj := new(question.MultipleChoice)
+func (m *MultipleChoiceFactory) BuildFromObj(questionObj *question.Question) (*question.Question, error) {
+	newQuestionObj := new(question.Question)
+	newQuestionObj.MultipleChoice = new(question.MultipleChoice)
 	options := make([]question.MultipleChoiceOption, 0)
-	newQuestionObj.Points = questionObj.Points
-	if err := m.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question); err != nil {
+	newQuestionObj.MultipleChoice.Points = questionObj.MultipleChoice.Points
+	if err := m.commonMapper.MapCommonFieldsObj(*questionObj, newQuestionObj); err != nil {
 		return nil, err
 	}
 
-	for _, option := range questionObj.Options {
-		m.buildOptionFromEntity(&option, newQuestionObj.Id)
-		options = append(options, option)
+	for _, option := range questionObj.MultipleChoice.Options {
+		newOption := m.buildOptionFromEntity(option, newQuestionObj.Id)
+		options = append(options, newOption)
 	}
 
-	newQuestionObj.Options = options
+	newQuestionObj.MultipleChoice.Options = options
 	return newQuestionObj, nil
 }
 
 func (m *MultipleChoiceFactory) buildOptionFromEntity(
-	optionObj *question.MultipleChoiceOption,
+	optionObj question.MultipleChoiceOption,
 	questionId uuid.UUID,
-) {
+) question.MultipleChoiceOption {
 	var option question.MultipleChoiceOption
 	option.Text = optionObj.Text
 	option.Order = optionObj.Order
 	option.IsAnswer = optionObj.IsAnswer
 	option.MultipleChoiceId = questionId
+	return option
 }

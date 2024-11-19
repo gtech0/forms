@@ -22,16 +22,16 @@ func NewQuestionMapper() *QuestionMapper {
 	}
 }
 
-func (q *QuestionMapper) toDto(questionObj question.IQuestion) (get.IQuestionDto, error) {
-	switch assertedQuestion := questionObj.(type) {
-	case *question.SingleChoice:
-		return q.singleChoiceMapper.toDto(assertedQuestion)
-	case *question.TextInput:
-		return q.textInputMapper.toDto(assertedQuestion)
-	case *question.MultipleChoice:
-		return q.multipleChoiceMapper.toDto(assertedQuestion)
-	case *question.Matching:
-		return q.matchingMapper.toDto(assertedQuestion)
+func (q *QuestionMapper) toDto(questionObj *question.Question) (get.IQuestionDto, error) {
+	switch questionObj.Type {
+	case question.SINGLE_CHOICE:
+		return q.singleChoiceMapper.toDto(questionObj)
+	case question.TEXT_INPUT:
+		return q.textInputMapper.toDto(questionObj)
+	case question.MULTIPLE_CHOICE:
+		return q.multipleChoiceMapper.toDto(questionObj)
+	case question.MATCHING:
+		return q.matchingMapper.toDto(questionObj)
 	default:
 		return nil, errs.New("invalid question type", 400)
 	}

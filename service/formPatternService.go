@@ -126,8 +126,8 @@ func (f *FormPatternService) doesFormExist(id uuid.UUID) error {
 	return nil
 }
 
-func (f *FormPatternService) extractQuestionsFromPattern(pattern *pattern.FormPattern) []question.IQuestion {
-	questions := make([]question.IQuestion, 0)
+func (f *FormPatternService) extractQuestionsFromPattern(pattern *pattern.FormPattern) []*question.Question {
+	questions := make([]*question.Question, 0)
 	for _, currSection := range pattern.Sections {
 		blocks := currSection.Blocks
 		for _, iBlock := range blocks {

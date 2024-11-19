@@ -22,8 +22,8 @@ func FindKeyByValue(m map[string]int, value int) (key string, ok bool) {
 	return
 }
 
-func ExtractQuestionObjs(formPattern pattern.FormPattern) []question.IQuestion {
-	questions := make([]question.IQuestion, 0)
+func ExtractQuestionObjs(formPattern pattern.FormPattern) []*question.Question {
+	questions := make([]*question.Question, 0)
 	for _, patternSection := range formPattern.Sections {
 		for _, sectionBlock := range patternSection.Blocks {
 			switch sectionBlock.Type {

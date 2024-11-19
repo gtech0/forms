@@ -16,12 +16,13 @@ func NewSingleChoiceFactory() *SingleChoiceFactory {
 	}
 }
 
-func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuestionDto) (*question.SingleChoice, error) {
-	questionObj := new(question.SingleChoice)
-	if err := s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, &questionObj.Question); err != nil {
+func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuestionDto) (*question.Question, error) {
+	questionObj := new(question.Question)
+	questionObj.SingleChoice = new(question.SingleChoice)
+	if err := s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj); err != nil {
 		return nil, err
 	}
-	questionObj.Points = questionDto.Points
+	questionObj.SingleChoice.Points = questionDto.Points
 
 	optionNames := questionDto.Options
 	options := make([]question.SingleChoiceOption, 0)
@@ -29,25 +30,26 @@ func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuest
 		option := s.buildOptionFromDto(questionDto, order, questionObj.Id)
 		options = append(options, option)
 	}
-	questionObj.Options = options
+	questionObj.SingleChoice.Options = options
 	return questionObj, nil
 }
 
-func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.SingleChoice) (*question.SingleChoice, error) {
-	newQuestionObj := new(question.SingleChoice)
-	if err := s.commonMapper.MapCommonFieldsObj(questionObj.Question, &newQuestionObj.Question); err != nil {
+func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.Question) (*question.Question, error) {
+	newQuestionObj := new(question.Question)
+	newQuestionObj.SingleChoice = new(question.SingleChoice)
+	if err := s.commonMapper.MapCommonFieldsObj(*questionObj, newQuestionObj); err != nil {
 		return nil, err
 	}
-	newQuestionObj.Points = questionObj.Points
+	newQuestionObj.SingleChoice.Points = questionObj.SingleChoice.Points
 
 	options := make([]question.SingleChoiceOption, 0)
-	for _, option := range questionObj.Options {
+	for _, option := range questionObj.SingleChoice.Options {
 		var newOption question.SingleChoiceOption
 		newOption.Text = option.Text
 		newOption.Order = option.Order
 		newOption.IsAnswer = option.IsAnswer
 	}
-	newQuestionObj.Options = options
+	newQuestionObj.SingleChoice.Options = options
 	return newQuestionObj, nil
 }
 

@@ -82,7 +82,7 @@ func (b *BlockMapper) variantToDto(variantObj block.Variant) (get.VariantDto, er
 	return variantDto, nil
 }
 
-func (b *BlockMapper) questionsToDto(questions []question.IQuestion) ([]get.IQuestionDto, error) {
+func (b *BlockMapper) questionsToDto(questions []*question.Question) ([]get.IQuestionDto, error) {
 	mappedQuestions := make([]get.IQuestionDto, 0)
 	for _, questionObj := range questions {
 		mappedQuestion, err := b.questionMapper.toDto(questionObj)

@@ -55,7 +55,7 @@ func (f *FormGeneratedVerificationFactory) ExtractQuestionDtoMap(
 			return nil, err
 		}
 
-		questionDtoMap[questionObj.GetId()] = questionDto
+		questionDtoMap[questionObj.Id] = questionDto
 	}
 
 	return questionDtoMap, nil

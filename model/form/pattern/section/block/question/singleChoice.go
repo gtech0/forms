@@ -6,10 +6,10 @@ import (
 )
 
 type SingleChoice struct {
-	//Question Question `gorm:"polymorphic:Question"`
-	Question
-	Points  int
-	Options []SingleChoiceOption
+	model.Base
+	Points     int
+	Options    []SingleChoiceOption
+	QuestionId uuid.UUID `gorm:"type:uuid"`
 }
 
 type SingleChoiceOption struct {
@@ -18,14 +18,4 @@ type SingleChoiceOption struct {
 	Order          int
 	IsAnswer       bool
 	SingleChoiceId uuid.UUID `gorm:"type:uuid"`
-}
-
-type SingleChoiceSlice []*SingleChoice
-
-func (s *SingleChoiceSlice) ToInterface() []IQuestion {
-	questions := make([]IQuestion, 0)
-	for _, singleChoice := range *s {
-		questions = append(questions, singleChoice)
-	}
-	return questions
 }

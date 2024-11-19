@@ -68,6 +68,8 @@ func Sync() {
 		&question.Attachment{},
 		&model.File{},
 
+		&question.Question{},
+
 		&question.MultipleChoice{},
 		&question.MultipleChoicePoints{},
 		&question.MultipleChoiceOption{},

@@ -17,6 +17,7 @@ type ExistingQuestionFactory struct {
 	textInputRepository      *repository.TextInputRepository
 	singleChoiceRepository   *repository.SingleChoiceRepository
 	multipleChoiceRepository *repository.MultipleChoiceRepository
+	questionRepository       *repository.QuestionRepository
 }
 
 func NewExistingQuestionFactory() *ExistingQuestionFactory {
@@ -30,35 +31,25 @@ func NewExistingQuestionFactory() *ExistingQuestionFactory {
 		textInputRepository:      repository.NewTextInputRepository(),
 		singleChoiceRepository:   repository.NewSingleChoiceRepository(),
 		multipleChoiceRepository: repository.NewMultipleChoiceRepository(),
+		questionRepository:       repository.NewQuestionRepository(),
 	}
 }
 
-func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExistingDto) (question.IQuestion, error) {
+func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExistingDto) (*question.Question, error) {
+	questionEntity, err := e.questionRepository.FindById(existingDto.QuestionId)
+	if err != nil {
+		return nil, err
+	}
+
 	switch existingDto.Type {
 	case question.MATCHING:
-		matchingQuestion, err := e.matchingRepository.FindById(existingDto.QuestionId)
-		if err != nil {
-			return nil, err
-		}
-		return e.matchingFactory.BuildFromObj(matchingQuestion)
+		return e.matchingFactory.BuildFromObj(questionEntity)
 	case question.MULTIPLE_CHOICE:
-		multipleChoiceQuestion, err := e.multipleChoiceRepository.FindById(existingDto.QuestionId)
-		if err != nil {
-			return nil, err
-		}
-		return e.multipleChoiceFactory.BuildFromObj(multipleChoiceQuestion)
+		return e.multipleChoiceFactory.BuildFromObj(questionEntity)
 	case question.SINGLE_CHOICE:
-		singleChoiceQuestion, err := e.singleChoiceRepository.FindById(existingDto.QuestionId)
-		if err != nil {
-			return nil, err
-		}
-		return e.singleChoiceFactory.BuildFromObj(singleChoiceQuestion)
+		return e.singleChoiceFactory.BuildFromObj(questionEntity)
 	case question.TEXT_INPUT:
-		textInputQuestion, err := e.textInputRepository.FindById(existingDto.QuestionId)
-		if err != nil {
-			return nil, err
-		}
-		return e.textInputFactory.BuildFromObj(textInputQuestion)
+		return e.textInputFactory.BuildFromObj(questionEntity)
 	default:
 		return nil, errs.New("invalid question type", 400)
 	}

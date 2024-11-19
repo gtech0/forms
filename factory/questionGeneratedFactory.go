@@ -13,7 +13,7 @@ func NewQuestionGeneratedFactory() *QuestionGeneratedFactory {
 	return &QuestionGeneratedFactory{}
 }
 
-func (q *QuestionGeneratedFactory) buildQuestions(questions []question.IQuestion) ([]generated.IQuestion, error) {
+func (q *QuestionGeneratedFactory) buildQuestions(questions []*question.Question) ([]generated.IQuestion, error) {
 	generatedQuestions := make([]generated.IQuestion, 0)
 	for _, iQuestion := range questions {
 		generatedQuestion, err := q.buildQuestion(iQuestion)
@@ -26,33 +26,33 @@ func (q *QuestionGeneratedFactory) buildQuestions(questions []question.IQuestion
 	return generatedQuestions, nil
 }
 
-func (q *QuestionGeneratedFactory) buildQuestion(iQuestion question.IQuestion) (generated.IQuestion, error) {
-	switch assertedQuestion := iQuestion.(type) {
-	case *question.TextInput:
-		return q.buildTextInput(assertedQuestion), nil
-	case *question.SingleChoice:
-		return q.buildSingleChoice(assertedQuestion), nil
-	case *question.MultipleChoice:
-		return q.buildMultipleChoice(assertedQuestion), nil
-	case *question.Matching:
-		return q.buildMatching(assertedQuestion), nil
+func (q *QuestionGeneratedFactory) buildQuestion(questionEntity *question.Question) (generated.IQuestion, error) {
+	switch questionEntity.Type {
+	case question.TEXT_INPUT:
+		return q.buildTextInput(questionEntity), nil
+	case question.SINGLE_CHOICE:
+		return q.buildSingleChoice(questionEntity), nil
+	case question.MULTIPLE_CHOICE:
+		return q.buildMultipleChoice(questionEntity), nil
+	case question.MATCHING:
+		return q.buildMatching(questionEntity), nil
 	default:
 		return nil, errs.New("unsupported question type", 400)
 	}
 }
 
-func (q *QuestionGeneratedFactory) buildTextInput(textInput *question.TextInput) *generated.TextInput {
+func (q *QuestionGeneratedFactory) buildTextInput(textInput *question.Question) *generated.TextInput {
 	generatedTextInput := new(generated.TextInput)
-	q.buildCommonFields(textInput.Question, &generatedTextInput.Question)
+	q.buildCommonFields(textInput, &generatedTextInput.Question)
 	return generatedTextInput
 }
 
-func (q *QuestionGeneratedFactory) buildSingleChoice(singleChoice *question.SingleChoice) *generated.SingleChoice {
+func (q *QuestionGeneratedFactory) buildSingleChoice(questionEntity *question.Question) *generated.SingleChoice {
 	generatedSingleChoice := new(generated.SingleChoice)
-	q.buildCommonFields(singleChoice.Question, &generatedSingleChoice.Question)
-	generatedSingleChoice.Points = singleChoice.Points
+	q.buildCommonFields(questionEntity, &generatedSingleChoice.Question)
+	generatedSingleChoice.Points = questionEntity.SingleChoice.Points
 	options := make([]generated.SingleChoiceOption, 0)
-	for _, option := range singleChoice.Options {
+	for _, option := range questionEntity.SingleChoice.Options {
 		var generatedOption generated.SingleChoiceOption
 		generatedOption.Id = option.Id
 		generatedOption.Text = option.Text
@@ -62,11 +62,11 @@ func (q *QuestionGeneratedFactory) buildSingleChoice(singleChoice *question.Sing
 	return generatedSingleChoice
 }
 
-func (q *QuestionGeneratedFactory) buildMultipleChoice(multipleChoice *question.MultipleChoice) *generated.MultipleChoice {
+func (q *QuestionGeneratedFactory) buildMultipleChoice(questionEntity *question.Question) *generated.MultipleChoice {
 	generatedMultipleChoice := new(generated.MultipleChoice)
-	q.buildCommonFields(multipleChoice.Question, &generatedMultipleChoice.Question)
+	q.buildCommonFields(questionEntity, &generatedMultipleChoice.Question)
 	options := make([]generated.MultipleChoiceOption, 0)
-	for _, option := range multipleChoice.Options {
+	for _, option := range questionEntity.MultipleChoice.Options {
 		var generatedOption generated.MultipleChoiceOption
 		generatedOption.Id = option.Id
 		generatedOption.Text = option.Text
@@ -76,11 +76,11 @@ func (q *QuestionGeneratedFactory) buildMultipleChoice(multipleChoice *question.
 	return generatedMultipleChoice
 }
 
-func (q *QuestionGeneratedFactory) buildMatching(matching *question.Matching) *generated.Matching {
+func (q *QuestionGeneratedFactory) buildMatching(questionEntity *question.Question) *generated.Matching {
 	generatedMatching := new(generated.Matching)
-	q.buildCommonFields(matching.Question, &generatedMatching.Question)
+	q.buildCommonFields(questionEntity, &generatedMatching.Question)
 	terms := make([]generated.Term, 0)
-	for _, term := range matching.Terms {
+	for _, term := range questionEntity.Matching.Terms {
 		var generatedTerm generated.Term
 		generatedTerm.Id = term.Id
 		generatedTerm.Text = term.Text
@@ -89,7 +89,7 @@ func (q *QuestionGeneratedFactory) buildMatching(matching *question.Matching) *g
 	generatedMatching.Terms = terms
 
 	definitions := make([]generated.Definition, 0)
-	for _, definition := range matching.Definitions {
+	for _, definition := range questionEntity.Matching.Definitions {
 		var generatedDefinition generated.Definition
 		generatedDefinition.Id = definition.Id
 		generatedDefinition.Text = definition.Text
@@ -100,10 +100,10 @@ func (q *QuestionGeneratedFactory) buildMatching(matching *question.Matching) *g
 	return generatedMatching
 }
 
-func (q *QuestionGeneratedFactory) buildCommonFields(source question.Question, target *generated.Question) {
+func (q *QuestionGeneratedFactory) buildCommonFields(source *question.Question, target *generated.Question) {
 	target.Id = source.Id
 	target.Description = source.Description
-	target.Type = source.QuestionType
+	target.Type = source.Type
 	target.Attachments = q.buildAttachments(source.Attachments)
 }
 

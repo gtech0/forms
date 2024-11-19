@@ -28,7 +28,7 @@ func (c *CommonFieldQuestionMapper) MapCommonFieldsDto(source create.NewQuestion
 		attachments = append(attachments, *attachmentObj)
 	}
 	target.Attachments = attachments
-	target.QuestionType = source.Type
+	target.Type = source.Type
 	return nil
 }
 
@@ -40,7 +40,7 @@ func (c *CommonFieldQuestionMapper) MapCommonFieldsObj(source question.Question,
 	target.Id = uuid.New()
 	target.Description = source.Description
 	target.Attachments = source.Attachments
-	target.QuestionType = source.QuestionType
+	target.Type = source.Type
 	target.IsQuestionFromBank = source.IsQuestionFromBank
 	return nil
 }

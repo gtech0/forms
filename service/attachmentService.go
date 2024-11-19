@@ -15,10 +15,10 @@ func NewAttachmentService() *AttachmentService {
 	return &AttachmentService{}
 }
 
-func (f *AttachmentService) ValidateAttachments(questions ...question.IQuestion) error {
+func (f *AttachmentService) ValidateAttachments(questions ...*question.Question) error {
 	attachmentIds := make([]uuid.UUID, 0)
 	for _, iQuestion := range questions {
-		for _, attachment := range iQuestion.GetAttachments() {
+		for _, attachment := range iQuestion.Attachments {
 			attachmentIds = append(attachmentIds, attachment.Id)
 		}
 	}

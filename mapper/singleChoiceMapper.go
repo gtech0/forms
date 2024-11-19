@@ -15,11 +15,11 @@ func NewSingleChoiceMapper() *SingleChoiceMapper {
 	}
 }
 
-func (s *SingleChoiceMapper) toDto(singleChoice *question.SingleChoice) (*get.SingleChoiceDto, error) {
+func (s *SingleChoiceMapper) toDto(questionEntity *question.Question) (*get.SingleChoiceDto, error) {
 	singleChoiceDto := new(get.SingleChoiceDto)
-	s.commonMapper.CommonFieldsToDto(singleChoice, singleChoiceDto)
-	singleChoiceDto.Points = singleChoice.Points
-	singleChoiceDto.Choices = s.singleOptionToDto(singleChoice.Options)
+	s.commonMapper.CommonFieldsToDto(questionEntity, singleChoiceDto)
+	singleChoiceDto.Points = questionEntity.SingleChoice.Points
+	singleChoiceDto.Choices = s.singleOptionToDto(questionEntity.SingleChoice.Options)
 	return singleChoiceDto, nil
 }
 

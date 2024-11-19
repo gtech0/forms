@@ -15,11 +15,11 @@ func NewTextInputMapper() *TextInputMapper {
 	}
 }
 
-func (t *TextInputMapper) toDto(textInputObj *question.TextInput) (*get.TextInputDto, error) {
+func (t *TextInputMapper) toDto(questionEntity *question.Question) (*get.TextInputDto, error) {
 	textInputDto := new(get.TextInputDto)
-	t.commonMapper.CommonFieldsToDto(textInputObj, textInputDto)
-	textInputDto.Points = textInputObj.Points
-	textInputDto.Answers = t.AnswersToDto(textInputObj.Answers)
+	t.commonMapper.CommonFieldsToDto(questionEntity, textInputDto)
+	textInputDto.Points = questionEntity.TextInput.Points
+	textInputDto.Answers = t.AnswersToDto(questionEntity.TextInput.Answers)
 	return textInputDto, nil
 }
 

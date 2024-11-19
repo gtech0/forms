@@ -46,24 +46,24 @@ func (q *QuestionService) CreateQuestion(subjectId string, rawQuestionDto json.R
 		return nil, err
 	}
 
-	iQuestion, err := q.questionFactory.BuildQuestionFromDto(questionDto)
+	questionEntity, err := q.questionFactory.BuildQuestionFromDto(questionDto)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = q.attachmentService.ValidateAttachments(iQuestion); err != nil {
+	if err = q.attachmentService.ValidateAttachments(questionEntity); err != nil {
 		return nil, err
 	}
 
-	iQuestion.SetSubject(*subject)
-	iQuestion.SetIsQuestionFromBank(true)
+	questionEntity.Subject = *subject
+	questionEntity.IsQuestionFromBank = true
 
-	if err = q.questionRepository.Create(iQuestion); err != nil {
+	if err = q.questionRepository.Create(questionEntity); err != nil {
 		return nil, err
 	}
 
 	getQuestionDto := new(get.QuestionDto)
-	q.commonFieldQuestionDtoMapper.CommonFieldsToDto(iQuestion, getQuestionDto)
+	q.commonFieldQuestionDtoMapper.CommonFieldsToDto(questionEntity, getQuestionDto)
 	return getQuestionDto, nil
 }
 

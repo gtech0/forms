@@ -6,10 +6,11 @@ import (
 )
 
 type Matching struct {
-	Question
+	model.Base
 	Terms       []MatchingTerm
 	Definitions []MatchingDefinition
 	Points      []MatchingPoint
+	QuestionId  uuid.UUID `gorm:"type:uuid"`
 }
 
 type MatchingTerm struct {
@@ -31,14 +32,4 @@ type MatchingPoint struct {
 	CorrectAnswers int
 	Points         int
 	MatchingId     uuid.UUID `gorm:"type:uuid"`
-}
-
-type MatchingSlice []*Matching
-
-func (s *MatchingSlice) ToInterface() []IQuestion {
-	questions := make([]IQuestion, 0)
-	for _, matching := range *s {
-		questions = append(questions, matching)
-	}
-	return questions
 }

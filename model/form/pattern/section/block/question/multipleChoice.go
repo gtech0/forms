@@ -6,9 +6,10 @@ import (
 )
 
 type MultipleChoice struct {
-	Question
-	Options []MultipleChoiceOption
-	Points  []MultipleChoicePoints
+	model.Base
+	Options    []MultipleChoiceOption
+	Points     []MultipleChoicePoints
+	QuestionId uuid.UUID `gorm:"type:uuid"`
 }
 
 type MultipleChoicePoints struct {
@@ -24,14 +25,4 @@ type MultipleChoiceOption struct {
 	Order            int
 	IsAnswer         bool
 	MultipleChoiceId uuid.UUID `gorm:"type:uuid"`
-}
-
-type MultipleChoiceSlice []*MultipleChoice
-
-func (m *MultipleChoiceSlice) ToInterface() []IQuestion {
-	questions := make([]IQuestion, 0)
-	for _, multipleChoice := range *m {
-		questions = append(questions, multipleChoice)
-	}
-	return questions
 }

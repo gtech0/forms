@@ -15,11 +15,11 @@ func NewMultipleChoiceMapper() *MultipleChoiceMapper {
 	}
 }
 
-func (m *MultipleChoiceMapper) toDto(multipleChoiceObj *question.MultipleChoice) (*get.MultipleChoiceDto, error) {
+func (m *MultipleChoiceMapper) toDto(questionEntity *question.Question) (*get.MultipleChoiceDto, error) {
 	multipleChoiceDto := new(get.MultipleChoiceDto)
-	m.commonMapper.CommonFieldsToDto(multipleChoiceObj, multipleChoiceDto)
-	multipleChoiceDto.Points = m.pointsToDto(multipleChoiceObj.Points)
-	multipleChoiceDto.Options = m.optionsToDto(multipleChoiceObj.Options)
+	m.commonMapper.CommonFieldsToDto(questionEntity, multipleChoiceDto)
+	multipleChoiceDto.Points = m.pointsToDto(questionEntity.MultipleChoice.Points)
+	multipleChoiceDto.Options = m.optionsToDto(questionEntity.MultipleChoice.Options)
 	return multipleChoiceDto, nil
 }
 
