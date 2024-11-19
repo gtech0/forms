@@ -15,8 +15,9 @@ func NewDynamicBlockFactory() *DynamicBlockFactory {
 	}
 }
 
-func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (*block.DynamicBlock, error) {
-	blockObj := new(block.DynamicBlock)
+func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (*block.Block, error) {
+	blockObj := new(block.Block)
+	blockObj.DynamicBlock = new(block.DynamicBlock)
 	questions, err := d.questionFactory.BuildQuestionDtoForDynamicBlock(dynamicDto.Questions, blockObj)
 	if err != nil {
 		return nil, err
@@ -25,14 +26,15 @@ func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (
 	blockObj.Title = dynamicDto.Title
 	blockObj.Description = dynamicDto.Description
 	blockObj.Type = block.DYNAMIC
-	blockObj.QuestionCount = dynamicDto.QuestionCount
-	blockObj.Questions = questions
+	blockObj.DynamicBlock.QuestionCount = dynamicDto.QuestionCount
+	blockObj.DynamicBlock.Questions = questions
 	return blockObj, nil
 }
 
-func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block.DynamicBlock) (*block.DynamicBlock, error) {
-	newBlockObj := new(block.DynamicBlock)
-	newQuestions, err := d.questionFactory.BuildQuestionObjForDynamicBlock(dynamicBlock.Questions, newBlockObj)
+func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block.Block) (*block.Block, error) {
+	newBlockObj := new(block.Block)
+	newBlockObj.DynamicBlock = new(block.DynamicBlock)
+	newQuestions, err := d.questionFactory.BuildQuestionObjForDynamicBlock(dynamicBlock.DynamicBlock.Questions, newBlockObj)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +42,7 @@ func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block.DynamicBlock) (*b
 	newBlockObj.Title = dynamicBlock.Title
 	newBlockObj.Description = dynamicBlock.Description
 	newBlockObj.Type = block.DYNAMIC
-	newBlockObj.QuestionCount = dynamicBlock.QuestionCount
-	newBlockObj.Questions = newQuestions
+	newBlockObj.DynamicBlock.QuestionCount = dynamicBlock.DynamicBlock.QuestionCount
+	newBlockObj.DynamicBlock.Questions = newQuestions
 	return newBlockObj, nil
 }

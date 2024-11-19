@@ -15,8 +15,8 @@ func NewFormPatternRepository() *FormPatternRepository {
 	return &FormPatternRepository{}
 }
 
-func (f *FormPatternRepository) Save(formPattern *pattern.FormPattern) error {
-	if err := database.DB.Save(formPattern).Error; err != nil {
+func (f *FormPatternRepository) Create(formPattern *pattern.FormPattern) error {
+	if err := database.DB.Create(formPattern).Error; err != nil {
 		return errs.New(err.Error(), 500)
 	}
 	return nil

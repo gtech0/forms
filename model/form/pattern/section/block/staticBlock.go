@@ -1,16 +1,12 @@
 package block
 
+import (
+	"github.com/google/uuid"
+	"hedgehog-forms/model"
+)
+
 type StaticBlock struct {
-	Block
+	model.Base
 	Variants []Variant
-}
-
-type StaticBlockSlice []*StaticBlock
-
-func (d *StaticBlockSlice) ToInterface() []IBlock {
-	blocks := make([]IBlock, 0)
-	for _, staticBlock := range *d {
-		blocks = append(blocks, staticBlock)
-	}
-	return blocks
+	BlockId  uuid.UUID `gorm:"type:uuid"`
 }

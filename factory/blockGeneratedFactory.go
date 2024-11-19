@@ -20,9 +20,9 @@ func NewBlockGeneratedFactory() *BlockGeneratedFactory {
 	}
 }
 
-func (b *BlockGeneratedFactory) buildBlocks(iBlocks []block.IBlock) ([]*generated.Block, error) {
+func (b *BlockGeneratedFactory) buildBlocks(blocks []*block.Block) ([]*generated.Block, error) {
 	generatedBlocks := make([]*generated.Block, 0)
-	for _, iBlock := range iBlocks {
+	for _, iBlock := range blocks {
 		newBlock, err := b.buildBlock(iBlock)
 		if err != nil {
 			return nil, err
@@ -33,20 +33,20 @@ func (b *BlockGeneratedFactory) buildBlocks(iBlocks []block.IBlock) ([]*generate
 	return generatedBlocks, nil
 }
 
-func (b *BlockGeneratedFactory) buildBlock(iBlock block.IBlock) (*generated.Block, error) {
-	switch assertedBlock := iBlock.(type) {
-	case *block.DynamicBlock:
-		return b.buildDynamicBlock(assertedBlock)
-	case *block.StaticBlock:
-		return b.buildStaticBlock(assertedBlock)
+func (b *BlockGeneratedFactory) buildBlock(iBlock *block.Block) (*generated.Block, error) {
+	switch iBlock.Type {
+	case block.DYNAMIC:
+		return b.buildDynamicBlock(iBlock)
+	case block.STATIC:
+		return b.buildStaticBlock(iBlock)
 	default:
 		return nil, errs.New("unsupported block type", 400)
 	}
 }
 
-func (b *BlockGeneratedFactory) buildDynamicBlock(dynamicBlock *block.DynamicBlock) (*generated.Block, error) {
-	questionCount := dynamicBlock.QuestionCount
-	questions := dynamicBlock.Questions
+func (b *BlockGeneratedFactory) buildDynamicBlock(dynamicBlock *block.Block) (*generated.Block, error) {
+	questionCount := dynamicBlock.DynamicBlock.QuestionCount
+	questions := dynamicBlock.DynamicBlock.Questions
 	questionsForBlock := make([]generated.IQuestion, 0, questionCount)
 	for i := 0; i < questionCount; i++ {
 		randomIndex := rand.Intn(len(questions))
@@ -69,8 +69,8 @@ func (b *BlockGeneratedFactory) buildDynamicBlock(dynamicBlock *block.DynamicBlo
 	}, nil
 }
 
-func (b *BlockGeneratedFactory) buildStaticBlock(staticBlock *block.StaticBlock) (*generated.Block, error) {
-	variant, err := b.variantGeneratedFactory.buildVariant(staticBlock.Variants)
+func (b *BlockGeneratedFactory) buildStaticBlock(staticBlock *block.Block) (*generated.Block, error) {
+	variant, err := b.variantGeneratedFactory.buildVariant(staticBlock.StaticBlock.Variants)
 	if err != nil {
 		return nil, err
 	}

@@ -44,7 +44,7 @@ func (q *QuestionFactory) BuildQuestionFromDto(questionDto any) (question.IQuest
 
 func (q *QuestionFactory) BuildQuestionDtoForDynamicBlock(
 	questionDtos []any,
-	dynamicBlock *block.DynamicBlock,
+	dynamicBlock *block.Block,
 ) ([]question.IQuestion, error) {
 	questionObjs := make([]question.IQuestion, 0)
 	for _, questionDto := range questionDtos {
@@ -56,13 +56,13 @@ func (q *QuestionFactory) BuildQuestionDtoForDynamicBlock(
 		questionObjs = append(questionObjs, questionObj)
 	}
 
-	dynamicBlock.Questions = questionObjs
+	dynamicBlock.DynamicBlock.Questions = questionObjs
 	return questionObjs, nil
 }
 
 func (q *QuestionFactory) BuildQuestionObjForDynamicBlock(
 	questionObjs []question.IQuestion,
-	dynamicBlock *block.DynamicBlock,
+	dynamicBlock *block.Block,
 ) ([]question.IQuestion, error) {
 	newQuestionObjs := make([]question.IQuestion, 0)
 	for _, questionObj := range questionObjs {
@@ -74,7 +74,7 @@ func (q *QuestionFactory) BuildQuestionObjForDynamicBlock(
 		newQuestionObjs = append(newQuestionObjs, newQuestionObj)
 	}
 
-	dynamicBlock.Questions = newQuestionObjs
+	dynamicBlock.DynamicBlock.Questions = newQuestionObjs
 	return questionObjs, nil
 }
 

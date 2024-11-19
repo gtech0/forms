@@ -42,6 +42,7 @@ func (f *FormPatternFactory) buildAndAddSections(
 		if err != nil {
 			return nil, err
 		}
+
 		sectionObj.FormPatternId = formPatternId
 		sectionObj.Order = order
 		sections = append(sections, *sectionObj)

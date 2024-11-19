@@ -26,11 +26,11 @@ func ExtractQuestionObjs(formPattern pattern.FormPattern) []question.IQuestion {
 	questions := make([]question.IQuestion, 0)
 	for _, patternSection := range formPattern.Sections {
 		for _, sectionBlock := range patternSection.Blocks {
-			switch assertedBlock := sectionBlock.(type) {
-			case *block.DynamicBlock:
-				questions = slices.Concat(questions, assertedBlock.Questions)
-			case *block.StaticBlock:
-				variants := assertedBlock.Variants
+			switch sectionBlock.Type {
+			case block.DYNAMIC:
+				questions = slices.Concat(questions, sectionBlock.DynamicBlock.Questions)
+			case block.STATIC:
+				variants := sectionBlock.StaticBlock.Variants
 				for _, variant := range variants {
 					questions = slices.Concat(questions, variant.Questions)
 				}

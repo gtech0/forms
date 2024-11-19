@@ -44,7 +44,7 @@ func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get.For
 		return nil, err
 	}
 
-	if err = f.formPatternRepository.Save(formPattern); err != nil {
+	if err = f.formPatternRepository.Create(formPattern); err != nil {
 		return nil, err
 	}
 
@@ -131,11 +131,11 @@ func (f *FormPatternService) extractQuestionsFromPattern(pattern *pattern.FormPa
 	for _, currSection := range pattern.Sections {
 		blocks := currSection.Blocks
 		for _, iBlock := range blocks {
-			switch assertedBlock := iBlock.(type) {
-			case *block.DynamicBlock:
-				questions = slices.Concat(questions, assertedBlock.Questions)
-			case *block.StaticBlock:
-				for _, variant := range assertedBlock.Variants {
+			switch iBlock.Type {
+			case block.DYNAMIC:
+				questions = slices.Concat(questions, iBlock.DynamicBlock.Questions)
+			case block.STATIC:
+				for _, variant := range iBlock.StaticBlock.Variants {
 					questions = slices.Concat(questions, variant.Questions)
 				}
 			}

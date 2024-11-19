@@ -43,20 +43,15 @@ func (s *SectionFactory) buildSectionNew(sectionDto *create.NewSectionDto) (*sec
 }
 
 func (s *SectionFactory) buildAndAddBlocksFromDto(blockDtos []any, sectionObj *section.Section) error {
-	blocks := make([]block.IBlock, 0)
+	blocks := make([]*block.Block, 0)
 	for order, blockDto := range blockDtos {
 		blockObj, err := s.blockFactory.BuildFromDto(blockDto)
 		if err != nil {
 			return err
 		}
 
-		switch blockTyped := blockObj.(type) {
-		case block.IBlock:
-			blockTyped.SetOrder(order)
-			blocks = append(blocks, blockTyped)
-		default:
-			return errs.New("invalid block type", 400)
-		}
+		blockObj.Order = order
+		blocks = append(blocks, blockObj)
 	}
 
 	sectionObj.Blocks = blocks
@@ -76,10 +71,10 @@ func (s *SectionFactory) buildSectionExisting(sectionDto *create.SectionOnExisti
 	return sectionObj, nil
 }
 
-func (s *SectionFactory) buildAndAddBlocksFromObj(blockObjs []block.IBlock, sectionObj *section.Section) {
-	blocks := make([]block.IBlock, 0)
+func (s *SectionFactory) buildAndAddBlocksFromObj(blockObjs []*block.Block, sectionObj *section.Section) {
+	blocks := make([]*block.Block, 0)
 	for order, blockObj := range blockObjs {
-		blockObj.SetOrder(order)
+		blockObj.Order = order
 		blocks = append(blocks, blockObj)
 	}
 

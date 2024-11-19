@@ -1,19 +1,22 @@
 package block
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"hedgehog-forms/model"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 	"slices"
 )
 
 type DynamicBlock struct {
-	Block
+	model.Base
 	QuestionCount  int
 	Questions      []question.IQuestion `gorm:"-"`
 	MultipleChoice question.MultipleChoiceSlice
 	TextInput      question.TextInputSlice
 	SingleChoice   question.SingleChoiceSlice
 	Matching       question.MatchingSlice
+	BlockId        uuid.UUID `gorm:"type:uuid"`
 }
 
 func (d *DynamicBlock) BeforeSave(*gorm.DB) error {
@@ -40,14 +43,4 @@ func (d *DynamicBlock) AfterFind(*gorm.DB) error {
 		d.Matching.ToInterface(),
 	)
 	return nil
-}
-
-type DynamicBlockSlice []*DynamicBlock
-
-func (d *DynamicBlockSlice) ToInterface() []IBlock {
-	blocks := make([]IBlock, 0)
-	for _, dynamicBlock := range *d {
-		blocks = append(blocks, dynamicBlock)
-	}
-	return blocks
 }

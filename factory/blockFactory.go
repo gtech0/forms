@@ -8,22 +8,20 @@ import (
 )
 
 type BlockFactory struct {
-	dynamicFactory    *DynamicBlockFactory
-	dynamicRepository *repository.DynamicBlockRepository
-	staticFactory     *StaticBlockFactory
-	staticRepository  *repository.StaticBlockRepository
+	dynamicFactory  *DynamicBlockFactory
+	staticFactory   *StaticBlockFactory
+	blockRepository *repository.BlockRepository
 }
 
 func NewBlockFactory() *BlockFactory {
 	return &BlockFactory{
-		dynamicFactory:    NewDynamicBlockFactory(),
-		dynamicRepository: repository.NewDynamicBlockRepository(),
-		staticFactory:     NewStaticBlockFactory(),
-		staticRepository:  repository.NewStaticBlockRepository(),
+		dynamicFactory:  NewDynamicBlockFactory(),
+		staticFactory:   NewStaticBlockFactory(),
+		blockRepository: repository.NewBlockRepository(),
 	}
 }
 
-func (b *BlockFactory) BuildFromDto(blockDto any) (block.IBlock, error) {
+func (b *BlockFactory) BuildFromDto(blockDto any) (*block.Block, error) {
 	switch bl := blockDto.(type) {
 	case *create.DynamicBlockDto:
 		return b.dynamicFactory.buildFromDto(bl)
@@ -36,32 +34,21 @@ func (b *BlockFactory) BuildFromDto(blockDto any) (block.IBlock, error) {
 	}
 }
 
-func (b *BlockFactory) buildFromObject(blockObj block.IBlock) (block.IBlock, error) {
-	switch bl := blockObj.(type) {
-	case *block.DynamicBlock:
-		return b.dynamicFactory.buildFromObj(bl)
-	case *block.StaticBlock:
-		return b.staticFactory.buildFromObj(bl)
+func (b *BlockFactory) buildFromObject(blockObj *block.Block) (*block.Block, error) {
+	switch blockObj.Type {
+	case block.DYNAMIC:
+		return b.dynamicFactory.buildFromObj(blockObj)
+	case block.STATIC:
+		return b.staticFactory.buildFromObj(blockObj)
 	default:
 		return nil, errs.New("invalid block object type", 400)
 	}
 }
 
-func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (block.IBlock, error) {
-	var blockObj block.IBlock
-	switch dto.Type {
-	case block.STATIC:
-		staticBlock, err := b.staticRepository.FindById(dto.BlockId)
-		if err != nil {
-			return nil, err
-		}
-		blockObj = staticBlock
-	case block.DYNAMIC:
-		dynamicBlock, err := b.dynamicRepository.FindById(dto.BlockId)
-		if err != nil {
-			return nil, err
-		}
-		blockObj = dynamicBlock
+func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (*block.Block, error) {
+	blockObj, err := b.blockRepository.FindById(dto.BlockId)
+	if err != nil {
+		return nil, err
 	}
 
 	return b.buildFromObject(blockObj)

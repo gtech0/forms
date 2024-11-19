@@ -17,24 +17,24 @@ func NewBlockMapper() *BlockMapper {
 	}
 }
 
-func (b *BlockMapper) toDto(iBlock block.IBlock) (get.IBlockDto, error) {
-	switch assertedBlock := iBlock.(type) {
-	case *block.DynamicBlock:
-		return b.dynamicToDto(assertedBlock)
-	case *block.StaticBlock:
-		return b.staticToDto(assertedBlock)
+func (b *BlockMapper) toDto(iBlock *block.Block) (get.IBlockDto, error) {
+	switch iBlock.Type {
+	case block.DYNAMIC:
+		return b.dynamicToDto(iBlock)
+	case block.STATIC:
+		return b.staticToDto(iBlock)
 	default:
 		return nil, errs.New("invalid block type", 400)
 	}
 }
 
-func (b *BlockMapper) dynamicToDto(dynamicBlock *block.DynamicBlock) (*get.DynamicBlockDto, error) {
+func (b *BlockMapper) dynamicToDto(dynamicBlock *block.Block) (*get.DynamicBlockDto, error) {
 	dynamicBlockDto := new(get.DynamicBlockDto)
 	dynamicBlockDto.Id = dynamicBlock.Id
 	dynamicBlockDto.Title = dynamicBlock.Title
 	dynamicBlockDto.Description = dynamicBlock.Description
 	dynamicBlockDto.Type = dynamicBlock.Type
-	questions, err := b.questionsToDto(dynamicBlock.Questions)
+	questions, err := b.questionsToDto(dynamicBlock.DynamicBlock.Questions)
 	if err != nil {
 		return nil, err
 	}
@@ -43,13 +43,13 @@ func (b *BlockMapper) dynamicToDto(dynamicBlock *block.DynamicBlock) (*get.Dynam
 	return dynamicBlockDto, nil
 }
 
-func (b *BlockMapper) staticToDto(staticBlock *block.StaticBlock) (*get.StaticBlockDto, error) {
+func (b *BlockMapper) staticToDto(staticBlock *block.Block) (*get.StaticBlockDto, error) {
 	staticBlockDto := new(get.StaticBlockDto)
 	staticBlockDto.Id = staticBlock.Id
 	staticBlockDto.Title = staticBlock.Title
 	staticBlockDto.Description = staticBlock.Description
 	staticBlockDto.Type = staticBlock.Type
-	variants, err := b.variantsToDto(staticBlock.Variants)
+	variants, err := b.variantsToDto(staticBlock.StaticBlock.Variants)
 	if err != nil {
 		return nil, err
 	}
