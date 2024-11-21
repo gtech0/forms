@@ -23,7 +23,7 @@ func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*questi
 		return nil, err
 	}
 
-	terms, definitions := m.buildTermsAndDefinitions(dto.TermsAndDefinitions, questionObj.Id)
+	terms, definitions := m.buildTermsAndDefinitions(dto.TermsAndDefinitions)
 	questionObj.Matching.Terms = terms
 	questionObj.Matching.Definitions = definitions
 	for answer, value := range dto.Points {
@@ -85,7 +85,6 @@ func (m *MatchingFactory) buildDefinitionFromEntity(
 
 func (m *MatchingFactory) buildTermsAndDefinitions(
 	matchingMap map[string]string,
-	questionId uuid.UUID,
 ) ([]question.MatchingTerm, []question.MatchingDefinition) {
 	terms := make([]question.MatchingTerm, 0)
 	definitions := make([]question.MatchingDefinition, 0)
@@ -93,14 +92,12 @@ func (m *MatchingFactory) buildTermsAndDefinitions(
 		var definition question.MatchingDefinition
 		definition.Id = uuid.New()
 		definition.Text = value
-		definition.MatchingId = questionId
 
 		var term question.MatchingTerm
 		term.Text = key
-		term.MatchingId = questionId
 		term.MatchingDefinitionId = definition.Id
 
-		definition.MatchingTerm = term
+		//definition.MatchingTerm = term
 		terms = append(terms, term)
 		definitions = append(definitions, definition)
 	}

@@ -7,8 +7,8 @@ import (
 
 type Matching struct {
 	model.Base
-	Terms       []MatchingTerm
 	Definitions []MatchingDefinition
+	Terms       []MatchingTerm
 	Points      []MatchingPoint
 	QuestionId  uuid.UUID `gorm:"type:uuid"`
 }
