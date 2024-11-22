@@ -15,6 +15,13 @@ func NewFormPublishedRepository() *FormPublishedRepository {
 	return &FormPublishedRepository{}
 }
 
+func (f *FormPublishedRepository) Create(formPublished *published.FormPublished) error {
+	if err := database.DB.Create(formPublished).Error; err != nil {
+		return errs.New(err.Error(), 500)
+	}
+	return nil
+}
+
 func (f *FormPublishedRepository) Save(formPublished *published.FormPublished) error {
 	if err := database.DB.Save(formPublished).Error; err != nil {
 		return errs.New(err.Error(), 500)

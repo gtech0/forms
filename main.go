@@ -37,6 +37,9 @@ func main() {
 	questionRouter := router.Group("/api/question")
 	{
 		questionRouter.POST("/create/:subjectId", questionController.CreateQuestion)
+		questionRouter.GET("/get/:questionId", questionController.GetQuestion)
+		questionRouter.GET("/get", questionController.GetQuestions)
+		questionRouter.DELETE("/delete/:questionId", questionController.DeleteQuestion)
 	}
 
 	sectionRouter := router.Group("/api/section")

@@ -6,10 +6,9 @@ import (
 )
 
 type SingleChoice struct {
-	model.Base
-	Points     int
-	Options    []SingleChoiceOption
-	QuestionId uuid.UUID `gorm:"type:uuid"`
+	Base
+	Points  int
+	Options []SingleChoiceOption
 }
 
 type SingleChoiceOption struct {

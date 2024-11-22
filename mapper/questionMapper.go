@@ -22,7 +22,7 @@ func NewQuestionMapper() *QuestionMapper {
 	}
 }
 
-func (q *QuestionMapper) toDto(questionObj *question.Question) (get.IQuestionDto, error) {
+func (q *QuestionMapper) ToDto(questionObj *question.Question) (get.IQuestionDto, error) {
 	switch questionObj.Type {
 	case question.SINGLE_CHOICE:
 		return q.singleChoiceMapper.toDto(questionObj)

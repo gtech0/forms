@@ -6,10 +6,9 @@ import (
 )
 
 type MultipleChoice struct {
-	model.Base
-	Options    []MultipleChoiceOption
-	Points     []MultipleChoicePoints
-	QuestionId uuid.UUID `gorm:"type:uuid"`
+	Base
+	Options []MultipleChoiceOption
+	Points  []MultipleChoicePoints
 }
 
 type MultipleChoicePoints struct {

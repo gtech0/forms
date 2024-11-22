@@ -19,7 +19,6 @@ func NewQuestionController() *QuestionController {
 }
 
 func (q *QuestionController) CreateQuestion(ctx *gin.Context) {
-	//TODO: test it!
 	subjectId := ctx.Param("subjectId")
 	var body json.RawMessage
 	if err := ctx.Bind(&body); err != nil {
@@ -34,4 +33,36 @@ func (q *QuestionController) CreateQuestion(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, *questionDto)
+}
+
+func (q *QuestionController) GetQuestion(ctx *gin.Context) {
+	questionId := ctx.Param("questionId")
+	questionDto, err := q.questionService.GetQuestion(questionId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *questionDto)
+}
+
+func (q *QuestionController) GetQuestions(ctx *gin.Context) {
+	query := ctx.Request.URL.Query()
+	questions, err := q.questionService.GetQuestions(query)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *questions)
+}
+
+func (q *QuestionController) DeleteQuestion(ctx *gin.Context) {
+	questionId := ctx.Param("questionId")
+	if err := q.questionService.DeleteQuestion(questionId); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
 }

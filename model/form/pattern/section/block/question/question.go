@@ -2,7 +2,9 @@ package question
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"hedgehog-forms/model"
+	"time"
 )
 
 type Question struct {
@@ -22,4 +24,11 @@ type Question struct {
 	MultipleChoice *MultipleChoice
 	Matching       *Matching
 	TextInput      *TextInput
+}
+
+type Base struct {
+	QuestionId uuid.UUID `gorm:"type:uuid;primaryKey"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  gorm.DeletedAt `gorm:"index"`
 }

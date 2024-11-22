@@ -64,7 +64,9 @@ func (m *MultipleChoiceProcessor) getMultipleOptionObj(
 			return &multipleChoiceOption, nil
 		}
 	}
-	return nil, errs.New(fmt.Sprintf("answer for multiple choice question %v doesn't exist", multipleChoiceObj.Id), 500)
+	return nil, errs.New(
+		fmt.Sprintf("answer for multiple choice question %v doesn't exist", multipleChoiceObj.QuestionId),
+		500)
 }
 
 func (m *MultipleChoiceProcessor) calculatePoints(matchingPoints []question.MultipleChoicePoints, correctAnswers int) int {

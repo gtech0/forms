@@ -6,11 +6,10 @@ import (
 )
 
 type TextInput struct {
-	model.Base
+	Base
 	Points          int
 	IsCaseSensitive bool
 	Answers         []TextInputAnswer
-	QuestionId      uuid.UUID `gorm:"type:uuid"`
 }
 
 type TextInputAnswer struct {

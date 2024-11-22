@@ -97,7 +97,6 @@ func (m *MatchingFactory) buildTermsAndDefinitions(
 		term.Text = key
 		term.MatchingDefinitionId = definition.Id
 
-		//definition.MatchingTerm = term
 		terms = append(terms, term)
 		definitions = append(definitions, definition)
 	}

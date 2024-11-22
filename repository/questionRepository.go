@@ -1,26 +1,18 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 	"hedgehog-forms/database"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/pattern/section/block/question"
 )
 
-type QuestionRepository struct {
-	textInputRepository        *TextInputRepository
-	multipleChoiceRepository   *MultipleChoiceRepository
-	singleChoiceRepository     *SingleChoiceRepository
-	matchingQuestionRepository *MatchingQuestionRepository
-}
+type QuestionRepository struct{}
 
 func NewQuestionRepository() *QuestionRepository {
-	return &QuestionRepository{
-		textInputRepository:        NewTextInputRepository(),
-		multipleChoiceRepository:   NewMultipleChoiceRepository(),
-		singleChoiceRepository:     NewSingleChoiceRepository(),
-		matchingQuestionRepository: NewMatchingQuestionRepository(),
-	}
+	return &QuestionRepository{}
 }
 
 func (q *QuestionRepository) Create(questionEntity *question.Question) error {
@@ -31,7 +23,7 @@ func (q *QuestionRepository) Create(questionEntity *question.Question) error {
 }
 
 func (q *QuestionRepository) FindById(id uuid.UUID) (*question.Question, error) {
-	var questionEntity *question.Question
+	questionEntity := new(question.Question)
 	if err := database.DB.Model(&question.Question{}).
 		Where("id = ?", id).
 		First(questionEntity).Error; err != nil {
@@ -40,26 +32,30 @@ func (q *QuestionRepository) FindById(id uuid.UUID) (*question.Question, error) 
 	return questionEntity, nil
 }
 
-//TODO
-//func (q *QuestionRepository) FindById(id uuid.UUID) (question.IQuestion, error) {
-//	switch iQuestion.GetType() {
-//	case question.MULTIPLE_CHOICE:
-//		question, err := q.multipleChoiceRepository.FindById(id)
-//		if err != nil {
-//
-//		}
-//	case question.SINGLE_CHOICE:
-//		if err := q.singleChoiceRepository.Create(iQuestion.(*question.SingleChoice)); err != nil {
-//			return err
-//		}
-//	case question.MATCHING:
-//		if err := q.matchingQuestionRepository.Create(iQuestion.(*question.Matching)); err != nil {
-//			return err
-//		}
-//	case question.TEXT_INPUT:
-//		if err := q.textInputRepository.Create(iQuestion.(*question.TextInput)); err != nil {
-//			return err
-//		}
-//	}
-//	return nil
-//}
+func (q *QuestionRepository) FindByParamsAndPaginate(
+	clauses []clause.Expression,
+	name string,
+	page, size int,
+	types []question.QuestionType,
+) ([]question.Question, error) {
+	questions := make([]question.Question, 0)
+	if err := database.DB.
+		Preload(clause.Associations, preload).
+		Model(&question.Question{}).
+		Clauses(clauses...).
+		Where("title LIKE ?", fmt.Sprintf("%%%s%%", name)).
+		Where("type IN ?", types).
+		Scopes(paginate(page, size)).
+		Find(&questions).
+		Error; err != nil {
+		return nil, errs.New(err.Error(), 500)
+	}
+	return questions, nil
+}
+
+func (q *QuestionRepository) DeleteById(id uuid.UUID) error {
+	if err := database.DB.Delete(&question.Question{}, id).Error; err != nil {
+		return errs.New(err.Error(), 500)
+	}
+	return nil
+}

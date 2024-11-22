@@ -6,11 +6,10 @@ import (
 )
 
 type Matching struct {
-	model.Base
+	Base
 	Definitions []MatchingDefinition
 	Terms       []MatchingTerm
 	Points      []MatchingPoint
-	QuestionId  uuid.UUID `gorm:"type:uuid"`
 }
 
 type MatchingTerm struct {

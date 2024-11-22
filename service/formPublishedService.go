@@ -40,7 +40,7 @@ func (f *FormPublishedService) PublishForm(publishDto create.FormPublishDto) (*g
 	}
 
 	formPublished := f.formPublishedFactory.Build(publishDto)
-	if err := f.formPublishedRepository.Save(&formPublished); err != nil {
+	if err := f.formPublishedRepository.Create(&formPublished); err != nil {
 		return nil, err
 	}
 
@@ -113,16 +113,7 @@ func (f *FormPublishedService) UpdateForm(
 		return nil, err
 	}
 
-	formPublished.Deadline = formPublishedDto.Deadline
-	formPublished.Duration = formPublishedDto.Duration
-	formPublished.Groups = f.formPublishedFactory.BuildGroups(formPublishedDto.GroupIds, parsedPublishedId)
-	formPublished.Users = f.formPublishedFactory.BuildUsers(formPublishedDto.UserIds, parsedPublishedId)
-	formPublished.HideScore = formPublishedDto.HideScore
-	formPublished.MarkConfiguration = f.formPublishedFactory.BuildMarkConfiguration(
-		formPublishedDto.MarkConfiguration,
-		parsedPublishedId,
-	)
-
+	f.formPublishedFactory.Update(formPublished, formPublishedDto)
 	if !maps.Equal(formPublished.GetMarkConfigMap(), formPublishedDto.MarkConfiguration) {
 		if err = f.recalculateMarks(formPublished.FormsGenerated, formPublishedDto.MarkConfiguration); err != nil {
 			return nil, err

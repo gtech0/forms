@@ -28,6 +28,19 @@ func (f *FormPublishedFactory) Build(publishDto create.FormPublishDto) published
 	return formPublished
 }
 
+func (f *FormPublishedFactory) Update(
+	formPublished *published.FormPublished,
+	formPublishedDto create.UpdateFormPublishedDto,
+) {
+	formPublished.Deadline = formPublishedDto.Deadline
+	formPublished.Duration = formPublishedDto.Duration
+	formPublished.HideScore = formPublishedDto.HideScore
+
+	formPublished.Groups = f.BuildGroups(formPublishedDto.GroupIds, formPublished.Id)
+	formPublished.Users = f.BuildUsers(formPublishedDto.UserIds, formPublished.Id)
+	formPublished.MarkConfiguration = f.BuildMarkConfiguration(formPublishedDto.MarkConfiguration, formPublished.Id)
+}
+
 func (f *FormPublishedFactory) BuildGroups(groupIds []uuid.UUID, publishedId uuid.UUID) []published.FormPublishedGroup {
 	groups := make([]published.FormPublishedGroup, 0)
 	for _, groupId := range groupIds {

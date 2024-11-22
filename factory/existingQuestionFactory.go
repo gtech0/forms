@@ -12,12 +12,7 @@ type ExistingQuestionFactory struct {
 	textInputFactory      *TextInputFactory
 	singleChoiceFactory   *SingleChoiceFactory
 	multipleChoiceFactory *MultipleChoiceFactory
-
-	matchingRepository       *repository.MatchingQuestionRepository
-	textInputRepository      *repository.TextInputRepository
-	singleChoiceRepository   *repository.SingleChoiceRepository
-	multipleChoiceRepository *repository.MultipleChoiceRepository
-	questionRepository       *repository.QuestionRepository
+	questionRepository    *repository.QuestionRepository
 }
 
 func NewExistingQuestionFactory() *ExistingQuestionFactory {
@@ -26,12 +21,7 @@ func NewExistingQuestionFactory() *ExistingQuestionFactory {
 		textInputFactory:      NewTextInputFactory(),
 		singleChoiceFactory:   NewSingleChoiceFactory(),
 		multipleChoiceFactory: NewMultipleChoiceFactory(),
-
-		matchingRepository:       repository.NewMatchingQuestionRepository(),
-		textInputRepository:      repository.NewTextInputRepository(),
-		singleChoiceRepository:   repository.NewSingleChoiceRepository(),
-		multipleChoiceRepository: repository.NewMultipleChoiceRepository(),
-		questionRepository:       repository.NewQuestionRepository(),
+		questionRepository:    repository.NewQuestionRepository(),
 	}
 }
 

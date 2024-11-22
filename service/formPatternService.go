@@ -48,7 +48,12 @@ func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get.For
 		return nil, err
 	}
 
-	dto, err := f.formPatternMapper.ToDto(formPattern)
+	formPatternEntity, err := f.formPatternRepository.FindById(formPattern.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	dto, err := f.formPatternMapper.ToDto(formPatternEntity)
 	if err != nil {
 		return nil, err
 	}

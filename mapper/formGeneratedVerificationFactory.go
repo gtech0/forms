@@ -50,7 +50,7 @@ func (f *FormGeneratedVerificationFactory) ExtractQuestionDtoMap(
 
 	questionDtoMap := make(map[uuid.UUID]get.IQuestionDto)
 	for _, questionObj := range questionObjs {
-		questionDto, err := f.questionMapper.toDto(questionObj)
+		questionDto, err := f.questionMapper.ToDto(questionObj)
 		if err != nil {
 			return nil, err
 		}
