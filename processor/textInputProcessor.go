@@ -25,14 +25,14 @@ func (t *TextInputProcessor) markAnswer(textInput *generated.TextInput, answer s
 
 func (t *TextInputProcessor) markAnswerAndCalculatePoints(
 	textInput *generated.TextInput,
-	textInputObj *question.TextInput,
+	textInputEntity *question.TextInput,
 	enteredAnswer string,
 ) (int, error) {
 	textInput.EnteredAnswer = enteredAnswer
 
-	answers := t.textInputMapper.AnswersToDto(textInputObj.Answers)
+	answers := t.textInputMapper.AnswersToDto(textInputEntity.Answers)
 	isEnteredAnswerCorrect := func() bool {
-		if textInputObj.IsCaseSensitive {
+		if textInputEntity.IsCaseSensitive {
 			return slices.Contains(answers, enteredAnswer)
 		}
 
@@ -43,7 +43,7 @@ func (t *TextInputProcessor) markAnswerAndCalculatePoints(
 	}
 
 	if isEnteredAnswerCorrect() {
-		textInput.Points = textInputObj.Points
+		textInput.Points = textInputEntity.Points
 	}
 
 	return textInput.Points, nil

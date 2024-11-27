@@ -13,7 +13,7 @@ func NewCommonFieldQuestionMapper() *CommonFieldQuestionMapper {
 	return &CommonFieldQuestionMapper{}
 }
 
-func (c *CommonFieldQuestionMapper) MapCommonFieldsDto(source create.NewQuestionDto, target *question.Question) error {
+func (c *CommonFieldQuestionMapper) MapCommonDtoFields(source create.NewQuestionDto, target *question.Question) error {
 	if target == nil {
 		return errs.New("nil question pointer", 500)
 	}
@@ -22,17 +22,17 @@ func (c *CommonFieldQuestionMapper) MapCommonFieldsDto(source create.NewQuestion
 	target.Description = source.Description
 	attachments := make([]question.Attachment, 0)
 	for _, attachmentId := range source.Attachments {
-		attachmentObj := new(question.Attachment)
-		attachmentObj.Id = attachmentId
-		attachmentObj.QuestionId = target.Id
-		attachments = append(attachments, *attachmentObj)
+		attachmentEntity := new(question.Attachment)
+		attachmentEntity.Id = attachmentId
+		attachmentEntity.QuestionId = target.Id
+		attachments = append(attachments, *attachmentEntity)
 	}
 	target.Attachments = attachments
 	target.Type = source.Type
 	return nil
 }
 
-func (c *CommonFieldQuestionMapper) MapCommonFieldsObj(source question.Question, target *question.Question) error {
+func (c *CommonFieldQuestionMapper) MapCommonEntityFields(source question.Question, target *question.Question) error {
 	if target == nil {
 		return errs.New("nil question pointer", 500)
 	}

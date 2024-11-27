@@ -69,12 +69,12 @@ func (b *BlockMapper) variantsToDto(variants []block.Variant) ([]get.VariantDto,
 	return mappedVariants, nil
 }
 
-func (b *BlockMapper) variantToDto(variantObj block.Variant) (get.VariantDto, error) {
+func (b *BlockMapper) variantToDto(variantEntity block.Variant) (get.VariantDto, error) {
 	var variantDto get.VariantDto
-	variantDto.Id = variantObj.Id
-	variantDto.Title = variantObj.Title
-	variantDto.Description = variantObj.Description
-	questions, err := b.questionsToDto(variantObj.Questions)
+	variantDto.Id = variantEntity.Id
+	variantDto.Title = variantEntity.Title
+	variantDto.Description = variantEntity.Description
+	questions, err := b.questionsToDto(variantEntity.Questions)
 	if err != nil {
 		return get.VariantDto{}, err
 	}
@@ -84,8 +84,8 @@ func (b *BlockMapper) variantToDto(variantObj block.Variant) (get.VariantDto, er
 
 func (b *BlockMapper) questionsToDto(questions []*question.Question) ([]get.IQuestionDto, error) {
 	mappedQuestions := make([]get.IQuestionDto, 0)
-	for _, questionObj := range questions {
-		mappedQuestion, err := b.questionMapper.ToDto(questionObj)
+	for _, questionEntity := range questions {
+		mappedQuestion, err := b.questionMapper.ToDto(questionEntity)
 		if err != nil {
 			return nil, err
 		}

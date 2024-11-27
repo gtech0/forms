@@ -23,10 +23,10 @@ func (t *TextInputMapper) toDto(questionEntity *question.Question) (*get.TextInp
 	return textInputDto, nil
 }
 
-func (t *TextInputMapper) AnswersToDto(answersObj []question.TextInputAnswer) []string {
+func (t *TextInputMapper) AnswersToDto(textInputAnswers []question.TextInputAnswer) []string {
 	answers := make([]string, 0)
-	for _, answerObj := range answersObj {
-		answers = append(answers, answerObj.Answer)
+	for _, answer := range textInputAnswers {
+		answers = append(answers, answer.Answer)
 	}
 	return answers
 }

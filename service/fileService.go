@@ -23,15 +23,15 @@ func NewFileService() *FileService {
 }
 
 func (f *FileService) UploadFile(fileDto get.FileDto, bucket string) (*minio.UploadInfo, error) {
-	fileObj := fileDto.File
-	headers := fileObj.Header
+	fileEntity := fileDto.File
+	headers := fileEntity.Header
 
 	fileModel := new(model.File)
 	fileModel.Id = uuid.New()
 	fileModel.Bucket = bucket
-	fileModel.Size = fileObj.Size
+	fileModel.Size = fileEntity.Size
 
-	fileOpened, err := fileObj.Open()
+	fileOpened, err := fileEntity.Open()
 	defer func(fileOpened multipart.File) {
 		err = fileOpened.Close()
 	}(fileOpened)

@@ -51,8 +51,9 @@ func Sync() {
 	err := DB.AutoMigrate(
 		&published.FormPublished{},
 		&published.MarkConfiguration{},
-		&published.FormPublishedGroup{},
-		&published.FormPublishedUser{},
+
+		&published.Group{},
+		&published.User{},
 
 		&generated.FormGenerated{},
 
@@ -81,7 +82,7 @@ func Sync() {
 		&question.TextInputAnswer{},
 
 		&question.Matching{},
-		&question.MatchingPoint{},
+		&question.MatchingPoints{},
 		&question.MatchingTerm{},
 		&question.MatchingDefinition{},
 	)

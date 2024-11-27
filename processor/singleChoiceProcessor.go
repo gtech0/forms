@@ -16,14 +16,14 @@ func NewSingleChoiceProcessor() *SingleChoiceProcessor {
 
 func (s *SingleChoiceProcessor) markAnswerAndCalculatePoints(
 	singleChoice *generated.SingleChoice,
-	singleChoiceObj *question.SingleChoice,
+	singleChoiceEntity *question.SingleChoice,
 	optionId uuid.UUID,
 ) (int, error) {
 	if err := s.markAnswer(singleChoice, optionId); err != nil {
 		return 0, err
 	}
 
-	points, err := s.calculateAndSetPoints(singleChoice, singleChoiceObj)
+	points, err := s.calculateAndSetPoints(singleChoice, singleChoiceEntity)
 	if err != nil {
 		return 0, err
 	}
@@ -33,28 +33,30 @@ func (s *SingleChoiceProcessor) markAnswerAndCalculatePoints(
 
 func (s *SingleChoiceProcessor) calculateAndSetPoints(
 	singleChoice *generated.SingleChoice,
-	singleChoiceObj *question.SingleChoice,
+	singleChoiceEntity *question.SingleChoice,
 ) (int, error) {
-	correctOption, err := s.getSingleOptionObj(singleChoiceObj)
+	correctOption, err := s.getSingleOptionEntity(singleChoiceEntity)
 	if err != nil {
 		return 0, err
 	}
 
 	if singleChoice.EnteredAnswer == correctOption.Id {
-		singleChoice.Points = singleChoiceObj.Points
+		singleChoice.Points = singleChoiceEntity.Points
 	}
 
 	return singleChoice.Points, nil
 }
 
-func (s *SingleChoiceProcessor) getSingleOptionObj(singleChoiceObj *question.SingleChoice) (*question.SingleChoiceOption, error) {
-	for _, singleChoiceOption := range singleChoiceObj.Options {
+func (s *SingleChoiceProcessor) getSingleOptionEntity(
+	singleChoiceEntity *question.SingleChoice,
+) (*question.SingleChoiceOption, error) {
+	for _, singleChoiceOption := range singleChoiceEntity.Options {
 		if singleChoiceOption.IsAnswer {
 			return &singleChoiceOption, nil
 		}
 	}
 	return nil, errs.New(
-		fmt.Sprintf("answer for sinlge choice question %v doesn't exist", singleChoiceObj.QuestionId),
+		fmt.Sprintf("answer for sinlge choice question %v doesn't exist", singleChoiceEntity.QuestionId),
 		500)
 }
 

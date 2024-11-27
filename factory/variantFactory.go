@@ -29,11 +29,11 @@ func (v *VariantFactory) buildFromDto(variantDto create.UpdateVariantDto, blockI
 	return variant, nil
 }
 
-func (v *VariantFactory) buildFromObj(variant *block.Variant, blockId uuid.UUID) (*block.Variant, error) {
+func (v *VariantFactory) buildFromEntity(variant *block.Variant, blockId uuid.UUID) (*block.Variant, error) {
 	newVariant := new(block.Variant)
 	newVariant.Title = variant.Title
 	newVariant.Description = variant.Description
-	questions, err := v.questionFactory.BuildQuestionForVariantObj(variant.Questions, newVariant)
+	questions, err := v.questionFactory.BuildQuestionForVariantEntities(variant.Questions, newVariant)
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +54,10 @@ func (v *VariantFactory) buildFromDtos(variantDtos []create.UpdateVariantDto, bl
 	return variants, nil
 }
 
-func (v *VariantFactory) buildFromObjs(variantObjs []block.Variant, blockId uuid.UUID) ([]block.Variant, error) {
+func (v *VariantFactory) buildFromEntities(variantEntities []block.Variant, blockId uuid.UUID) ([]block.Variant, error) {
 	variants := make([]block.Variant, 0)
-	for _, variantObj := range variantObjs {
-		variant, err := v.buildFromObj(&variantObj, blockId)
+	for _, variantEntity := range variantEntities {
+		variant, err := v.buildFromEntity(&variantEntity, blockId)
 		if err != nil {
 			return nil, err
 		}

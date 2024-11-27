@@ -16,15 +16,15 @@ func NewSectionRepository() *SectionRepository {
 }
 
 func (s *SectionRepository) FindById(id uuid.UUID) (*section.Section, error) {
-	sectObj := new(section.Section)
+	sectionEntity := new(section.Section)
 	if err := database.DB.
 		Preload(clause.Associations, preload).
 		Model(&section.Section{}).
 		Where("id = ?", id).
-		First(sectObj).Error; err != nil {
+		First(sectionEntity).Error; err != nil {
 		return nil, errs.New(err.Error(), 500)
 	}
-	return sectObj, nil
+	return sectionEntity, nil
 }
 
 func (s *SectionRepository) FindByNameAndPaginate(name string, page, size int) ([]section.Section, error) {

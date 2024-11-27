@@ -31,7 +31,7 @@ func NewFormGeneratedProcessor() *FormGeneratedProcessor {
 }
 
 func (f *FormGeneratedProcessor) SaveAnswers(formGenerated *generated.FormGenerated, answers get.AnswerDto) error {
-	questions := f.extractQuestionsFromGeneratedForm(formGenerated)
+	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
 	for _, iQuestion := range questions {
 		if err := f.checkQuestion(iQuestion.GetId(), iQuestion.GetType(), answers); err != nil {
 			return err
@@ -50,15 +50,14 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 	formPattern pattern.FormPattern,
 	answers get.AnswerDto,
 ) error {
-	questions := f.extractQuestionsFromGeneratedForm(formGenerated)
-	questionEntities := util.ExtractQuestionObjs(formPattern)
-
+	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
 	for _, iQuestion := range questions {
 		if err := f.checkQuestion(iQuestion.GetId(), iQuestion.GetType(), answers); err != nil {
 			return err
 		}
 	}
 
+	questionEntities := util.ExtractQuestionEntities(formPattern)
 	for _, questionEntity := range questionEntities {
 		if err := f.checkQuestion(questionEntity.Id, questionEntity.Type, answers); err != nil {
 			return err
@@ -67,9 +66,9 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 
 	points := 0
 	for _, iQuestion := range questions {
-		for _, questionObj := range questionEntities {
-			if iQuestion.GetId() == questionObj.Id {
-				calculatedPoints, err := f.markAnswerAndCalculatePoints(iQuestion, questionObj, answers)
+		for _, questionEntity := range questionEntities {
+			if iQuestion.GetId() == questionEntity.Id {
+				calculatedPoints, err := f.markAnswerAndCalculatePoints(iQuestion, questionEntity, answers)
 				if err != nil {
 					return err
 				}
@@ -83,7 +82,7 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 }
 
 func (f *FormGeneratedProcessor) ReapplyPoints(formGenerated *generated.FormGenerated, checkDto create.CheckDto) error {
-	questions := f.extractQuestionsFromGeneratedForm(formGenerated)
+	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
 	if checkDto.Points != nil {
 		for questionId, points := range checkDto.Points {
 			var questionGenerated generated.IQuestion
@@ -133,22 +132,6 @@ func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGene
 	return nil
 }
 
-func (f *FormGeneratedProcessor) extractQuestionsFromGeneratedForm(formGenerated *generated.FormGenerated) []generated.IQuestion {
-	questions := make([]generated.IQuestion, 0)
-	for _, generatedSection := range formGenerated.Sections {
-		for _, generatedBlock := range generatedSection.Blocks {
-			if generatedBlock != nil {
-				questions = slices.Concat(questions, generatedBlock.Questions)
-
-				if generatedBlock.Variant != nil {
-					questions = slices.Concat(questions, generatedBlock.Variant.Questions)
-				}
-			}
-		}
-	}
-	return questions
-}
-
 func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated.IQuestion, answers get.AnswerDto) error {
 	switch iQuestion.GetType() {
 	case question.SINGLE_CHOICE:
@@ -179,7 +162,7 @@ func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated.IQuestion, answe
 
 func (f *FormGeneratedProcessor) markAnswerAndCalculatePoints(
 	iQuestion generated.IQuestion,
-	questionObj *question.Question,
+	questionEntity *question.Question,
 	answers get.AnswerDto,
 ) (int, error) {
 	var points int
@@ -190,28 +173,28 @@ func (f *FormGeneratedProcessor) markAnswerAndCalculatePoints(
 		option := answers.SingleChoice[iQuestion.GetId()]
 		points, err = f.singleChoiceProcessor.markAnswerAndCalculatePoints(
 			iQuestion.(*generated.SingleChoice),
-			questionObj.SingleChoice,
+			questionEntity.SingleChoice,
 			option,
 		)
 	case question.MULTIPLE_CHOICE:
 		options := answers.MultipleChoice[iQuestion.GetId()]
 		points, err = f.multipleChoiceProcessor.markAnswerAndCalculatePoints(
 			iQuestion.(*generated.MultipleChoice),
-			questionObj.MultipleChoice,
+			questionEntity.MultipleChoice,
 			options,
 		)
 	case question.MATCHING:
 		pairs := answers.Matching[iQuestion.GetId()]
 		points, err = f.matchingProcessor.markAnswerAndCalculatePoints(
 			iQuestion.(*generated.Matching),
-			questionObj.Matching,
+			questionEntity.Matching,
 			pairs,
 		)
 	case question.TEXT_INPUT:
 		answer := answers.TextInput[iQuestion.GetId()]
 		points, err = f.textInputProcessor.markAnswerAndCalculatePoints(
 			iQuestion.(*generated.TextInput),
-			questionObj.TextInput,
+			questionEntity.TextInput,
 			answer,
 		)
 	default:

@@ -17,14 +17,14 @@ func NewMultipleChoiceProcessor() *MultipleChoiceProcessor {
 
 func (m *MultipleChoiceProcessor) markAnswerAndCalculatePoints(
 	multipleChoice *generated.MultipleChoice,
-	multipleChoiceObj *question.MultipleChoice,
+	multipleChoiceEntity *question.MultipleChoice,
 	enteredAnswers []uuid.UUID,
 ) (int, error) {
 	if err := m.markAnswer(multipleChoice, enteredAnswers); err != nil {
 		return 0, err
 	}
 
-	points, err := m.calculateAndSetPoints(multipleChoice, multipleChoiceObj)
+	points, err := m.calculateAndSetPoints(multipleChoice, multipleChoiceEntity)
 	if err != nil {
 		return 0, err
 	}
@@ -34,11 +34,11 @@ func (m *MultipleChoiceProcessor) markAnswerAndCalculatePoints(
 
 func (m *MultipleChoiceProcessor) calculateAndSetPoints(
 	multipleChoice *generated.MultipleChoice,
-	multipleChoiceObj *question.MultipleChoice,
+	multipleChoiceEntity *question.MultipleChoice,
 ) (int, error) {
 	var correctAnswers int
 	for _, enteredAnswer := range multipleChoice.EnteredAnswers {
-		option, err := m.getMultipleOptionObj(multipleChoiceObj, enteredAnswer)
+		option, err := m.getMultipleOptionEntity(multipleChoiceEntity, enteredAnswer)
 		if err != nil {
 			return 0, err
 		}
@@ -51,29 +51,30 @@ func (m *MultipleChoiceProcessor) calculateAndSetPoints(
 	incorrectAnswers := len(multipleChoice.EnteredAnswers) - correctAnswers
 	correctAnswers = correctAnswers - incorrectAnswers
 
-	multipleChoice.Points = m.calculatePoints(multipleChoiceObj.Points, correctAnswers)
+	multipleChoice.Points = m.calculatePoints(multipleChoiceEntity.Points, correctAnswers)
 	return multipleChoice.Points, nil
 }
 
-func (m *MultipleChoiceProcessor) getMultipleOptionObj(
-	multipleChoiceObj *question.MultipleChoice,
+func (m *MultipleChoiceProcessor) getMultipleOptionEntity(
+	multipleChoiceEntity *question.MultipleChoice,
 	optionId uuid.UUID,
 ) (*question.MultipleChoiceOption, error) {
-	for _, multipleChoiceOption := range multipleChoiceObj.Options {
+	for _, multipleChoiceOption := range multipleChoiceEntity.Options {
 		if multipleChoiceOption.Id == optionId {
 			return &multipleChoiceOption, nil
 		}
 	}
+
 	return nil, errs.New(
-		fmt.Sprintf("answer for multiple choice question %v doesn't exist", multipleChoiceObj.QuestionId),
+		fmt.Sprintf("answer for multiple choice question %v doesn't exist", multipleChoiceEntity.QuestionId),
 		500)
 }
 
 func (m *MultipleChoiceProcessor) calculatePoints(matchingPoints []question.MultipleChoicePoints, correctAnswers int) int {
 	var points int
 	for _, matchingPoint := range matchingPoints {
-		if matchingPoint.CorrectAnswers > points && matchingPoint.CorrectAnswers <= correctAnswers {
-			points = matchingPoint.CorrectAnswers
+		if matchingPoint.CorrectAnswer > points && matchingPoint.CorrectAnswer <= correctAnswers {
+			points = matchingPoint.CorrectAnswer
 		}
 	}
 

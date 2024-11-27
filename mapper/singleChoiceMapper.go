@@ -23,13 +23,13 @@ func (s *SingleChoiceMapper) toDto(questionEntity *question.Question) (*get.Sing
 	return singleChoiceDto, nil
 }
 
-func (s *SingleChoiceMapper) singleOptionToDto(optionsObj []question.SingleChoiceOption) []get.SingleOptionDto {
-	options := make([]get.SingleOptionDto, len(optionsObj))
-	for _, optionObj := range optionsObj {
+func (s *SingleChoiceMapper) singleOptionToDto(singleChoiceOptions []question.SingleChoiceOption) []get.SingleOptionDto {
+	options := make([]get.SingleOptionDto, len(singleChoiceOptions))
+	for _, singleChoiceOption := range singleChoiceOptions {
 		var option get.SingleOptionDto
-		option.Id = optionObj.Id
-		option.Text = optionObj.Text
-		option.IsAnswer = optionObj.IsAnswer
+		option.Id = singleChoiceOption.Id
+		option.Text = singleChoiceOption.Text
+		option.IsAnswer = singleChoiceOption.IsAnswer
 		options = append(options, option)
 	}
 	return options

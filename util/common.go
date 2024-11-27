@@ -22,7 +22,7 @@ func FindKeyByValue(m map[string]int, value int) (key string, ok bool) {
 	return
 }
 
-func ExtractQuestionObjs(formPattern pattern.FormPattern) []*question.Question {
+func ExtractQuestionEntities(formPattern pattern.FormPattern) []*question.Question {
 	questions := make([]*question.Question, 0)
 	for _, patternSection := range formPattern.Sections {
 		for _, sectionBlock := range patternSection.Blocks {

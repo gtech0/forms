@@ -15,8 +15,9 @@ type FormPublished struct {
 	HideScore         bool
 	PostModeration    bool
 	MarkConfiguration []MarkConfiguration
-	Groups            []FormPublishedGroup
-	Users             []FormPublishedUser
+	Attempts          int
+	Groups            []Group `gorm:"many2many:form_groups"`
+	Users             []User  `gorm:"many2many:form_users"`
 	FormPattern       pattern.FormPattern
 	FormPatternId     uuid.UUID `gorm:"type:uuid"`
 	FormsGenerated    []generated.FormGenerated
@@ -35,14 +36,4 @@ type MarkConfiguration struct {
 	Mark            string
 	MinPoints       int
 	FormPublishedId uuid.UUID `gorm:"type:uuid"`
-}
-
-type FormPublishedGroup struct {
-	FormPublishedId uuid.UUID `gorm:"type:uuid"`
-	GroupId         uuid.UUID `gorm:"type:uuid"`
-}
-
-type FormPublishedUser struct {
-	FormPublishedId uuid.UUID `gorm:"type:uuid"`
-	UserId          uuid.UUID `gorm:"type:uuid"`
 }

@@ -18,30 +18,30 @@ func NewStaticBlockFactory() *StaticBlockFactory {
 }
 
 func (s *StaticBlockFactory) buildFromDto(blockDto *create.StaticBlockDto) (*block.Block, error) {
-	blockObj := new(block.Block)
-	blockObj.StaticBlock = new(block.StaticBlock)
-	variants, err := s.variantFactory.buildFromDtos(blockDto.Variants, blockObj.Id)
+	blockEntity := new(block.Block)
+	blockEntity.StaticBlock = new(block.StaticBlock)
+	variants, err := s.variantFactory.buildFromDtos(blockDto.Variants, blockEntity.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	blockObj.Title = blockDto.Title
-	blockObj.Description = blockDto.Description
-	blockObj.Type = block.STATIC
-	blockObj.StaticBlock.Variants = variants
-	return blockObj, nil
+	blockEntity.Title = blockDto.Title
+	blockEntity.Description = blockDto.Description
+	blockEntity.Type = block.STATIC
+	blockEntity.StaticBlock.Variants = variants
+	return blockEntity, nil
 }
 
-func (s *StaticBlockFactory) buildFromObj(blockObj *block.Block) (*block.Block, error) {
+func (s *StaticBlockFactory) buildFromEntity(blockEntity *block.Block) (*block.Block, error) {
 	newBlock := new(block.Block)
 	newBlock.StaticBlock = new(block.StaticBlock)
-	newVariants, err := s.variantFactory.buildFromObjs(blockObj.StaticBlock.Variants, newBlock.Id)
+	newVariants, err := s.variantFactory.buildFromEntities(blockEntity.StaticBlock.Variants, newBlock.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	newBlock.Title = blockObj.Title
-	newBlock.Description = blockObj.Description
+	newBlock.Title = blockEntity.Title
+	newBlock.Description = blockEntity.Description
 	newBlock.Type = block.STATIC
 	newBlock.StaticBlock.Variants = newVariants
 	return newBlock, nil

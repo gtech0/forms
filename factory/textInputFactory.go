@@ -16,34 +16,34 @@ func NewTextInputFactory() *TextInputFactory {
 }
 
 func (t *TextInputFactory) BuildFromDto(questionDto *create.TextQuestionDto) (*question.Question, error) {
-	questionObj := new(question.Question)
-	questionObj.TextInput = new(question.TextInput)
-	if err := t.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj); err != nil {
+	questionEntity := new(question.Question)
+	questionEntity.TextInput = new(question.TextInput)
+	if err := t.commonMapper.MapCommonDtoFields(questionDto.NewQuestionDto, questionEntity); err != nil {
 		return nil, err
 	}
 
-	questionObj.TextInput.Points = questionDto.Points
-	questionObj.TextInput.IsCaseSensitive = questionDto.IsCaseSensitive
+	questionEntity.TextInput.Points = questionDto.Points
+	questionEntity.TextInput.IsCaseSensitive = questionDto.IsCaseSensitive
 
 	answers := make([]question.TextInputAnswer, 0)
 	for _, answer := range questionDto.Answers {
-		var questionObjAnswer question.TextInputAnswer
-		questionObjAnswer.Answer = answer
-		answers = append(answers, questionObjAnswer)
+		var answerEntity question.TextInputAnswer
+		answerEntity.Answer = answer
+		answers = append(answers, answerEntity)
 	}
-	questionObj.TextInput.Answers = answers
-	return questionObj, nil
+	questionEntity.TextInput.Answers = answers
+	return questionEntity, nil
 }
 
-func (t *TextInputFactory) BuildFromObj(questionObj *question.Question) (*question.Question, error) {
-	newQuestionObj := new(question.Question)
-	newQuestionObj.TextInput = new(question.TextInput)
-	if err := t.commonMapper.MapCommonFieldsObj(*questionObj, newQuestionObj); err != nil {
+func (t *TextInputFactory) BuildFromEntity(questionEntity *question.Question) (*question.Question, error) {
+	newQuestion := new(question.Question)
+	newQuestion.TextInput = new(question.TextInput)
+	if err := t.commonMapper.MapCommonEntityFields(*questionEntity, newQuestion); err != nil {
 		return nil, err
 	}
 
-	newQuestionObj.TextInput.Points = questionObj.TextInput.Points
-	newQuestionObj.TextInput.IsCaseSensitive = questionObj.TextInput.IsCaseSensitive
-	newQuestionObj.TextInput.Answers = questionObj.TextInput.Answers
-	return newQuestionObj, nil
+	newQuestion.TextInput.Points = questionEntity.TextInput.Points
+	newQuestion.TextInput.IsCaseSensitive = questionEntity.TextInput.IsCaseSensitive
+	newQuestion.TextInput.Answers = questionEntity.TextInput.Answers
+	return newQuestion, nil
 }

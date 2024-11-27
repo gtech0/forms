@@ -16,7 +16,7 @@ func NewFormPublishedMapper() *FormPublishedMapper {
 	}
 }
 
-func (f *FormPublishedMapper) ToBaseDto(publishedForm published.FormPublished) *get.FormPublishedBaseDto {
+func (f *FormPublishedMapper) ToBaseDto(publishedForm *published.FormPublished) *get.FormPublishedBaseDto {
 	publishedBaseDto := new(get.FormPublishedBaseDto)
 	publishedBaseDto.Id = publishedForm.Id
 	publishedBaseDto.FormPatternId = publishedForm.FormPatternId
@@ -25,13 +25,13 @@ func (f *FormPublishedMapper) ToBaseDto(publishedForm published.FormPublished) *
 	publishedBaseDto.Duration = publishedForm.Duration
 	groups := make([]uuid.UUID, 0)
 	for _, publishedGroup := range publishedForm.Groups {
-		groups = append(groups, publishedGroup.GroupId)
+		groups = append(groups, publishedGroup.Id)
 	}
 	publishedBaseDto.GroupIds = groups
 
 	users := make([]uuid.UUID, 0)
 	for _, publishedUser := range publishedForm.Users {
-		users = append(users, publishedUser.UserId)
+		users = append(users, publishedUser.Id)
 	}
 	publishedBaseDto.UserIds = users
 
@@ -56,13 +56,13 @@ func (f *FormPublishedMapper) ToDto(publishedForm *published.FormPublished) (*ge
 	publishedDto.Duration = publishedForm.Duration
 	groups := make([]uuid.UUID, 0)
 	for _, publishedGroup := range publishedForm.Groups {
-		groups = append(groups, publishedGroup.GroupId)
+		groups = append(groups, publishedGroup.Id)
 	}
 	publishedDto.GroupIds = groups
 
 	users := make([]uuid.UUID, 0)
 	for _, publishedUser := range publishedForm.Users {
-		users = append(users, publishedUser.UserId)
+		users = append(users, publishedUser.Id)
 	}
 	publishedDto.UserIds = users
 	return publishedDto, nil

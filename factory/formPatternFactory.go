@@ -38,14 +38,14 @@ func (f *FormPatternFactory) buildAndAddSections(
 ) ([]section.Section, error) {
 	sections := make([]section.Section, 0)
 	for order, sectionDto := range sectionDtos {
-		sectionObj, err := f.sectionFactory.buildSection(sectionDto)
+		sectionEntity, err := f.sectionFactory.buildSection(sectionDto)
 		if err != nil {
 			return nil, err
 		}
 
-		sectionObj.FormPatternId = formPatternId
-		sectionObj.Order = order
-		sections = append(sections, *sectionObj)
+		sectionEntity.FormPatternId = formPatternId
+		sectionEntity.Order = order
+		sections = append(sections, *sectionEntity)
 	}
 
 	return sections, nil

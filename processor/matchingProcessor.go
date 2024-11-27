@@ -17,21 +17,21 @@ func NewMatchingProcessor() *MatchingProcessor {
 
 func (m *MatchingProcessor) markAnswerAndCalculatePoints(
 	matchingQuestion *generated.Matching,
-	matchingQuestionObj *question.Matching,
+	matchingQuestionEntity *question.Matching,
 	pairs []generated.EnteredMatchingPair,
 ) (int, error) {
 	if err := m.markAnswer(matchingQuestion, pairs, matchingQuestion.GetId()); err != nil {
 		return 0, err
 	}
 
-	return m.calculateAndSetPoints(matchingQuestion, matchingQuestionObj), nil
+	return m.calculateAndSetPoints(matchingQuestion, matchingQuestionEntity), nil
 }
 
 func (m *MatchingProcessor) calculateAndSetPoints(
 	matching *generated.Matching,
-	matchingObj *question.Matching,
+	matchingEntity *question.Matching,
 ) int {
-	termsAndDefinitions := m.extractTermDefinitionPairs(matchingObj)
+	termsAndDefinitions := m.extractTermDefinitionPairs(matchingEntity)
 
 	var correctAnswers int
 	for _, enteredAnswer := range matching.EnteredAnswers {
@@ -40,14 +40,14 @@ func (m *MatchingProcessor) calculateAndSetPoints(
 		}
 	}
 
-	matching.Points = m.calculatePoints(matchingObj.Points, correctAnswers)
+	matching.Points = m.calculatePoints(matchingEntity.Points, correctAnswers)
 	return matching.Points
 }
 
-func (m *MatchingProcessor) calculatePoints(matchingPoints []question.MatchingPoint, correctAnswers int) int {
+func (m *MatchingProcessor) calculatePoints(matchingPoints []question.MatchingPoints, correctAnswers int) int {
 	var points int
 	for _, matchingPoint := range matchingPoints {
-		if matchingPoint.Points > points && matchingPoint.CorrectAnswers <= correctAnswers {
+		if matchingPoint.Points > points && matchingPoint.CorrectAnswer <= correctAnswers {
 			points = matchingPoint.Points
 		}
 	}
@@ -55,9 +55,9 @@ func (m *MatchingProcessor) calculatePoints(matchingPoints []question.MatchingPo
 	return points
 }
 
-func (m *MatchingProcessor) extractTermDefinitionPairs(matchingObj *question.Matching) []generated.EnteredMatchingPair {
+func (m *MatchingProcessor) extractTermDefinitionPairs(matchingEntity *question.Matching) []generated.EnteredMatchingPair {
 	pairs := make([]generated.EnteredMatchingPair, 0)
-	for _, matchingTerm := range matchingObj.Terms {
+	for _, matchingTerm := range matchingEntity.Terms {
 		var pair generated.EnteredMatchingPair
 		pair.TermId = matchingTerm.Id
 		pair.DefinitionId = matchingTerm.MatchingDefinitionId

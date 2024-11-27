@@ -65,6 +65,10 @@ func (f *FormGeneratedService) GetMyForm(
 		}
 	}
 
+	if formGenerated.CurrentAttempts > 0 {
+
+	}
+
 	return f.formGeneratedMapper.ToDto(formGenerated)
 }
 
@@ -116,6 +120,10 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
+	if err = f.checkAttempts(formGenerated.CurrentAttempts, formPublished.Attempts); err != nil {
+		return nil, err
+	}
+
 	if err = f.formGeneratedProcessor.SaveAnswers(formGenerated, answers); err != nil {
 		return nil, err
 	}
@@ -160,6 +168,10 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
+	if err = f.checkAttempts(formGenerated.CurrentAttempts, formPublished.Attempts); err != nil {
+		return nil, err
+	}
+
 	if err = f.formGeneratedProcessor.CalculatePoints(formGenerated, formPublished.FormPattern, answers); err != nil {
 		return nil, err
 	}
@@ -179,6 +191,7 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
+	formGenerated.CurrentAttempts += 1
 	return f.formGeneratedMapper.ToMyDto(formGenerated)
 }
 
@@ -397,6 +410,14 @@ func (f *FormGeneratedService) checkDeadline(formPublished *published.FormPublis
 func (f *FormGeneratedService) checkStatus(formGenerated *generated.FormGenerated) error {
 	if formGenerated.Status != generated.NEW && formGenerated.Status != generated.IN_PROGRESS {
 		return errs.New("Form is already submitted", 400)
+	}
+
+	return nil
+}
+
+func (f *FormGeneratedService) checkAttempts(current, max int) error {
+	if current > max {
+		return errs.New(fmt.Sprintf("Attempt limit exceeded"), 400)
 	}
 
 	return nil

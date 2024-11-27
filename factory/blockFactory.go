@@ -34,22 +34,22 @@ func (b *BlockFactory) BuildFromDto(blockDto any) (*block.Block, error) {
 	}
 }
 
-func (b *BlockFactory) buildFromObject(blockObj *block.Block) (*block.Block, error) {
-	switch blockObj.Type {
+func (b *BlockFactory) buildFromEntity(blockEntity *block.Block) (*block.Block, error) {
+	switch blockEntity.Type {
 	case block.DYNAMIC:
-		return b.dynamicFactory.buildFromObj(blockObj)
+		return b.dynamicFactory.buildFromEntity(blockEntity)
 	case block.STATIC:
-		return b.staticFactory.buildFromObj(blockObj)
+		return b.staticFactory.buildFromEntity(blockEntity)
 	default:
-		return nil, errs.New("invalid block object type", 400)
+		return nil, errs.New("invalid block entity type", 400)
 	}
 }
 
 func (b *BlockFactory) buildFromExisting(dto *create.BlockOnExistingDto) (*block.Block, error) {
-	blockObj, err := b.blockRepository.FindById(dto.BlockId)
+	blockEntity, err := b.blockRepository.FindById(dto.BlockId)
 	if err != nil {
 		return nil, err
 	}
 
-	return b.buildFromObject(blockObj)
+	return b.buildFromEntity(blockEntity)
 }

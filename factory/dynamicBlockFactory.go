@@ -16,33 +16,33 @@ func NewDynamicBlockFactory() *DynamicBlockFactory {
 }
 
 func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (*block.Block, error) {
-	blockObj := new(block.Block)
-	blockObj.DynamicBlock = new(block.DynamicBlock)
-	questions, err := d.questionFactory.BuildQuestionDtoForDynamicBlock(dynamicDto.Questions, blockObj)
+	blockEntity := new(block.Block)
+	blockEntity.DynamicBlock = new(block.DynamicBlock)
+	questions, err := d.questionFactory.BuildQuestionDtoForDynamicBlock(dynamicDto.Questions, blockEntity)
 	if err != nil {
 		return nil, err
 	}
 
-	blockObj.Title = dynamicDto.Title
-	blockObj.Description = dynamicDto.Description
-	blockObj.Type = block.DYNAMIC
-	blockObj.DynamicBlock.QuestionCount = dynamicDto.QuestionCount
-	blockObj.DynamicBlock.Questions = questions
-	return blockObj, nil
+	blockEntity.Title = dynamicDto.Title
+	blockEntity.Description = dynamicDto.Description
+	blockEntity.Type = block.DYNAMIC
+	blockEntity.DynamicBlock.QuestionCount = dynamicDto.QuestionCount
+	blockEntity.DynamicBlock.Questions = questions
+	return blockEntity, nil
 }
 
-func (d *DynamicBlockFactory) buildFromObj(dynamicBlock *block.Block) (*block.Block, error) {
-	newBlockObj := new(block.Block)
-	newBlockObj.DynamicBlock = new(block.DynamicBlock)
-	newQuestions, err := d.questionFactory.BuildQuestionObjForDynamicBlock(dynamicBlock.DynamicBlock.Questions, newBlockObj)
+func (d *DynamicBlockFactory) buildFromEntity(dynamicBlock *block.Block) (*block.Block, error) {
+	newBlock := new(block.Block)
+	newBlock.DynamicBlock = new(block.DynamicBlock)
+	newQuestions, err := d.questionFactory.BuildQuestionEntityForDynamicBlock(dynamicBlock.DynamicBlock.Questions, newBlock)
 	if err != nil {
 		return nil, err
 	}
 
-	newBlockObj.Title = dynamicBlock.Title
-	newBlockObj.Description = dynamicBlock.Description
-	newBlockObj.Type = block.DYNAMIC
-	newBlockObj.DynamicBlock.QuestionCount = dynamicBlock.DynamicBlock.QuestionCount
-	newBlockObj.DynamicBlock.Questions = newQuestions
-	return newBlockObj, nil
+	newBlock.Title = dynamicBlock.Title
+	newBlock.Description = dynamicBlock.Description
+	newBlock.Type = block.DYNAMIC
+	newBlock.DynamicBlock.QuestionCount = dynamicBlock.DynamicBlock.QuestionCount
+	newBlock.DynamicBlock.Questions = newQuestions
+	return newBlock, nil
 }

@@ -46,16 +46,16 @@ func (f *FormGeneratedVerificationFactory) Build(
 func (f *FormGeneratedVerificationFactory) ExtractQuestionDtoMap(
 	formPattern pattern.FormPattern,
 ) (map[uuid.UUID]get.IQuestionDto, error) {
-	questionObjs := util.ExtractQuestionObjs(formPattern)
+	questionEntities := util.ExtractQuestionEntities(formPattern)
 
 	questionDtoMap := make(map[uuid.UUID]get.IQuestionDto)
-	for _, questionObj := range questionObjs {
-		questionDto, err := f.questionMapper.ToDto(questionObj)
+	for _, questionEntity := range questionEntities {
+		questionDto, err := f.questionMapper.ToDto(questionEntity)
 		if err != nil {
 			return nil, err
 		}
 
-		questionDtoMap[questionObj.Id] = questionDto
+		questionDtoMap[questionEntity.Id] = questionDto
 	}
 
 	return questionDtoMap, nil

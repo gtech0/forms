@@ -39,8 +39,12 @@ func (f *FormPublishedService) PublishForm(publishDto create.FormPublishDto) (*g
 		return nil, err
 	}
 
-	formPublished := f.formPublishedFactory.Build(publishDto)
-	if err := f.formPublishedRepository.Create(&formPublished); err != nil {
+	formPublished, err := f.formPublishedFactory.Build(publishDto)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = f.formPublishedRepository.Create(formPublished); err != nil {
 		return nil, err
 	}
 
@@ -88,7 +92,7 @@ func (f *FormPublishedService) GetForms(query url.Values) (*get.PaginationRespon
 
 	publishedDtos := make([]get.FormPublishedBaseDto, 0)
 	for _, formPublished := range formsPublished {
-		publishedDto := f.formPublishedMapper.ToBaseDto(formPublished)
+		publishedDto := f.formPublishedMapper.ToBaseDto(&formPublished)
 		publishedDtos = append(publishedDtos, *publishedDto)
 	}
 
@@ -113,7 +117,10 @@ func (f *FormPublishedService) UpdateForm(
 		return nil, err
 	}
 
-	f.formPublishedFactory.Update(formPublished, formPublishedDto)
+	if err = f.formPublishedFactory.Update(formPublished, formPublishedDto); err != nil {
+		return nil, err
+	}
+
 	if !maps.Equal(formPublished.GetMarkConfigMap(), formPublishedDto.MarkConfiguration) {
 		if err = f.recalculateMarks(formPublished.FormsGenerated, formPublishedDto.MarkConfiguration); err != nil {
 			return nil, err
@@ -124,7 +131,7 @@ func (f *FormPublishedService) UpdateForm(
 		return nil, err
 	}
 
-	return f.formPublishedMapper.ToBaseDto(*formPublished), nil
+	return f.formPublishedMapper.ToBaseDto(formPublished), nil
 }
 
 func (f *FormPublishedService) recalculateMarks(formsGenerated []generated.FormGenerated, marks map[string]int) error {

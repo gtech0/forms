@@ -9,7 +9,7 @@ type Matching struct {
 	Base
 	Definitions []MatchingDefinition
 	Terms       []MatchingTerm
-	Points      []MatchingPoint
+	Points      []MatchingPoints
 }
 
 type MatchingTerm struct {
@@ -26,9 +26,9 @@ type MatchingDefinition struct {
 	MatchingTerm MatchingTerm
 }
 
-type MatchingPoint struct {
+type MatchingPoints struct {
 	model.Base
-	CorrectAnswers int
-	Points         int
-	MatchingId     uuid.UUID `gorm:"type:uuid"`
+	CorrectAnswer int
+	Points        int
+	MatchingId    uuid.UUID `gorm:"type:uuid"`
 }

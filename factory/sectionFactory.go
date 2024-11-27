@@ -32,51 +32,51 @@ func (s *SectionFactory) buildSection(sectionDto any) (*section.Section, error) 
 }
 
 func (s *SectionFactory) buildSectionNew(sectionDto *create.NewSectionDto) (*section.Section, error) {
-	sectionObj := new(section.Section)
-	sectionObj.Title = sectionDto.Title
-	sectionObj.Description = sectionDto.Description
-	err := s.buildAndAddBlocksFromDto(sectionDto.Blocks, sectionObj)
+	sectionEntity := new(section.Section)
+	sectionEntity.Title = sectionDto.Title
+	sectionEntity.Description = sectionDto.Description
+	err := s.buildAndAddBlocksFromDto(sectionDto.Blocks, sectionEntity)
 	if err != nil {
 		return nil, err
 	}
-	return sectionObj, nil
+	return sectionEntity, nil
 }
 
-func (s *SectionFactory) buildAndAddBlocksFromDto(blockDtos []any, sectionObj *section.Section) error {
+func (s *SectionFactory) buildAndAddBlocksFromDto(blockDtos []any, sectionEntity *section.Section) error {
 	blocks := make([]*block.Block, 0)
 	for order, blockDto := range blockDtos {
-		blockObj, err := s.blockFactory.BuildFromDto(blockDto)
+		blockEntity, err := s.blockFactory.BuildFromDto(blockDto)
 		if err != nil {
 			return err
 		}
 
-		blockObj.Order = order
-		blocks = append(blocks, blockObj)
+		blockEntity.Order = order
+		blocks = append(blocks, blockEntity)
 	}
 
-	sectionObj.Blocks = blocks
+	sectionEntity.Blocks = blocks
 	return nil
 }
 
 func (s *SectionFactory) buildSectionExisting(sectionDto *create.SectionOnExistingDto) (*section.Section, error) {
-	sectObj, err := s.sectionRepository.FindById(sectionDto.SectionId)
+	sectEntity, err := s.sectionRepository.FindById(sectionDto.SectionId)
 	if err != nil {
 		return nil, err
 	}
 
-	sectionObj := new(section.Section)
-	sectionObj.Title = sectObj.Title
-	sectionObj.Description = sectObj.Description
-	s.buildAndAddBlocksFromObj(sectObj.Blocks, sectionObj)
-	return sectionObj, nil
+	sectionEntity := new(section.Section)
+	sectionEntity.Title = sectEntity.Title
+	sectionEntity.Description = sectEntity.Description
+	s.buildAndAddBlocksFromEntity(sectEntity.Blocks, sectionEntity)
+	return sectionEntity, nil
 }
 
-func (s *SectionFactory) buildAndAddBlocksFromObj(blockObjs []*block.Block, sectionObj *section.Section) {
+func (s *SectionFactory) buildAndAddBlocksFromEntity(blockEntities []*block.Block, sectionEntity *section.Section) {
 	blocks := make([]*block.Block, 0)
-	for order, blockObj := range blockObjs {
-		blockObj.Order = order
-		blocks = append(blocks, blockObj)
+	for order, blockEntity := range blockEntities {
+		blockEntity.Order = order
+		blocks = append(blocks, blockEntity)
 	}
 
-	sectionObj.Blocks = blocks
+	sectionEntity.Blocks = blocks
 }

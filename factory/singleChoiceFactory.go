@@ -17,40 +17,40 @@ func NewSingleChoiceFactory() *SingleChoiceFactory {
 }
 
 func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuestionDto) (*question.Question, error) {
-	questionObj := new(question.Question)
-	questionObj.SingleChoice = new(question.SingleChoice)
-	if err := s.commonMapper.MapCommonFieldsDto(questionDto.NewQuestionDto, questionObj); err != nil {
+	questionEntity := new(question.Question)
+	questionEntity.SingleChoice = new(question.SingleChoice)
+	if err := s.commonMapper.MapCommonDtoFields(questionDto.NewQuestionDto, questionEntity); err != nil {
 		return nil, err
 	}
-	questionObj.SingleChoice.Points = questionDto.Points
+	questionEntity.SingleChoice.Points = questionDto.Points
 
 	optionNames := questionDto.Options
 	options := make([]question.SingleChoiceOption, 0)
 	for order := 0; order < len(optionNames); order++ {
-		option := s.buildOptionFromDto(questionDto, order, questionObj.Id)
+		option := s.buildOptionFromDto(questionDto, order, questionEntity.Id)
 		options = append(options, option)
 	}
-	questionObj.SingleChoice.Options = options
-	return questionObj, nil
+	questionEntity.SingleChoice.Options = options
+	return questionEntity, nil
 }
 
-func (s *SingleChoiceFactory) BuildFromObj(questionObj *question.Question) (*question.Question, error) {
-	newQuestionObj := new(question.Question)
-	newQuestionObj.SingleChoice = new(question.SingleChoice)
-	if err := s.commonMapper.MapCommonFieldsObj(*questionObj, newQuestionObj); err != nil {
+func (s *SingleChoiceFactory) BuildFromEntity(questionEntity *question.Question) (*question.Question, error) {
+	newQuestion := new(question.Question)
+	newQuestion.SingleChoice = new(question.SingleChoice)
+	if err := s.commonMapper.MapCommonEntityFields(*questionEntity, newQuestion); err != nil {
 		return nil, err
 	}
-	newQuestionObj.SingleChoice.Points = questionObj.SingleChoice.Points
+	newQuestion.SingleChoice.Points = questionEntity.SingleChoice.Points
 
 	options := make([]question.SingleChoiceOption, 0)
-	for _, option := range questionObj.SingleChoice.Options {
+	for _, option := range questionEntity.SingleChoice.Options {
 		var newOption question.SingleChoiceOption
 		newOption.Text = option.Text
 		newOption.Order = option.Order
 		newOption.IsAnswer = option.IsAnswer
 	}
-	newQuestionObj.SingleChoice.Options = options
-	return newQuestionObj, nil
+	newQuestion.SingleChoice.Options = options
+	return newQuestion, nil
 }
 
 func (s *SingleChoiceFactory) buildOptionFromDto(

@@ -23,21 +23,21 @@ func (m *MultipleChoiceMapper) toDto(questionEntity *question.Question) (*get.Mu
 	return multipleChoiceDto, nil
 }
 
-func (m *MultipleChoiceMapper) pointsToDto(pointsObj []question.MultipleChoicePoints) map[int]int {
+func (m *MultipleChoiceMapper) pointsToDto(multipleChoicePoints []question.MultipleChoicePoints) map[int]int {
 	points := make(map[int]int)
-	for _, pointObj := range pointsObj {
-		points[pointObj.CorrectAnswers] = pointObj.Points
+	for _, multipleChoicePoint := range multipleChoicePoints {
+		points[multipleChoicePoint.CorrectAnswer] = multipleChoicePoint.Points
 	}
 	return points
 }
 
-func (m *MultipleChoiceMapper) optionsToDto(optionsObj []question.MultipleChoiceOption) []get.MultipleOptionDto {
+func (m *MultipleChoiceMapper) optionsToDto(multipleChoiceOptions []question.MultipleChoiceOption) []get.MultipleOptionDto {
 	options := make([]get.MultipleOptionDto, 0)
-	for _, optionObj := range optionsObj {
+	for _, multipleChoiceOption := range multipleChoiceOptions {
 		var option get.MultipleOptionDto
-		option.Id = optionObj.Id
-		option.Text = optionObj.Text
-		option.IsAnswer = optionObj.IsAnswer
+		option.Id = multipleChoiceOption.Id
+		option.Text = multipleChoiceOption.Text
+		option.IsAnswer = multipleChoiceOption.IsAnswer
 		options = append(options, option)
 	}
 	return options

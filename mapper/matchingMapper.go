@@ -24,20 +24,20 @@ func (m *MatchingMapper) toDto(questionEntity *question.Question) (*get.Matching
 }
 
 func (m *MatchingMapper) termsAndDefinitionsToDto(
-	definitionsObj []question.MatchingDefinition,
+	definitions []question.MatchingDefinition,
 ) []get.MatchingTermDefinitionDto {
 	termDefinitionDtos := make([]get.MatchingTermDefinitionDto, 0)
-	for _, definitionObj := range definitionsObj {
+	for _, definitionEntity := range definitions {
 		var termAndDefinition get.MatchingTermDefinitionDto
 
 		var definition get.MatchingOptionDto
-		definition.Id = definitionObj.Id
-		definition.Text = definitionObj.Text
+		definition.Id = definitionEntity.Id
+		definition.Text = definitionEntity.Text
 		termAndDefinition.Definition = definition
 
 		var term get.MatchingOptionDto
-		term.Id = definitionObj.MatchingTerm.Id
-		term.Text = definitionObj.MatchingTerm.Text
+		term.Id = definitionEntity.MatchingTerm.Id
+		term.Text = definitionEntity.MatchingTerm.Text
 		termAndDefinition.Term = term
 
 		termDefinitionDtos = append(termDefinitionDtos, termAndDefinition)
@@ -45,10 +45,10 @@ func (m *MatchingMapper) termsAndDefinitionsToDto(
 	return termDefinitionDtos
 }
 
-func (m *MatchingMapper) pointsToDto(pointsObj []question.MatchingPoint) map[int]int {
+func (m *MatchingMapper) pointsToDto(matchingPoints []question.MatchingPoints) map[int]int {
 	points := make(map[int]int)
-	for _, pointObj := range pointsObj {
-		points[pointObj.CorrectAnswers] = pointObj.Points
+	for _, matchingPoint := range matchingPoints {
+		points[matchingPoint.CorrectAnswer] = matchingPoint.Points
 	}
 	return points
 }

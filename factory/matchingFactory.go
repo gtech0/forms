@@ -17,48 +17,48 @@ func NewMatchingFactory() *MatchingFactory {
 }
 
 func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*question.Question, error) {
-	questionObj := new(question.Question)
-	questionObj.Matching = new(question.Matching)
-	if err := m.commonMapper.MapCommonFieldsDto(dto.NewQuestionDto, questionObj); err != nil {
+	questionEntity := new(question.Question)
+	questionEntity.Matching = new(question.Matching)
+	if err := m.commonMapper.MapCommonDtoFields(dto.NewQuestionDto, questionEntity); err != nil {
 		return nil, err
 	}
 
 	terms, definitions := m.buildTermsAndDefinitions(dto.TermsAndDefinitions)
-	questionObj.Matching.Terms = terms
-	questionObj.Matching.Definitions = definitions
+	questionEntity.Matching.Terms = terms
+	questionEntity.Matching.Definitions = definitions
 	for answer, value := range dto.Points {
-		var pointObj question.MatchingPoint
-		pointObj.CorrectAnswers = answer
-		pointObj.Points = value
-		questionObj.Matching.Points = append(questionObj.Matching.Points, pointObj)
+		var pointEntity question.MatchingPoints
+		pointEntity.CorrectAnswer = answer
+		pointEntity.Points = value
+		questionEntity.Matching.Points = append(questionEntity.Matching.Points, pointEntity)
 	}
 
-	return questionObj, nil
+	return questionEntity, nil
 }
 
-func (m *MatchingFactory) BuildFromObj(questionObj *question.Question) (*question.Question, error) {
-	newQuestionObj := new(question.Question)
-	newQuestionObj.Matching = new(question.Matching)
+func (m *MatchingFactory) BuildFromEntity(questionEntity *question.Question) (*question.Question, error) {
+	newQuestionEntity := new(question.Question)
+	newQuestionEntity.Matching = new(question.Matching)
 	terms := make([]question.MatchingTerm, 0)
 	definitions := make([]question.MatchingDefinition, 0)
 
-	for _, term := range questionObj.Matching.Terms {
-		newDefinition := m.buildDefinitionFromEntity(term, newQuestionObj.Id)
-		newTerm := m.buildTermFromEntity(term, newQuestionObj.Id, newDefinition)
+	for _, term := range questionEntity.Matching.Terms {
+		newDefinition := m.buildDefinitionFromEntity(term, newQuestionEntity.Id)
+		newTerm := m.buildTermFromEntity(term, newQuestionEntity.Id, newDefinition)
 
 		terms = append(terms, newTerm)
 		definitions = append(definitions, newDefinition)
 	}
 
-	newQuestionObj.Matching.Points = questionObj.Matching.Points
-	newQuestionObj.Matching.Terms = terms
-	newQuestionObj.Matching.Definitions = definitions
+	newQuestionEntity.Matching.Points = questionEntity.Matching.Points
+	newQuestionEntity.Matching.Terms = terms
+	newQuestionEntity.Matching.Definitions = definitions
 
-	if err := m.commonMapper.MapCommonFieldsObj(*questionObj, newQuestionObj); err != nil {
+	if err := m.commonMapper.MapCommonEntityFields(*questionEntity, newQuestionEntity); err != nil {
 		return nil, err
 	}
 
-	return newQuestionObj, nil
+	return newQuestionEntity, nil
 }
 
 func (m *MatchingFactory) buildTermFromEntity(
@@ -66,21 +66,21 @@ func (m *MatchingFactory) buildTermFromEntity(
 	questionId uuid.UUID,
 	definition question.MatchingDefinition,
 ) question.MatchingTerm {
-	var newTermObj question.MatchingTerm
-	newTermObj.Text = term.Text
-	newTermObj.MatchingId = questionId
-	newTermObj.MatchingDefinitionId = definition.Id
-	return newTermObj
+	var newTerm question.MatchingTerm
+	newTerm.Text = term.Text
+	newTerm.MatchingId = questionId
+	newTerm.MatchingDefinitionId = definition.Id
+	return newTerm
 }
 
 func (m *MatchingFactory) buildDefinitionFromEntity(
 	term question.MatchingTerm,
 	questionId uuid.UUID,
 ) question.MatchingDefinition {
-	var newDefObj question.MatchingDefinition
-	newDefObj.Text = term.Text
-	newDefObj.MatchingId = questionId
-	return newDefObj
+	var definition question.MatchingDefinition
+	definition.Text = term.Text
+	definition.MatchingId = questionId
+	return definition
 }
 
 func (m *MatchingFactory) buildTermsAndDefinitions(

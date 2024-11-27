@@ -27,12 +27,12 @@ func (s *SectionService) GetSection(sectionId string) (*get.SectionDto, error) {
 		return nil, err
 	}
 
-	sectionObj, err := s.sectionRepository.FindById(parsedSectionId)
+	sectionEntity, err := s.sectionRepository.FindById(parsedSectionId)
 	if err != nil {
 		return nil, err
 	}
 
-	sectionDto, err := s.sectionMapper.ToDto(sectionObj)
+	sectionDto, err := s.sectionMapper.ToDto(sectionEntity)
 	if err != nil {
 		return nil, err
 	}

@@ -4,63 +4,90 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/published"
+	"hedgehog-forms/repository"
 )
 
-type FormPublishedFactory struct{}
-
-func NewFormPublishedFactory() *FormPublishedFactory {
-	return &FormPublishedFactory{}
+type FormPublishedFactory struct {
+	groupRepository *repository.GroupRepository
+	userRepository  *repository.UserRepository
 }
 
-func (f *FormPublishedFactory) Build(publishDto create.FormPublishDto) published.FormPublished {
-	var formPublished published.FormPublished
+func NewFormPublishedFactory() *FormPublishedFactory {
+	return &FormPublishedFactory{
+		userRepository:  repository.NewUserRepository(),
+		groupRepository: repository.NewGroupRepository(),
+	}
+}
+
+func (f *FormPublishedFactory) Build(publishDto create.FormPublishDto) (*published.FormPublished, error) {
+	formPublished := new(published.FormPublished)
 	formPublished.Id = uuid.New()
 	formPublished.Deadline = publishDto.Deadline
 	formPublished.Duration = publishDto.Duration
 	formPublished.HideScore = publishDto.HideScore
 	formPublished.PostModeration = publishDto.PostModeration
 	formPublished.FormPatternId = publishDto.FormPatternId
+	if err := f.BuildGroups(publishDto.GroupIds, formPublished); err != nil {
+		return nil, err
+	}
 
-	formPublished.Groups = f.BuildGroups(publishDto.GroupIds, formPublished.Id)
-	formPublished.Users = f.BuildUsers(publishDto.UserIds, formPublished.Id)
+	if err := f.BuildUsers(publishDto.UserIds, formPublished); err != nil {
+		return nil, err
+	}
+
 	formPublished.MarkConfiguration = f.BuildMarkConfiguration(publishDto.MarkConfiguration, formPublished.Id)
-
-	return formPublished
+	return formPublished, nil
 }
 
 func (f *FormPublishedFactory) Update(
 	formPublished *published.FormPublished,
 	formPublishedDto create.UpdateFormPublishedDto,
-) {
+) error {
 	formPublished.Deadline = formPublishedDto.Deadline
 	formPublished.Duration = formPublishedDto.Duration
 	formPublished.HideScore = formPublishedDto.HideScore
+	if err := f.BuildGroups(formPublishedDto.GroupIds, formPublished); err != nil {
+		return err
+	}
 
-	formPublished.Groups = f.BuildGroups(formPublishedDto.GroupIds, formPublished.Id)
-	formPublished.Users = f.BuildUsers(formPublishedDto.UserIds, formPublished.Id)
+	if err := f.BuildUsers(formPublishedDto.UserIds, formPublished); err != nil {
+		return err
+	}
+
 	formPublished.MarkConfiguration = f.BuildMarkConfiguration(formPublishedDto.MarkConfiguration, formPublished.Id)
+	return nil
 }
 
-func (f *FormPublishedFactory) BuildGroups(groupIds []uuid.UUID, publishedId uuid.UUID) []published.FormPublishedGroup {
-	groups := make([]published.FormPublishedGroup, 0)
+func (f *FormPublishedFactory) BuildGroups(
+	groupIds []uuid.UUID,
+	formPublished *published.FormPublished,
+) error {
+	groups := make([]published.Group, 0)
 	for _, groupId := range groupIds {
-		var publishedGroup published.FormPublishedGroup
-		publishedGroup.FormPublishedId = publishedId
-		publishedGroup.GroupId = groupId
-		groups = append(groups, publishedGroup)
+		group, err := f.groupRepository.FindById(groupId)
+		if err != nil {
+			return err
+		}
+		groups = append(groups, *group)
 	}
-	return groups
+	formPublished.Groups = groups
+	return nil
 }
 
-func (f *FormPublishedFactory) BuildUsers(userIds []uuid.UUID, publishedId uuid.UUID) []published.FormPublishedUser {
-	users := make([]published.FormPublishedUser, 0)
+func (f *FormPublishedFactory) BuildUsers(
+	userIds []uuid.UUID,
+	formPublished *published.FormPublished,
+) error {
+	users := make([]published.User, 0)
 	for _, userId := range userIds {
-		var publishedUser published.FormPublishedUser
-		publishedUser.FormPublishedId = publishedId
-		publishedUser.UserId = userId
-		users = append(users, publishedUser)
+		user, err := f.userRepository.FindById(userId)
+		if err != nil {
+			return err
+		}
+		users = append(users, *user)
 	}
-	return users
+	formPublished.Users = users
+	return nil
 }
 
 func (f *FormPublishedFactory) BuildMarkConfiguration(

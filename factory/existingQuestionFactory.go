@@ -33,13 +33,13 @@ func (e *ExistingQuestionFactory) BuildFromDto(existingDto *create.QuestionOnExi
 
 	switch existingDto.Type {
 	case question.MATCHING:
-		return e.matchingFactory.BuildFromObj(questionEntity)
+		return e.matchingFactory.BuildFromEntity(questionEntity)
 	case question.MULTIPLE_CHOICE:
-		return e.multipleChoiceFactory.BuildFromObj(questionEntity)
+		return e.multipleChoiceFactory.BuildFromEntity(questionEntity)
 	case question.SINGLE_CHOICE:
-		return e.singleChoiceFactory.BuildFromObj(questionEntity)
+		return e.singleChoiceFactory.BuildFromEntity(questionEntity)
 	case question.TEXT_INPUT:
-		return e.textInputFactory.BuildFromObj(questionEntity)
+		return e.textInputFactory.BuildFromEntity(questionEntity)
 	default:
 		return nil, errs.New("invalid question type", 400)
 	}

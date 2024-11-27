@@ -47,7 +47,7 @@ func (b *BlockGeneratedFactory) buildBlock(iBlock *block.Block) (*generated.Bloc
 func (b *BlockGeneratedFactory) buildDynamicBlock(dynamicBlock *block.Block) (*generated.Block, error) {
 	questionCount := dynamicBlock.DynamicBlock.QuestionCount
 	questions := dynamicBlock.DynamicBlock.Questions
-	questionsForBlock := make([]generated.IQuestion, 0, questionCount)
+	questionsForBlock := make([]generated.IQuestion, 0)
 	for i := 0; i < questionCount; i++ {
 		randomIndex := rand.Intn(len(questions))
 		randomQuestion := questions[randomIndex]
