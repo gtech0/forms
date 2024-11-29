@@ -42,6 +42,7 @@ func (f *FormGeneratedRepository) FindByPublishedId(publishedId uuid.UUID) (*gen
 }
 
 func (f *FormGeneratedRepository) FindBySubjectIdAndPaginate(
+	userId,
 	subjectId uuid.UUID,
 	page int,
 	size int,
@@ -52,6 +53,7 @@ func (f *FormGeneratedRepository) FindBySubjectIdAndPaginate(
 		Model(&generated.FormGenerated{}).
 		Joins("inner join form_published on form_published_id = form_published.id").
 		Joins("inner join form_pattern on form_published.form_pattern_id = form_pattern.id").
+		Where("form_pattern.user_id = ?", userId).
 		Where("form_pattern.subject_id = ?", subjectId).
 		Scopes(paginate(page, size)).
 		Find(&formsGenerated).
@@ -62,6 +64,7 @@ func (f *FormGeneratedRepository) FindBySubjectIdAndPaginate(
 }
 
 func (f *FormGeneratedRepository) FindByPublishedIdAndStatusAndPaginate(
+	userId,
 	publishedId uuid.UUID,
 	status generated.FormStatus,
 	page int,
@@ -72,8 +75,10 @@ func (f *FormGeneratedRepository) FindByPublishedIdAndStatusAndPaginate(
 		Preload(clause.Associations, preload).
 		Model(&generated.FormGenerated{}).
 		Joins("inner join form_published on form_published_id = form_published.id").
+		Joins("inner join form_pattern on form_published.form_pattern_id = form_pattern.id").
+		Where("form_pattern.user_id = ?", userId).
 		Where("form_published.id = ?", publishedId).
-		Where("status = ?", status).
+		Where("form_generated.status = ?", status).
 		Scopes(paginate(page, size)).
 		Find(&formsGenerated).
 		Error; err != nil {

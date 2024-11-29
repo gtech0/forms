@@ -7,5 +7,8 @@ import (
 
 type Attachment struct {
 	model.Base
+	Question   Question
 	QuestionId uuid.UUID `gorm:"type:uuid"`
+	File       model.File
+	FileId     uuid.UUID `gorm:"type:uuid"`
 }

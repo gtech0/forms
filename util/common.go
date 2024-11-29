@@ -1,12 +1,5 @@
 package util
 
-import (
-	"hedgehog-forms/model/form/pattern"
-	"hedgehog-forms/model/form/pattern/section/block"
-	"hedgehog-forms/model/form/pattern/section/block/question"
-	"slices"
-)
-
 func Zero[T any]() T {
 	return *new(T)
 }
@@ -22,20 +15,16 @@ func FindKeyByValue(m map[string]int, value int) (key string, ok bool) {
 	return
 }
 
-func ExtractQuestionEntities(formPattern pattern.FormPattern) []*question.Question {
-	questions := make([]*question.Question, 0)
-	for _, patternSection := range formPattern.Sections {
-		for _, sectionBlock := range patternSection.Blocks {
-			switch sectionBlock.Type {
-			case block.DYNAMIC:
-				questions = slices.Concat(questions, sectionBlock.DynamicBlock.Questions)
-			case block.STATIC:
-				variants := sectionBlock.StaticBlock.Variants
-				for _, variant := range variants {
-					questions = slices.Concat(questions, variant.Questions)
-				}
-			}
+func Difference[T comparable](a, b []T) []T {
+	mb := make(map[T]struct{}, len(b))
+	for _, x := range b {
+		mb[x] = struct{}{}
+	}
+	var diff []T
+	for _, x := range a {
+		if _, found := mb[x]; !found {
+			diff = append(diff, x)
 		}
 	}
-	return questions
+	return diff
 }

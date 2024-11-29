@@ -4,6 +4,9 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/model"
 	"hedgehog-forms/model/form/pattern/section"
+	"hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block/question"
+	"slices"
 )
 
 type FormPattern struct {
@@ -14,4 +17,22 @@ type FormPattern struct {
 	Subject     model.Subject
 	SubjectId   uuid.UUID `gorm:"type:uuid"`
 	Sections    []section.Section
+}
+
+func (f *FormPattern) ExtractQuestionEntities() []*question.Question {
+	questions := make([]*question.Question, 0)
+	for _, patternSection := range f.Sections {
+		for _, sectionBlock := range patternSection.Blocks {
+			switch sectionBlock.Type {
+			case block.DYNAMIC:
+				questions = slices.Concat(questions, sectionBlock.DynamicBlock.Questions)
+			case block.STATIC:
+				variants := sectionBlock.StaticBlock.Variants
+				for _, variant := range variants {
+					questions = slices.Concat(questions, variant.Questions)
+				}
+			}
+		}
+	}
+	return questions
 }

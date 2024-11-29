@@ -40,10 +40,15 @@ func NewFormGeneratedService() *FormGeneratedService {
 }
 
 func (f *FormGeneratedService) GetMyForm(
-	//userId,
+	userId,
 	publishedId string,
 ) (*get.FormGeneratedDto, error) {
 	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -59,24 +64,24 @@ func (f *FormGeneratedService) GetMyForm(
 	}
 
 	if formGenerated == nil {
-		formGenerated, err = f.buildAndCreate(*formPublished)
+		formGenerated, err = f.buildAndCreate(formPublished, parsedUserId)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	if formGenerated.CurrentAttempts > 0 {
-
+		//TODO
 	}
 
 	return f.formGeneratedMapper.ToDto(formGenerated)
 }
 
 func (f *FormGeneratedService) buildAndCreate(
-	formPublished published.FormPublished,
-	// userId string,
+	formPublished *published.FormPublished,
+	userId uuid.UUID,
 ) (*generated.FormGenerated, error) {
-	generatedForm, err := f.formGeneratedFactory.BuildForm(formPublished)
+	generatedForm, err := f.formGeneratedFactory.BuildForm(formPublished, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -89,10 +94,16 @@ func (f *FormGeneratedService) buildAndCreate(
 }
 
 func (f *FormGeneratedService) SaveAnswers(
+	userId,
 	generatedId string,
 	answers get.AnswerDto,
 ) (*get.FormGeneratedDto, error) {
 	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +118,10 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
-	//TODO: check user access
+	if err = f.checkAccess(formPublished, parsedUserId); err != nil {
+		return nil, err
+	}
+
 	if err = f.checkTime(formPublished); err != nil {
 		return nil, err
 	}
@@ -137,11 +151,16 @@ func (f *FormGeneratedService) SaveAnswers(
 }
 
 func (f *FormGeneratedService) SubmitForm(
-	//userId,
+	userId,
 	generatedId string,
 	answers get.AnswerDto,
 ) (*get.MyGeneratedDto, error) {
 	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -153,6 +172,10 @@ func (f *FormGeneratedService) SubmitForm(
 
 	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedID)
 	if err != nil {
+		return nil, err
+	}
+
+	if err = f.checkAccess(formPublished, parsedUserId); err != nil {
 		return nil, err
 	}
 
@@ -215,11 +238,16 @@ func (f *FormGeneratedService) UnSubmitForm(generatedId string) (*get.MyGenerate
 }
 
 func (f *FormGeneratedService) GetMyForms(
-	//userId,
+	userId,
 	subjectId string,
 	query url.Values,
 ) (*get.PaginationResponse[get.MyGeneratedDto], error) {
 	parsedSubjectId, err := util.IdCheckAndParse(subjectId)
+	if err != nil {
+		return nil, err
+	}
+
+	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +265,7 @@ func (f *FormGeneratedService) GetMyForms(
 		size = 5
 	}
 
-	formsGenerated, err := f.formGeneratedRepository.FindBySubjectIdAndPaginate(parsedSubjectId, page, size)
+	formsGenerated, err := f.formGeneratedRepository.FindBySubjectIdAndPaginate(parsedUserId, parsedSubjectId, page, size)
 	if err != nil {
 		return nil, err
 	}
@@ -260,11 +288,16 @@ func (f *FormGeneratedService) GetMyForms(
 }
 
 func (f *FormGeneratedService) GetSubmittedForms(
-	//userId,
+	userId,
 	publishedId string,
 	query url.Values,
 ) (*get.PaginationResponse[get.SubmittedDto], error) {
 	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -286,6 +319,7 @@ func (f *FormGeneratedService) GetSubmittedForms(
 	}
 
 	formsGenerated, err := f.formGeneratedRepository.FindByPublishedIdAndStatusAndPaginate(
+		parsedUserId,
 		parsedPublishedId,
 		formStatus,
 		page,
@@ -319,13 +353,23 @@ func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) (
 		return nil, err
 	}
 
-	//TODO: userIdsWithAccess
-	userIdsWithFormGenerated := make([]uuid.UUID, 0)
-	for _, formGenerated := range formPublished.FormsGenerated {
-		userIdsWithFormGenerated = append(userIdsWithFormGenerated, formGenerated.UserId)
+	userIdsWithAccess := make([]uuid.UUID, 0)
+	for _, groupEntity := range formPublished.Groups {
+		for _, userEntity := range groupEntity.Users {
+			userIdsWithAccess = append(userIdsWithAccess, userEntity.Id)
+		}
 	}
-	//
-	return userIdsWithFormGenerated, nil
+
+	for _, userEntity := range formPublished.Users {
+		userIdsWithAccess = append(userIdsWithAccess, userEntity.Id)
+	}
+
+	userIdsWithGeneratedForm := make([]uuid.UUID, 0)
+	for _, formGenerated := range formPublished.FormsGenerated {
+		userIdsWithGeneratedForm = append(userIdsWithGeneratedForm, formGenerated.UserId)
+	}
+
+	return util.Difference(userIdsWithAccess, userIdsWithGeneratedForm), nil
 }
 
 func (f *FormGeneratedService) GetSubmittedForm(generatedId string) (*verify.FormGenerated, error) {
@@ -385,6 +429,30 @@ func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.Ch
 	}
 
 	return f.formGeneratedMapper.ToDto(formGenerated)
+}
+
+func (f *FormGeneratedService) checkAccess(formPublished *published.FormPublished, userId uuid.UUID) error {
+	formHasUser := false
+	for _, userEntity := range formPublished.Users {
+		if userEntity.Id == userId {
+			formHasUser = true
+		}
+	}
+
+	groupsHasUser := false
+	for _, groupEntity := range formPublished.Groups {
+		for _, userEntity := range groupEntity.Users {
+			if userEntity.Id == userId {
+				groupsHasUser = true
+			}
+		}
+	}
+
+	if formHasUser || groupsHasUser {
+		return nil
+	}
+
+	return errs.New(fmt.Sprintf("You don't have access to published test %v", formPublished.Id), 403)
 }
 
 func (f *FormGeneratedService) checkTime(formPublished *published.FormPublished) error {

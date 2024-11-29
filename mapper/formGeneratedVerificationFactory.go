@@ -6,7 +6,6 @@ import (
 	"hedgehog-forms/dto/verify"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern"
-	"hedgehog-forms/util"
 )
 
 type FormGeneratedVerificationFactory struct {
@@ -46,7 +45,7 @@ func (f *FormGeneratedVerificationFactory) Build(
 func (f *FormGeneratedVerificationFactory) ExtractQuestionDtoMap(
 	formPattern pattern.FormPattern,
 ) (map[uuid.UUID]get.IQuestionDto, error) {
-	questionEntities := util.ExtractQuestionEntities(formPattern)
+	questionEntities := formPattern.ExtractQuestionEntities()
 
 	questionDtoMap := make(map[uuid.UUID]get.IQuestionDto)
 	for _, questionEntity := range questionEntities {

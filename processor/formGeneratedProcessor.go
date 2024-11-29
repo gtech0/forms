@@ -57,7 +57,7 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 		}
 	}
 
-	questionEntities := util.ExtractQuestionEntities(formPattern)
+	questionEntities := formPattern.ExtractQuestionEntities()
 	for _, questionEntity := range questionEntities {
 		if err := f.checkQuestion(questionEntity.Id, questionEntity.Type, answers); err != nil {
 			return err

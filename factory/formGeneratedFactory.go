@@ -16,12 +16,15 @@ func NewFormGeneratedFactory() *FormGeneratedFactory {
 	}
 }
 
-func (f *FormGeneratedFactory) BuildForm(published published.FormPublished) (*generated.FormGenerated, error) {
+func (f *FormGeneratedFactory) BuildForm(
+	published *published.FormPublished,
+	userId uuid.UUID,
+) (*generated.FormGenerated, error) {
 	generatedForm := new(generated.FormGenerated)
 	generatedForm.Id = uuid.New()
 	generatedForm.Status = generated.NEW
 	generatedForm.FormPublishedID = published.Id
-	//generatedForm.UserId = userId
+	generatedForm.UserId = userId
 	sections, err := f.sectionGeneratedFactory.buildSections(published.FormPattern.Sections)
 	if err != nil {
 		return nil, err
