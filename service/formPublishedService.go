@@ -140,7 +140,7 @@ func (f *FormPublishedService) recalculateMarks(formsGenerated []generated.FormG
 			return err
 		}
 
-		if err := f.formGeneratedRepository.Save(&formGenerated); err != nil {
+		if err := f.formGeneratedRepository.Create(&formGenerated); err != nil {
 			return err
 		}
 	}

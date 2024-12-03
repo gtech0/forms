@@ -9,14 +9,16 @@ import (
 
 type FormGenerated struct {
 	model.Base
-	Status          FormStatus
-	FormPublishedID uuid.UUID `gorm:"type:uuid"`
-	UserId          uuid.UUID `gorm:"type:uuid"`
-	Sections        []Section `gorm:"type:jsonb;serializer:json"`
-	Points          int
-	Mark            string
-	SubmitTime      time.Time
-	CurrentAttempts int
+	Status            FormStatus
+	FormPublishedID   uuid.UUID `gorm:"type:uuid"`
+	UserId            uuid.UUID `gorm:"type:uuid"`
+	Sections          []Section `gorm:"type:jsonb;serializer:json"`
+	Points            int
+	Mark              string
+	SubmitTime        time.Time
+	CurrentAttempts   int
+	IsGenerated       bool
+	ExcludedQuestions []uuid.UUID `gorm:"type:uuid[]"`
 }
 
 func (f *FormGenerated) ExtractQuestionsFromGeneratedForm() []IQuestion {

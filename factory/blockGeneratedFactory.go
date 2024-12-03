@@ -83,3 +83,7 @@ func (b *BlockGeneratedFactory) buildStaticBlock(staticBlock *block.Block) (*gen
 		Variant:     variant,
 	}, nil
 }
+
+//func (b *BlockGeneratedFactory) excludeQuestions(questions []*generated.Question) []*generated.Question {
+//
+//}

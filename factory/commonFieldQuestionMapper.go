@@ -21,9 +21,9 @@ func (c *CommonFieldQuestionMapper) MapCommonDtoFields(source create.NewQuestion
 	target.Id = uuid.New()
 	target.Description = source.Description
 	attachments := make([]question.Attachment, 0)
-	for _, attachmentId := range source.Attachments {
+	for _, fileId := range source.Attachments {
 		attachmentEntity := new(question.Attachment)
-		attachmentEntity.Id = attachmentId
+		attachmentEntity.FileId = fileId
 		attachmentEntity.QuestionId = target.Id
 		attachments = append(attachments, *attachmentEntity)
 	}

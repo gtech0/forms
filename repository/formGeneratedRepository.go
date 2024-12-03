@@ -14,6 +14,13 @@ func NewFormGeneratedRepository() *FormGeneratedRepository {
 	return &FormGeneratedRepository{}
 }
 
+func (f *FormGeneratedRepository) Create(formGenerated *generated.FormGenerated) error {
+	if err := database.DB.Create(formGenerated).Error; err != nil {
+		return errs.New(err.Error(), 500)
+	}
+	return nil
+}
+
 func (f *FormGeneratedRepository) Save(formGenerated *generated.FormGenerated) error {
 	if err := database.DB.Save(formGenerated).Error; err != nil {
 		return errs.New(err.Error(), 500)

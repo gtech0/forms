@@ -39,6 +39,8 @@ func NewFormGeneratedService() *FormGeneratedService {
 	}
 }
 
+//TODO: hide questions after retries
+
 func (f *FormGeneratedService) GetMyForm(
 	userId,
 	publishedId string,
@@ -70,8 +72,12 @@ func (f *FormGeneratedService) GetMyForm(
 		}
 	}
 
-	if formGenerated.CurrentAttempts > 0 {
+	if formGenerated.CurrentAttempts > 0 &&
+		formGenerated.IsGenerated == false &&
+		formGenerated.Status == generated.IN_PROGRESS {
 		//TODO
+		//questions := formGenerated.ExtractQuestionsFromGeneratedForm()
+
 	}
 
 	return f.formGeneratedMapper.ToDto(formGenerated)
@@ -86,7 +92,7 @@ func (f *FormGeneratedService) buildAndCreate(
 		return nil, err
 	}
 
-	if err = f.formGeneratedRepository.Save(generatedForm); err != nil {
+	if err = f.formGeneratedRepository.Create(generatedForm); err != nil {
 		return nil, err
 	}
 
@@ -134,7 +140,7 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
-	if err = f.checkAttempts(formGenerated.CurrentAttempts, formPublished.Attempts); err != nil {
+	if err = f.checkAttempts(formGenerated.CurrentAttempts, formPublished.MaxAttempts); err != nil {
 		return nil, err
 	}
 
@@ -143,7 +149,7 @@ func (f *FormGeneratedService) SaveAnswers(
 	}
 
 	formGenerated.Status = generated.IN_PROGRESS
-	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+	if err = f.formGeneratedRepository.Create(formGenerated); err != nil {
 		return nil, err
 	}
 
@@ -191,7 +197,7 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	if err = f.checkAttempts(formGenerated.CurrentAttempts, formPublished.Attempts); err != nil {
+	if err = f.checkAttempts(formGenerated.CurrentAttempts, formPublished.MaxAttempts); err != nil {
 		return nil, err
 	}
 
@@ -210,7 +216,7 @@ func (f *FormGeneratedService) SubmitForm(
 
 	formGenerated.Status = status
 	formGenerated.SubmitTime = time.Now()
-	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+	if err = f.formGeneratedRepository.Create(formGenerated); err != nil {
 		return nil, err
 	}
 
@@ -230,7 +236,7 @@ func (f *FormGeneratedService) UnSubmitForm(generatedId string) (*get.MyGenerate
 	}
 
 	formGenerated.Status = generated.IN_PROGRESS
-	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+	if err = f.formGeneratedRepository.Create(formGenerated); err != nil {
 		return nil, err
 	}
 
@@ -424,7 +430,7 @@ func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.Ch
 		return nil, err
 	}
 
-	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+	if err = f.formGeneratedRepository.Create(formGenerated); err != nil {
 		return nil, err
 	}
 

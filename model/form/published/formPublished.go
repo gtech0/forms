@@ -14,8 +14,8 @@ type FormPublished struct {
 	Duration          time.Duration
 	HideScore         bool
 	PostModeration    bool
+	MaxAttempts       int
 	MarkConfiguration []MarkConfiguration
-	Attempts          int
 	Groups            []Group `gorm:"many2many:form_groups"`
 	Users             []User  `gorm:"many2many:form_users"`
 	FormPattern       pattern.FormPattern
