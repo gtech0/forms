@@ -42,8 +42,6 @@ func NewFormGeneratedService() *FormGeneratedService {
 	}
 }
 
-//TODO: hide questions after retries
-
 func (f *FormGeneratedService) GetMyForm(
 	userId,
 	publishedId string,
@@ -78,8 +76,10 @@ func (f *FormGeneratedService) GetMyForm(
 	if formGenerated.CurrentAttempts > 0 &&
 		formGenerated.IsGenerated == false &&
 		formGenerated.Status == generated.RETURNED {
-		//TODO
-
+		err = f.regenerate(formGenerated, formPublished.FormPattern.Sections)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return f.formGeneratedMapper.ToDto(formGenerated)
