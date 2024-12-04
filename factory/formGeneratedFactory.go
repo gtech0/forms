@@ -25,7 +25,7 @@ func (f *FormGeneratedFactory) BuildForm(
 	generatedForm.Status = generated.NEW
 	generatedForm.FormPublishedID = published.Id
 	generatedForm.UserId = userId
-	sections, err := f.sectionGeneratedFactory.buildSections(published.FormPattern.Sections)
+	sections, err := f.sectionGeneratedFactory.BuildSections(published.FormPattern.Sections, nil)
 	if err != nil {
 		return nil, err
 	}

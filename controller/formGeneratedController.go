@@ -140,3 +140,15 @@ func (f *FormGeneratedController) VerifyForm(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, *formGeneratedDto)
 }
+
+func (f *FormGeneratedController) ReturnForm(ctx *gin.Context) {
+	generatedId := ctx.Param("generatedId")
+
+	myGeneratedDto, err := f.formGeneratedService.ReturnForm(generatedId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *myGeneratedDto)
+}

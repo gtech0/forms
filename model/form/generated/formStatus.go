@@ -9,6 +9,7 @@ type FormStatus string
 const (
 	NEW         FormStatus = "NEW"
 	IN_PROGRESS FormStatus = "IN_PROGRESS"
+	RETURNED    FormStatus = "RETURNED"
 	SUBMITTED   FormStatus = "SUBMITTED"
 	COMPLETED   FormStatus = "COMPLETED"
 )

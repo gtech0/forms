@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"github.com/google/uuid"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern/section"
 )
@@ -15,24 +16,30 @@ func NewSectionGeneratedFactory() *SectionGeneratedFactory {
 	}
 }
 
-func (s *SectionGeneratedFactory) buildSections(blocks []section.Section) ([]generated.Section, error) {
+func (s *SectionGeneratedFactory) BuildSections(
+	sections []section.Section,
+	excluded []uuid.UUID,
+) ([]generated.Section, error) {
 	var generatedSections []generated.Section
-	for _, currBlock := range blocks {
-		newBlock, err := s.buildSection(currBlock)
+	for _, currSection := range sections {
+		newSection, err := s.buildSection(currSection, excluded)
 		if err != nil {
 			return nil, err
 		}
-		generatedSections = append(generatedSections, newBlock)
+		generatedSections = append(generatedSections, newSection)
 	}
 	return generatedSections, nil
 }
 
-func (s *SectionGeneratedFactory) buildSection(newSection section.Section) (generated.Section, error) {
+func (s *SectionGeneratedFactory) buildSection(
+	newSection section.Section,
+	excluded []uuid.UUID,
+) (generated.Section, error) {
 	var generatedSection generated.Section
 	generatedSection.Id = newSection.Id
 	generatedSection.Title = newSection.Title
 	generatedSection.Description = newSection.Description
-	blocks, err := s.blockGeneratedFactory.buildBlocks(newSection.Blocks)
+	blocks, err := s.blockGeneratedFactory.buildBlocks(newSection.Blocks, excluded)
 	if err != nil {
 		return generatedSection, err
 	}

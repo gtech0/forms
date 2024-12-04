@@ -1,9 +1,11 @@
 package factory
 
 import (
+	"github.com/google/uuid"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/model/form/generated"
 	"hedgehog-forms/model/form/pattern/section/block"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 	"math/rand"
 	"slices"
 )
@@ -20,10 +22,13 @@ func NewBlockGeneratedFactory() *BlockGeneratedFactory {
 	}
 }
 
-func (b *BlockGeneratedFactory) buildBlocks(blocks []*block.Block) ([]*generated.Block, error) {
+func (b *BlockGeneratedFactory) buildBlocks(
+	blocks []*block.Block,
+	excluded []uuid.UUID,
+) ([]*generated.Block, error) {
 	generatedBlocks := make([]*generated.Block, 0)
 	for _, iBlock := range blocks {
-		newBlock, err := b.buildBlock(iBlock)
+		newBlock, err := b.buildBlock(iBlock, excluded)
 		if err != nil {
 			return nil, err
 		}
@@ -33,10 +38,13 @@ func (b *BlockGeneratedFactory) buildBlocks(blocks []*block.Block) ([]*generated
 	return generatedBlocks, nil
 }
 
-func (b *BlockGeneratedFactory) buildBlock(iBlock *block.Block) (*generated.Block, error) {
+func (b *BlockGeneratedFactory) buildBlock(
+	iBlock *block.Block,
+	excluded []uuid.UUID,
+) (*generated.Block, error) {
 	switch iBlock.Type {
 	case block.DYNAMIC:
-		return b.buildDynamicBlock(iBlock)
+		return b.buildDynamicBlock(iBlock, excluded)
 	case block.STATIC:
 		return b.buildStaticBlock(iBlock)
 	default:
@@ -44,9 +52,18 @@ func (b *BlockGeneratedFactory) buildBlock(iBlock *block.Block) (*generated.Bloc
 	}
 }
 
-func (b *BlockGeneratedFactory) buildDynamicBlock(dynamicBlock *block.Block) (*generated.Block, error) {
+func (b *BlockGeneratedFactory) buildDynamicBlock(
+	dynamicBlock *block.Block,
+	excluded []uuid.UUID,
+) (*generated.Block, error) {
 	questionCount := dynamicBlock.DynamicBlock.QuestionCount
-	questions := dynamicBlock.DynamicBlock.Questions
+	questions := make([]*question.Question, 0)
+	for _, currQuestion := range dynamicBlock.DynamicBlock.Questions {
+		if !slices.Contains(excluded, currQuestion.Id) {
+			questions = append(questions, currQuestion)
+		}
+	}
+
 	questionsForBlock := make([]generated.IQuestion, 0)
 	for i := 0; i < questionCount; i++ {
 		randomIndex := rand.Intn(len(questions))
@@ -83,7 +100,3 @@ func (b *BlockGeneratedFactory) buildStaticBlock(staticBlock *block.Block) (*gen
 		Variant:     variant,
 	}, nil
 }
-
-//func (b *BlockGeneratedFactory) excludeQuestions(questions []*generated.Question) []*generated.Question {
-//
-//}
