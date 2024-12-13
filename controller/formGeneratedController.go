@@ -23,7 +23,8 @@ func NewFormGeneratedController() *FormGeneratedController {
 
 func (f *FormGeneratedController) GetMyForm(ctx *gin.Context) {
 	publishedId := ctx.Param("publishedId")
-	formGeneratedDto, err := f.formGeneratedService.GetMyForm("", publishedId)
+	userId := ctx.Param("userId")
+	formGeneratedDto, err := f.formGeneratedService.GetMyForm(userId, publishedId)
 	if err != nil {
 		ctx.Error(err)
 		return
@@ -40,7 +41,7 @@ func (f *FormGeneratedController) SaveAnswers(ctx *gin.Context) {
 		return
 	}
 
-	formGeneratedDto, err := f.formGeneratedService.SaveAnswers("", generatedId, answerDto)
+	formGeneratedDto, err := f.formGeneratedService.SaveAnswers(generatedId, answerDto)
 	if err != nil {
 		ctx.Error(err)
 		return
@@ -57,7 +58,7 @@ func (f *FormGeneratedController) SubmitForm(ctx *gin.Context) {
 		return
 	}
 
-	myGeneratedDto, err := f.formGeneratedService.SubmitForm("", generatedId, answerDto)
+	myGeneratedDto, err := f.formGeneratedService.SubmitForm(generatedId, answerDto)
 	if err != nil {
 		ctx.Error(err)
 		return
@@ -80,8 +81,9 @@ func (f *FormGeneratedController) UnSubmitForm(ctx *gin.Context) {
 
 func (f *FormGeneratedController) GetMyForms(ctx *gin.Context) {
 	subjectId := ctx.Param("subjectId")
+	userId := ctx.Param("userId")
 	query := ctx.Request.URL.Query()
-	response, err := f.formGeneratedService.GetMyForms("", subjectId, query)
+	response, err := f.formGeneratedService.GetMyForms(userId, subjectId, query)
 	if err != nil {
 		ctx.Error(err)
 		return
@@ -92,8 +94,9 @@ func (f *FormGeneratedController) GetMyForms(ctx *gin.Context) {
 
 func (f *FormGeneratedController) GetSubmittedForms(ctx *gin.Context) {
 	publishedId := ctx.Param("publishedId")
+	userId := ctx.Param("userId")
 	query := ctx.Request.URL.Query()
-	response, err := f.formGeneratedService.GetSubmittedForms("", publishedId, query)
+	response, err := f.formGeneratedService.GetSubmittedForms(userId, publishedId, query)
 	if err != nil {
 		ctx.Error(err)
 		return

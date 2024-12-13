@@ -127,16 +127,10 @@ func (f *FormGeneratedService) getAllQuestionIds(questions []generated.IQuestion
 }
 
 func (f *FormGeneratedService) SaveAnswers(
-	userId,
 	generatedId string,
 	answers get.AnswerDto,
 ) (*get.FormGeneratedDto, error) {
 	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
-	if err != nil {
-		return nil, err
-	}
-
-	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -148,10 +142,6 @@ func (f *FormGeneratedService) SaveAnswers(
 
 	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedID)
 	if err != nil {
-		return nil, err
-	}
-
-	if err = f.checkAccess(formPublished, parsedUserId); err != nil {
 		return nil, err
 	}
 
@@ -184,16 +174,10 @@ func (f *FormGeneratedService) SaveAnswers(
 }
 
 func (f *FormGeneratedService) SubmitForm(
-	userId,
 	generatedId string,
 	answers get.AnswerDto,
 ) (*get.MyGeneratedDto, error) {
 	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
-	if err != nil {
-		return nil, err
-	}
-
-	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -205,10 +189,6 @@ func (f *FormGeneratedService) SubmitForm(
 
 	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedID)
 	if err != nil {
-		return nil, err
-	}
-
-	if err = f.checkAccess(formPublished, parsedUserId); err != nil {
 		return nil, err
 	}
 
@@ -482,30 +462,6 @@ func (f *FormGeneratedService) ReturnForm(generatedId string) (*get.MyGeneratedD
 	}
 
 	return f.formGeneratedMapper.ToMyDto(formGenerated)
-}
-
-func (f *FormGeneratedService) checkAccess(formPublished *published.FormPublished, userId uuid.UUID) error {
-	formHasUser := false
-	for _, userEntity := range formPublished.Users {
-		if userEntity.Id == userId {
-			formHasUser = true
-		}
-	}
-
-	groupsHasUser := false
-	for _, groupEntity := range formPublished.Groups {
-		for _, userEntity := range groupEntity.Users {
-			if userEntity.Id == userId {
-				groupsHasUser = true
-			}
-		}
-	}
-
-	if formHasUser || groupsHasUser {
-		return nil
-	}
-
-	return errs.New(fmt.Sprintf("You don't have access to published test %v", formPublished.Id), 403)
 }
 
 func (f *FormGeneratedService) checkTime(formPublished *published.FormPublished) error {
