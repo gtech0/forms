@@ -56,6 +56,7 @@ func Sync() {
 		&published.User{},
 
 		&generated.FormGenerated{},
+		&generated.Attempt{},
 
 		&pattern.FormPattern{},
 

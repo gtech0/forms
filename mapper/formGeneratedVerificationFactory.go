@@ -29,7 +29,12 @@ func (f *FormGeneratedVerificationFactory) Build(
 		return nil, err
 	}
 
-	verifiedSections, err := f.sectionGeneratedVerificationFactory.build(formGenerated.Sections, questionsWithCorrectAnswers)
+	attempt, err := formGenerated.ExtractCurrentAttempt()
+	if err != nil {
+		return nil, err
+	}
+
+	verifiedSections, err := f.sectionGeneratedVerificationFactory.build(attempt.Sections, questionsWithCorrectAnswers)
 	if err != nil {
 		return nil, err
 	}
