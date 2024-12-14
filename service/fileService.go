@@ -2,12 +2,14 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 	"hedgehog-forms/dto/get"
 	"hedgehog-forms/errs"
 	"hedgehog-forms/file"
 	"hedgehog-forms/model"
+	"hedgehog-forms/model/form/pattern/section/block/question"
 	"hedgehog-forms/repository"
 	"mime/multipart"
 )
@@ -78,4 +80,31 @@ func (f *FileService) DownloadFile(fileId string, bucket string) (*minio.Object,
 	}
 
 	return reader, nil
+}
+
+func (f *FileService) ValidateFiles(questions ...*question.Question) error {
+	fileIds := make([]uuid.UUID, 0)
+	for _, questionEntity := range questions {
+		for _, attachment := range questionEntity.Attachments {
+			fileIds = append(fileIds, attachment.FileId)
+		}
+	}
+
+	nonexistentFileIds := make([]uuid.UUID, 0)
+	for _, fileId := range fileIds {
+		fileEntity, err := f.fileRepository.FindById(fileId)
+		if err != nil {
+			return err
+		}
+
+		if fileEntity.Id == uuid.Nil {
+			nonexistentFileIds = append(nonexistentFileIds, fileId)
+		}
+	}
+
+	if len(nonexistentFileIds) > 0 {
+		return errs.New(fmt.Sprintf("incorrect attachment ids: %v", nonexistentFileIds), 400)
+	}
+
+	return nil
 }

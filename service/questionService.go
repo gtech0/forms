@@ -25,7 +25,7 @@ type QuestionService struct {
 	questionFactory              *factory.QuestionFactory
 	subjectMapper                *mapper.SubjectMapper
 	commonFieldQuestionDtoMapper *mapper.CommonFieldQuestionDtoMapper
-	attachmentService            *AttachmentService
+	fileService                  *FileService
 }
 
 func NewQuestionService() *QuestionService {
@@ -36,7 +36,7 @@ func NewQuestionService() *QuestionService {
 		questionFactory:              factory.NewQuestionFactory(),
 		subjectMapper:                mapper.NewSubjectMapper(),
 		commonFieldQuestionDtoMapper: mapper.NewCommonFieldQuestionDtoMapper(),
-		attachmentService:            NewAttachmentService(),
+		fileService:                  NewFileService(),
 	}
 }
 
@@ -61,7 +61,7 @@ func (q *QuestionService) CreateQuestion(subjectId string, rawQuestionDto json.R
 		return nil, err
 	}
 
-	if err = q.attachmentService.ValidateAttachments(questionEntity); err != nil {
+	if err = q.fileService.ValidateFiles(questionEntity); err != nil {
 		return nil, err
 	}
 

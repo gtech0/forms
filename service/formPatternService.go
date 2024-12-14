@@ -22,7 +22,7 @@ type FormPatternService struct {
 	formPatternRepository *repository.FormPatternRepository
 	formPatternFactory    *factory.FormPatternFactory
 	formPatternMapper     *mapper.FormPatternMapper
-	attachmentService     *AttachmentService
+	fileService           *FileService
 }
 
 func NewFormPatternService() *FormPatternService {
@@ -30,7 +30,7 @@ func NewFormPatternService() *FormPatternService {
 		formPatternRepository: repository.NewFormPatternRepository(),
 		formPatternFactory:    factory.NewFormPatternFactory(),
 		formPatternMapper:     mapper.NewFormPatternMapper(),
-		attachmentService:     NewAttachmentService(),
+		fileService:           NewFileService(),
 	}
 }
 
@@ -151,5 +151,5 @@ func (f *FormPatternService) extractQuestionsFromPattern(pattern *pattern.FormPa
 
 func (f *FormPatternService) validatePatternAttachments(pattern *pattern.FormPattern) error {
 	questions := f.extractQuestionsFromPattern(pattern)
-	return f.attachmentService.ValidateAttachments(questions...)
+	return f.fileService.ValidateFiles(questions...)
 }
