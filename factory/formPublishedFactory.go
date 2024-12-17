@@ -35,6 +35,7 @@ func (f *FormPublishedFactory) Build(publishDto create.FormPublishDto) (*publish
 		return nil, err
 	}
 
+	formPublished.MaxAttempts = publishDto.MaxAttempts
 	formPublished.MarkConfiguration = f.BuildMarkConfiguration(publishDto.MarkConfiguration, formPublished.Id)
 	return formPublished, nil
 }

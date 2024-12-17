@@ -13,6 +13,7 @@ type FormPublishDto struct {
 	Duration          time.Duration  `json:"duration"`
 	HideScore         bool           `json:"hideScore"`
 	PostModeration    bool           `json:"postModeration"`
+	MaxAttempts       int            `json:"maxAttempts"`
 	MarkConfiguration map[string]int `json:"markConfiguration"`
 }
 

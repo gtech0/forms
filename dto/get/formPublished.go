@@ -13,6 +13,7 @@ type FormPublishedBaseDto struct {
 	UserIds           []uuid.UUID    `json:"userIds"`
 	FormPatternId     uuid.UUID      `json:"formPatternId"`
 	HideScore         bool           `json:"hideScore"`
+	MaxAttempts       int            `json:"maxAttempts"`
 	MarkConfiguration map[string]int `json:"markConfiguration"`
 }
 

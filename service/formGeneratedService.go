@@ -81,11 +81,6 @@ func (f *FormGeneratedService) GetMyForm(
 		}
 	}
 
-	//TODO: conditions for fail
-	//for _, attempt := range formGenerated.Attempts {
-	//	attempt.IsComplete = true
-	//}
-
 	return f.formGeneratedMapper.ToDto(formGenerated)
 }
 
@@ -112,7 +107,7 @@ func (f *FormGeneratedService) newAttempt(
 	formGenerated *generated.FormGenerated,
 	patternSections []section.Section,
 ) error {
-	attempt, err := f.attemptFactory.BuildAttempt(patternSections, formGenerated.ExcludedQuestions)
+	attempt, err := f.attemptFactory.BuildAttempt(patternSections, formGenerated.ExcludedQuestionsToSlice())
 	if err != nil {
 		return err
 	}
@@ -121,10 +116,12 @@ func (f *FormGeneratedService) newAttempt(
 	return nil
 }
 
-func (f *FormGeneratedService) getAllQuestionIds(questions []generated.IQuestion) []uuid.UUID {
-	questionIds := make([]uuid.UUID, 0)
+func (f *FormGeneratedService) getAllQuestionIds(questions []generated.IQuestion) []generated.ExcludedQuestion {
+	questionIds := make([]generated.ExcludedQuestion, 0)
 	for _, currQuestion := range questions {
-		questionIds = append(questionIds, currQuestion.GetId())
+		var excludedQuestion generated.ExcludedQuestion
+		excludedQuestion.QuestionId = currQuestion.GetId()
+		questionIds = append(questionIds, excludedQuestion)
 	}
 	return questionIds
 }
@@ -475,6 +472,9 @@ func (f *FormGeneratedService) checkTime(formGenerated *generated.FormGenerated,
 	endTime := startTime.Add(duration)
 	if endTime.Before(time.Now()) {
 		currentAttempt.IsComplete = true
+		if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+			return err
+		}
 		return errs.New("Generated form duration is expired", 400)
 	}
 

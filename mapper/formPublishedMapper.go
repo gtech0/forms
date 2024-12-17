@@ -23,6 +23,7 @@ func (f *FormPublishedMapper) ToBaseDto(publishedForm *published.FormPublished) 
 	publishedBaseDto.HideScore = publishedForm.HideScore
 	publishedBaseDto.Deadline = publishedForm.Deadline
 	publishedBaseDto.Duration = publishedForm.Duration
+	publishedBaseDto.MaxAttempts = publishedForm.MaxAttempts
 	groups := make([]uuid.UUID, 0)
 	for _, publishedGroup := range publishedForm.Groups {
 		groups = append(groups, publishedGroup.Id)

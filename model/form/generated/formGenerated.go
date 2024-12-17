@@ -17,7 +17,20 @@ type FormGenerated struct {
 	FinalPoints       int
 	FinalMark         string
 	SubmitTime        time.Time
-	ExcludedQuestions []uuid.UUID `gorm:"type:uuid[]"`
+	ExcludedQuestions []ExcludedQuestion
+}
+
+func (f *FormGenerated) ExcludedQuestionsToSlice() []uuid.UUID {
+	questions := make([]uuid.UUID, 0)
+	for _, excludedQuestion := range f.ExcludedQuestions {
+		questions = append(questions, excludedQuestion.QuestionId)
+	}
+	return questions
+}
+
+type ExcludedQuestion struct {
+	QuestionId      uuid.UUID `gorm:"type:uuid"`
+	FormGeneratedId uuid.UUID `gorm:"type:uuid"`
 }
 
 func (f *FormGenerated) ExtractQuestionsFromGeneratedForm() []IQuestion {
