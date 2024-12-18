@@ -77,7 +77,7 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 		}
 	}
 
-	formGenerated.FinalPoints = points
+	formGenerated.Points = points
 	return nil
 }
 
@@ -111,11 +111,11 @@ func (f *FormGeneratedProcessor) applyNewPoints(formGenerated *generated.FormGen
 ) {
 	difference := questionGenerated.GetPoints() - newPoints
 	questionGenerated.SetPoints(newPoints)
-	formGenerated.FinalPoints = formGenerated.FinalPoints - difference
+	formGenerated.Points = formGenerated.Points - difference
 }
 
 func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGenerated, marks map[string]int) error {
-	pointsForForm := formGenerated.FinalPoints
+	pointsForForm := formGenerated.Points
 	var requiredPointsForMark int
 	for _, points := range marks {
 		if points >= requiredPointsForMark && points <= pointsForForm {
@@ -128,7 +128,7 @@ func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGene
 		return errs.New(fmt.Sprintf("mark for %d points is not found", requiredPointsForMark), 500)
 	}
 
-	formGenerated.FinalMark = mark
+	formGenerated.Mark = mark
 	return nil
 }
 

@@ -26,13 +26,13 @@ func (f *FormPublishedMapper) ToBaseDto(publishedForm *published.FormPublished) 
 	publishedBaseDto.MaxAttempts = publishedForm.MaxAttempts
 	groups := make([]uuid.UUID, 0)
 	for _, publishedGroup := range publishedForm.Groups {
-		groups = append(groups, publishedGroup.Id)
+		groups = append(groups, publishedGroup.GroupId)
 	}
 	publishedBaseDto.GroupIds = groups
 
 	users := make([]uuid.UUID, 0)
 	for _, publishedUser := range publishedForm.Users {
-		users = append(users, publishedUser.Id)
+		users = append(users, publishedUser.UserId)
 	}
 	publishedBaseDto.UserIds = users
 
@@ -57,13 +57,13 @@ func (f *FormPublishedMapper) ToDto(publishedForm *published.FormPublished) (*ge
 	publishedDto.Duration = publishedForm.Duration
 	groups := make([]uuid.UUID, 0)
 	for _, publishedGroup := range publishedForm.Groups {
-		groups = append(groups, publishedGroup.Id)
+		groups = append(groups, publishedGroup.GroupId)
 	}
 	publishedDto.GroupIds = groups
 
 	users := make([]uuid.UUID, 0)
 	for _, publishedUser := range publishedForm.Users {
-		users = append(users, publishedUser.Id)
+		users = append(users, publishedUser.UserId)
 	}
 	publishedDto.UserIds = users
 	return publishedDto, nil

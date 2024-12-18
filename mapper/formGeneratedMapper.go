@@ -29,12 +29,7 @@ func (f *FormGeneratedMapper) ToDto(formGenerated *generated.FormGenerated) (*ge
 	}
 
 	formGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(formPublished)
-	attempt, err := formGenerated.ExtractCurrentAttempt()
-	if err != nil {
-		return nil, err
-	}
-
-	formGeneratedDto.Sections = attempt.Sections
+	formGeneratedDto.Sections = formGenerated.Sections
 	return formGeneratedDto, nil
 }
 
@@ -49,8 +44,8 @@ func (f *FormGeneratedMapper) ToMyDto(formGenerated *generated.FormGenerated) (*
 
 	myGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(formPublished)
 	myGeneratedDto.SubmitTime = formGenerated.SubmitTime
-	myGeneratedDto.Points = formGenerated.FinalPoints
-	myGeneratedDto.Mark = formGenerated.FinalMark
+	myGeneratedDto.Points = formGenerated.Points
+	myGeneratedDto.Mark = formGenerated.Mark
 
 	hideScore := myGeneratedDto.FormPublished.HideScore
 	isAfterDeadline := myGeneratedDto.FormPublished.Deadline.After(time.Now())
@@ -65,8 +60,8 @@ func (f *FormGeneratedMapper) ToMyDto(formGenerated *generated.FormGenerated) (*
 func (f *FormGeneratedMapper) ToSubmittedDto(formGenerated generated.FormGenerated) *get.SubmittedDto {
 	submittedDto := new(get.SubmittedDto)
 	submittedDto.Status = formGenerated.Status
-	submittedDto.Points = formGenerated.FinalPoints
-	submittedDto.Mark = formGenerated.FinalMark
+	submittedDto.Points = formGenerated.Points
+	submittedDto.Mark = formGenerated.Mark
 	submittedDto.SubmitTime = formGenerated.SubmitTime
 	return submittedDto
 }

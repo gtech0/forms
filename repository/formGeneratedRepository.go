@@ -93,3 +93,20 @@ func (f *FormGeneratedRepository) FindByPublishedIdAndStatusAndPaginate(
 	}
 	return formsGenerated, nil
 }
+
+func (f *FormGeneratedRepository) FindAttemptsByUserAndPublished(
+	userId,
+	publishedId uuid.UUID,
+) ([]*generated.FormGenerated, error) {
+	attempts := make([]*generated.FormGenerated, 0)
+	if err := database.DB.
+		Preload(clause.Associations, preload).
+		Model(&generated.FormGenerated{}).
+		Where("user_id = ?", userId).
+		Where("form_published_id = ?", publishedId).
+		Find(&attempts).
+		Error; err != nil {
+		return nil, errs.New(err.Error(), 500)
+	}
+	return attempts, nil
+}

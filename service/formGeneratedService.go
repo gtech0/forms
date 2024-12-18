@@ -24,7 +24,6 @@ type FormGeneratedService struct {
 	formPublishedRepository          *repository.FormPublishedRepository
 	formGeneratedRepository          *repository.FormGeneratedRepository
 	formGeneratedFactory             *factory.FormGeneratedFactory
-	attemptFactory                   *factory.AttemptFactory
 	sectionGeneratedFactory          *factory.SectionGeneratedFactory
 	formGeneratedVerificationFactory *mapper.FormGeneratedVerificationFactory
 	formGeneratedMapper              *mapper.FormGeneratedMapper
@@ -36,7 +35,6 @@ func NewFormGeneratedService() *FormGeneratedService {
 		formPublishedRepository:          repository.NewFormPublishedRepository(),
 		formGeneratedRepository:          repository.NewFormGeneratedRepository(),
 		formGeneratedFactory:             factory.NewFormGeneratedFactory(),
-		attemptFactory:                   factory.NewAttemptFactory(),
 		sectionGeneratedFactory:          factory.NewSectionGeneratedFactory(),
 		formGeneratedVerificationFactory: mapper.NewFormGeneratedVerificationFactory(),
 		formGeneratedMapper:              mapper.NewFormGeneratedMapper(),
@@ -75,8 +73,18 @@ func (f *FormGeneratedService) GetMyForm(
 		}
 	}
 
-	if _, err = formGenerated.ExtractCurrentAttempt(); err != nil {
-		if err = f.newAttempt(formGenerated, formPublished.FormPattern.Sections); err != nil {
+	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(formGenerated.UserId, formGenerated.FormPublishedID)
+	if err != nil {
+		return nil, err
+	}
+
+	currAttempt, err := f.findActiveGeneratedForm(attempts)
+	if err != nil {
+		return nil, err
+	}
+
+	if currAttempt == nil && len(attempts) < formPublished.MaxAttempts {
+		if err = f.generateNew(formGenerated, formPublished.FormPattern.Sections); err != nil {
 			return nil, err
 		}
 	}
@@ -94,7 +102,7 @@ func (f *FormGeneratedService) buildAndCreate(
 	}
 
 	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
-	formGenerated.ExcludedQuestions = f.getAllQuestionIds(questions)
+	formGenerated.ExcludedQuestions = f.getAllQuestionIds(questions, formPublished.Id)
 
 	if err = f.formGeneratedRepository.Create(formGenerated); err != nil {
 		return nil, err
@@ -103,24 +111,29 @@ func (f *FormGeneratedService) buildAndCreate(
 	return formGenerated, nil
 }
 
-func (f *FormGeneratedService) newAttempt(
+func (f *FormGeneratedService) generateNew(
 	formGenerated *generated.FormGenerated,
 	patternSections []section.Section,
 ) error {
-	attempt, err := f.attemptFactory.BuildAttempt(patternSections, formGenerated.ExcludedQuestionsToSlice())
+	sections, err := f.sectionGeneratedFactory.BuildSections(patternSections, formGenerated.ExcludedQuestionsToSlice())
 	if err != nil {
 		return err
 	}
 
-	formGenerated.Attempts = append(formGenerated.Attempts, attempt)
+	formGenerated.Sections = sections
+	formGenerated.IsCompleted = true
 	return nil
 }
 
-func (f *FormGeneratedService) getAllQuestionIds(questions []generated.IQuestion) []generated.ExcludedQuestion {
+func (f *FormGeneratedService) getAllQuestionIds(
+	questions []generated.IQuestion,
+	formPublishedId uuid.UUID,
+) []generated.ExcludedQuestion {
 	questionIds := make([]generated.ExcludedQuestion, 0)
 	for _, currQuestion := range questions {
 		var excludedQuestion generated.ExcludedQuestion
 		excludedQuestion.QuestionId = currQuestion.GetId()
+		excludedQuestion.FormGeneratedId = formPublishedId
 		questionIds = append(questionIds, excludedQuestion)
 	}
 	return questionIds
@@ -145,7 +158,17 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
-	if err = f.checkTime(formGenerated, formPublished.Duration); err != nil {
+	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(formGenerated.UserId, formGenerated.FormPublishedID)
+	if err != nil {
+		return nil, err
+	}
+
+	currForm, err := f.findActiveGeneratedForm(attempts)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = f.checkTime(currForm, formPublished.Duration); err != nil {
 		return nil, err
 	}
 
@@ -157,7 +180,7 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
-	if err = f.checkAttempts(len(formGenerated.Attempts), formPublished.MaxAttempts); err != nil {
+	if err = f.checkAttempts(len(attempts), formPublished.MaxAttempts); err != nil {
 		return nil, err
 	}
 
@@ -192,7 +215,17 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	if err = f.checkTime(formGenerated, formPublished.Duration); err != nil {
+	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(formGenerated.UserId, formGenerated.FormPublishedID)
+	if err != nil {
+		return nil, err
+	}
+
+	currForm, err := f.findActiveGeneratedForm(attempts)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = f.checkTime(currForm, formPublished.Duration); err != nil {
 		return nil, err
 	}
 
@@ -204,7 +237,7 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	if err = f.checkAttempts(len(formGenerated.Attempts), formPublished.MaxAttempts); err != nil {
+	if err = f.checkAttempts(len(attempts), formPublished.MaxAttempts); err != nil {
 		return nil, err
 	}
 
@@ -366,14 +399,15 @@ func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) (
 	}
 
 	userIdsWithAccess := make([]uuid.UUID, 0)
-	for _, groupEntity := range formPublished.Groups {
-		for _, userEntity := range groupEntity.Users {
-			userIdsWithAccess = append(userIdsWithAccess, userEntity.Id)
-		}
-	}
+	//TODO: user group ids
+	//for _, groupEntity := range formPublished.Groups {
+	//	for _, userEntity := range groupEntity.Users {
+	//		userIdsWithAccess = append(userIdsWithAccess, userEntity.Id)
+	//	}
+	//}
 
 	for _, userEntity := range formPublished.Users {
-		userIdsWithAccess = append(userIdsWithAccess, userEntity.Id)
+		userIdsWithAccess = append(userIdsWithAccess, userEntity.UserId)
 	}
 
 	userIdsWithGeneratedForm := make([]uuid.UUID, 0)
@@ -463,16 +497,11 @@ func (f *FormGeneratedService) ReturnForm(generatedId string) (*get.MyGeneratedD
 }
 
 func (f *FormGeneratedService) checkTime(formGenerated *generated.FormGenerated, duration time.Duration) error {
-	currentAttempt, err := formGenerated.ExtractCurrentAttempt()
-	if err != nil {
-		return err
-	}
-
-	startTime := currentAttempt.StartTime
+	startTime := formGenerated.StartTime
 	endTime := startTime.Add(duration)
 	if endTime.Before(time.Now()) {
-		currentAttempt.IsComplete = true
-		if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+		formGenerated.IsCompleted = true
+		if err := f.formGeneratedRepository.Save(formGenerated); err != nil {
 			return err
 		}
 		return errs.New("Generated form duration is expired", 400)
@@ -515,4 +544,13 @@ func (f *FormGeneratedService) checkStatusForVerification(old, new generated.For
 		return errs.New(fmt.Sprintf("New status %s of generated test is not suitable for verification", new), 400)
 	}
 	return nil
+}
+
+func (f *FormGeneratedService) findActiveGeneratedForm(forms []*generated.FormGenerated) (*generated.FormGenerated, error) {
+	for _, formGenerated := range forms {
+		if formGenerated.IsCompleted == false {
+			return formGenerated, nil
+		}
+	}
+	return nil, errs.New("Generated form is completed", 400)
 }

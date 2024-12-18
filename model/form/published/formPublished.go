@@ -16,11 +16,23 @@ type FormPublished struct {
 	PostModeration    bool
 	MaxAttempts       int
 	MarkConfiguration []MarkConfiguration
-	Groups            []Group `gorm:"many2many:form_groups"`
-	Users             []User  `gorm:"many2many:form_users"`
+	Groups            []FormPublishedGroup
+	Users             []FormPublishedUser
 	FormPattern       pattern.FormPattern
 	FormPatternId     uuid.UUID `gorm:"type:uuid"`
-	FormsGenerated    []generated.FormGenerated
+	FormsGenerated    []*generated.FormGenerated
+}
+
+type FormPublishedGroup struct {
+	model.Base
+	GroupId         uuid.UUID `gorm:"type:uuid"`
+	FormPublishedId uuid.UUID `gorm:"type:uuid"`
+}
+
+type FormPublishedUser struct {
+	model.Base
+	UserId          uuid.UUID `gorm:"type:uuid"`
+	FormPublishedId uuid.UUID `gorm:"type:uuid"`
 }
 
 func (m *FormPublished) GetMarkConfigMap() map[string]int {

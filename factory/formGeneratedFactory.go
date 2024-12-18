@@ -7,12 +7,12 @@ import (
 )
 
 type FormGeneratedFactory struct {
-	attemptFactory *AttemptFactory
+	sectionFactory *SectionGeneratedFactory
 }
 
 func NewFormGeneratedFactory() *FormGeneratedFactory {
 	return &FormGeneratedFactory{
-		attemptFactory: NewAttemptFactory(),
+		sectionFactory: NewSectionGeneratedFactory(),
 	}
 }
 
@@ -25,12 +25,11 @@ func (f *FormGeneratedFactory) BuildForm(
 	generatedForm.Status = generated.NEW
 	generatedForm.FormPublishedID = published.Id
 	generatedForm.UserId = userId
-	attempts := make([]*generated.Attempt, 0)
-	attempt, err := f.attemptFactory.BuildAttempt(published.FormPattern.Sections, nil)
+	sections, err := f.sectionFactory.BuildSections(published.FormPattern.Sections, nil)
 	if err != nil {
 		return nil, err
 	}
-	attempts = append(attempts, attempt)
-	generatedForm.Attempts = attempts
+
+	generatedForm.Sections = sections
 	return generatedForm, nil
 }

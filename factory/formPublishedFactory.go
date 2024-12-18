@@ -4,19 +4,12 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/model/form/published"
-	"hedgehog-forms/repository"
 )
 
-type FormPublishedFactory struct {
-	groupRepository *repository.GroupRepository
-	userRepository  *repository.UserRepository
-}
+type FormPublishedFactory struct{}
 
 func NewFormPublishedFactory() *FormPublishedFactory {
-	return &FormPublishedFactory{
-		userRepository:  repository.NewUserRepository(),
-		groupRepository: repository.NewGroupRepository(),
-	}
+	return &FormPublishedFactory{}
 }
 
 func (f *FormPublishedFactory) Build(publishDto create.FormPublishDto) (*published.FormPublished, error) {
@@ -63,13 +56,11 @@ func (f *FormPublishedFactory) BuildGroups(
 	groupIds []uuid.UUID,
 	formPublished *published.FormPublished,
 ) error {
-	groups := make([]published.Group, 0)
+	groups := make([]published.FormPublishedGroup, 0)
 	for _, groupId := range groupIds {
-		group, err := f.groupRepository.FindById(groupId)
-		if err != nil {
-			return err
-		}
-		groups = append(groups, *group)
+		var group published.FormPublishedGroup
+		group.GroupId = groupId
+		groups = append(groups, group)
 	}
 	formPublished.Groups = groups
 	return nil
@@ -79,13 +70,11 @@ func (f *FormPublishedFactory) BuildUsers(
 	userIds []uuid.UUID,
 	formPublished *published.FormPublished,
 ) error {
-	users := make([]published.User, 0)
+	users := make([]published.FormPublishedUser, 0)
 	for _, userId := range userIds {
-		user, err := f.userRepository.FindById(userId)
-		if err != nil {
-			return err
-		}
-		users = append(users, *user)
+		var user published.FormPublishedUser
+		user.UserId = userId
+		users = append(users, user)
 	}
 	formPublished.Users = users
 	return nil
