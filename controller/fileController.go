@@ -55,10 +55,9 @@ func (f *FileController) DownloadFile(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", info.Metadata.Get("Content-Disposition"))
 	ctx.Header("Content-Type", info.Metadata.Get("Content-Type"))
 	if _, err = io.Copy(ctx.Writer, reader); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		ctx.Error(errs.New(err.Error(), 500))
 		return
 	}
+
 	ctx.Status(http.StatusOK)
 }
