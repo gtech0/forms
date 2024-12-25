@@ -52,15 +52,15 @@ func Sync() {
 		&published.FormPublished{},
 		&published.MarkConfiguration{},
 
-		&published.FormPublishedGroup{},
+		&published.FormPublishedTeam{},
 		&published.FormPublishedUser{},
+		&published.ExcludedQuestion{},
 
-		&published.Solution{},
-		&published.SolutionComment{},
-		&published.Submission{},
+		//&published.Solution{},
+		//&published.SolutionComment{},
+		//&published.Submission{},
 
 		&generated.FormGenerated{},
-		&generated.ExcludedQuestion{},
 
 		&pattern.FormPattern{},
 

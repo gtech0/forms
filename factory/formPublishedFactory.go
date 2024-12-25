@@ -56,13 +56,13 @@ func (f *FormPublishedFactory) BuildGroups(
 	groupIds []uuid.UUID,
 	formPublished *published.FormPublished,
 ) error {
-	groups := make([]published.FormPublishedGroup, 0)
+	groups := make([]published.FormPublishedTeam, 0)
 	for _, groupId := range groupIds {
-		var group published.FormPublishedGroup
+		var group published.FormPublishedTeam
 		group.GroupId = groupId
 		groups = append(groups, group)
 	}
-	formPublished.Groups = groups
+	formPublished.Teams = groups
 	return nil
 }
 

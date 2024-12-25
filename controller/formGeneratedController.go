@@ -24,7 +24,7 @@ func NewFormGeneratedController() *FormGeneratedController {
 func (f *FormGeneratedController) GetMyForm(ctx *gin.Context) {
 	publishedId := ctx.Param("publishedId")
 	userId := ctx.Param("userId")
-	formGeneratedDto, err := f.formGeneratedService.GetMyForm(userId, publishedId)
+	formGeneratedDto, err := f.formGeneratedService.GetMyForm(publishedId, userId)
 	if err != nil {
 		ctx.Error(err)
 		return

@@ -16,14 +16,15 @@ type FormPublished struct {
 	PostModeration    bool
 	MaxAttempts       int
 	MarkConfiguration []MarkConfiguration
-	Groups            []FormPublishedGroup
+	Teams             []FormPublishedTeam
 	Users             []FormPublishedUser
 	FormPattern       pattern.FormPattern
 	FormPatternId     uuid.UUID `gorm:"type:uuid"`
 	FormsGenerated    []*generated.FormGenerated
+	ExcludedQuestions []ExcludedQuestion
 }
 
-type FormPublishedGroup struct {
+type FormPublishedTeam struct {
 	model.Base
 	GroupId         uuid.UUID `gorm:"type:uuid"`
 	FormPublishedId uuid.UUID `gorm:"type:uuid"`
@@ -35,9 +36,24 @@ type FormPublishedUser struct {
 	FormPublishedId uuid.UUID `gorm:"type:uuid"`
 }
 
-func (m *FormPublished) GetMarkConfigMap() map[string]int {
+type ExcludedQuestion struct {
+	model.Base
+	UserId          uuid.UUID `gorm:"type:uuid"`
+	QuestionId      uuid.UUID `gorm:"type:uuid"`
+	FormPublishedId uuid.UUID `gorm:"type:uuid"`
+}
+
+func (f *FormPublished) ExcludedQuestionsToSlice() []uuid.UUID {
+	questions := make([]uuid.UUID, 0)
+	for _, excludedQuestion := range f.ExcludedQuestions {
+		questions = append(questions, excludedQuestion.QuestionId)
+	}
+	return questions
+}
+
+func (f *FormPublished) GetMarkConfigMap() map[string]int {
 	config := make(map[string]int)
-	for _, markConfiguration := range m.MarkConfiguration {
+	for _, markConfiguration := range f.MarkConfiguration {
 		config[markConfiguration.Mark] = markConfiguration.MinPoints
 	}
 	return config

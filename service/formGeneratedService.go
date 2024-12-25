@@ -10,7 +10,6 @@ import (
 	"hedgehog-forms/factory"
 	"hedgehog-forms/mapper"
 	"hedgehog-forms/model/form/generated"
-	"hedgehog-forms/model/form/pattern/section"
 	"hedgehog-forms/model/form/published"
 	"hedgehog-forms/processor"
 	"hedgehog-forms/repository"
@@ -24,7 +23,6 @@ type FormGeneratedService struct {
 	formPublishedRepository          *repository.FormPublishedRepository
 	formGeneratedRepository          *repository.FormGeneratedRepository
 	formGeneratedFactory             *factory.FormGeneratedFactory
-	sectionGeneratedFactory          *factory.SectionGeneratedFactory
 	formGeneratedVerificationFactory *mapper.FormGeneratedVerificationFactory
 	formGeneratedMapper              *mapper.FormGeneratedMapper
 	formGeneratedProcessor           *processor.FormGeneratedProcessor
@@ -35,7 +33,6 @@ func NewFormGeneratedService() *FormGeneratedService {
 		formPublishedRepository:          repository.NewFormPublishedRepository(),
 		formGeneratedRepository:          repository.NewFormGeneratedRepository(),
 		formGeneratedFactory:             factory.NewFormGeneratedFactory(),
-		sectionGeneratedFactory:          factory.NewSectionGeneratedFactory(),
 		formGeneratedVerificationFactory: mapper.NewFormGeneratedVerificationFactory(),
 		formGeneratedMapper:              mapper.NewFormGeneratedMapper(),
 		formGeneratedProcessor:           processor.NewFormGeneratedProcessor(),
@@ -43,8 +40,8 @@ func NewFormGeneratedService() *FormGeneratedService {
 }
 
 func (f *FormGeneratedService) GetMyForm(
-	userId,
-	publishedId string,
+	publishedId,
+	userId string,
 ) (*get.FormGeneratedDto, error) {
 	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
 	if err != nil {
@@ -56,40 +53,38 @@ func (f *FormGeneratedService) GetMyForm(
 		return nil, err
 	}
 
-	formGenerated, err := f.formGeneratedRepository.FindByPublishedId(parsedPublishedId)
-	if err != nil && err.Error() != "record not found" {
-		return nil, err
-	}
-
 	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
 	if err != nil {
 		return nil, err
 	}
 
-	if formGenerated == nil {
-		formGenerated, err = f.buildAndCreate(formPublished, parsedUserId)
+	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(parsedUserId, parsedPublishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	currAttempt := new(generated.FormGenerated)
+	//TODO: possibly more changes needed
+	if len(attempts) == 0 {
+		currAttempt, err = f.buildAndCreate(formPublished, parsedUserId)
 		if err != nil {
 			return nil, err
 		}
-	}
-
-	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(formGenerated.UserId, formGenerated.FormPublishedID)
-	if err != nil {
-		return nil, err
-	}
-
-	currAttempt, err := f.findActiveGeneratedForm(attempts)
-	if err != nil {
-		return nil, err
-	}
-
-	if currAttempt == nil && len(attempts) < formPublished.MaxAttempts {
-		if err = f.generateNew(formGenerated, formPublished.FormPattern.Sections); err != nil {
+	} else {
+		currAttempt, err = f.findActiveGeneratedForm(attempts)
+		if err != nil {
 			return nil, err
+		}
+
+		if currAttempt == nil && len(attempts) < formPublished.MaxAttempts {
+			currAttempt, err = f.buildAndCreate(formPublished, parsedUserId)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
-	return f.formGeneratedMapper.ToDto(formGenerated)
+	return f.formGeneratedMapper.ToDto(currAttempt)
 }
 
 func (f *FormGeneratedService) buildAndCreate(
@@ -102,38 +97,28 @@ func (f *FormGeneratedService) buildAndCreate(
 	}
 
 	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
-	formGenerated.ExcludedQuestions = f.getAllQuestionIds(questions, formPublished.Id)
+	questionIds := f.getAllQuestionIds(userId, questions, formPublished.Id)
+	formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
+	formPublished.FormsGenerated = append(formPublished.FormsGenerated, formGenerated)
 
-	if err = f.formGeneratedRepository.Create(formGenerated); err != nil {
+	if err = f.formPublishedRepository.Save(formPublished); err != nil {
 		return nil, err
 	}
 
 	return formGenerated, nil
 }
 
-func (f *FormGeneratedService) generateNew(
-	formGenerated *generated.FormGenerated,
-	patternSections []section.Section,
-) error {
-	sections, err := f.sectionGeneratedFactory.BuildSections(patternSections, formGenerated.ExcludedQuestionsToSlice())
-	if err != nil {
-		return err
-	}
-
-	formGenerated.Sections = sections
-	formGenerated.IsCompleted = true
-	return nil
-}
-
 func (f *FormGeneratedService) getAllQuestionIds(
+	userId uuid.UUID,
 	questions []generated.IQuestion,
 	formPublishedId uuid.UUID,
-) []generated.ExcludedQuestion {
-	questionIds := make([]generated.ExcludedQuestion, 0)
+) []published.ExcludedQuestion {
+	questionIds := make([]published.ExcludedQuestion, 0)
 	for _, currQuestion := range questions {
-		var excludedQuestion generated.ExcludedQuestion
+		var excludedQuestion published.ExcludedQuestion
+		excludedQuestion.UserId = userId
 		excludedQuestion.QuestionId = currQuestion.GetId()
-		excludedQuestion.FormGeneratedId = formPublishedId
+		excludedQuestion.FormPublishedId = formPublishedId
 		questionIds = append(questionIds, excludedQuestion)
 	}
 	return questionIds
@@ -400,7 +385,7 @@ func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) (
 
 	userIdsWithAccess := make([]uuid.UUID, 0)
 	//TODO: user group ids
-	//for _, groupEntity := range formPublished.Groups {
+	//for _, groupEntity := range formPublished.Teams {
 	//	for _, userEntity := range groupEntity.Users {
 	//		userIdsWithAccess = append(userIdsWithAccess, userEntity.Id)
 	//	}

@@ -83,7 +83,7 @@ func (f *FormGeneratedRepository) FindByPublishedIdAndStatusAndPaginate(
 		Model(&generated.FormGenerated{}).
 		Joins("inner join form_published on form_published_id = form_published.id").
 		Joins("inner join form_pattern on form_published.form_pattern_id = form_pattern.id").
-		Where("form_pattern.user_id = ?", userId).
+		Where("form_pattern.owner_id = ?", userId).
 		Where("form_published.id = ?", publishedId).
 		Where("form_generated.status = ?", status).
 		Scopes(paginate(page, size)).
