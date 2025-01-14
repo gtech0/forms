@@ -1,11 +1,26 @@
 package factory
 
-type SolutionChoiceFactory struct {
-	commonMapper *CommonFieldQuestionMapper
+import (
+	"github.com/google/uuid"
+	"hedgehog-forms/model/form/generated"
+	"hedgehog-forms/model/form/published"
+)
+
+type SolutionFactory struct {
 }
 
-func NewSolutionChoiceFactory() *SingleChoiceFactory {
-	return &SingleChoiceFactory{
-		commonMapper: NewCommonFieldQuestionMapper(),
-	}
+func NewSolutionFactory() *SolutionFactory {
+	return &SolutionFactory{}
+}
+
+func (s *SolutionFactory) BuildFromPublished(
+	formPublished *published.FormPublished,
+	userId *uuid.UUID,
+	submission *generated.FormGenerated,
+) *published.Solution {
+	solution := new(published.Solution)
+	solution.UserOwnerId = userId
+	solution.ClassTaskId = formPublished.Id
+	solution.Submissions = []generated.FormGenerated{*submission}
+	return solution
 }

@@ -3,6 +3,7 @@ package published
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/model"
+	"hedgehog-forms/model/form/generated"
 )
 
 type Solution struct {
@@ -22,8 +23,8 @@ type Solution struct {
 	PostmoderationVerdict string `json:"postmoderationVerdict" gorm:"default:PENDING"`
 	FinalVerdict          string `json:"finalVerdict" gorm:"default:PENDING"`
 
-	Submissions      []Submission      `json:"submissions" gorm:"-:all"`
-	SolutionComments []SolutionComment `json:"solutionComments"`
+	Submissions      []generated.FormGenerated `json:"submissions" gorm:"-:all"`
+	SolutionComments []SolutionComment         `json:"solutionComments"`
 
 	Files []model.File `json:"files" gorm:"-:all"`
 }

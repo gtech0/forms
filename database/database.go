@@ -56,8 +56,8 @@ func Sync() {
 		&published.FormPublishedUser{},
 		&published.ExcludedQuestion{},
 
-		//&published.Solution{},
-		//&published.SolutionComment{},
+		&published.Solution{},
+		&published.SolutionComment{},
 		//&published.Submission{},
 
 		&generated.FormGenerated{},

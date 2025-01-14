@@ -20,6 +20,8 @@ import (
 )
 
 type FormGeneratedService struct {
+	solutionRepository               *repository.SolutionRepository
+	solutionFactory                  *factory.SolutionFactory
 	formPublishedRepository          *repository.FormPublishedRepository
 	formGeneratedRepository          *repository.FormGeneratedRepository
 	formGeneratedFactory             *factory.FormGeneratedFactory
@@ -30,6 +32,8 @@ type FormGeneratedService struct {
 
 func NewFormGeneratedService() *FormGeneratedService {
 	return &FormGeneratedService{
+		solutionRepository:               repository.NewSolutionRepository(),
+		solutionFactory:                  factory.NewSolutionFactory(),
 		formPublishedRepository:          repository.NewFormPublishedRepository(),
 		formGeneratedRepository:          repository.NewFormGeneratedRepository(),
 		formGeneratedFactory:             factory.NewFormGeneratedFactory(),
@@ -58,19 +62,29 @@ func (f *FormGeneratedService) GetMyForm(
 		return nil, err
 	}
 
-	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(parsedUserId, parsedPublishedId)
+	solution, err := f.solutionRepository.FindByTaskIdAndUserId(parsedPublishedId, parsedUserId)
 	if err != nil {
 		return nil, err
 	}
 
 	currAttempt := new(generated.FormGenerated)
-	//TODO: possibly more changes needed
-	if len(attempts) == 0 {
+	if solution.Id == uuid.Nil {
 		currAttempt, err = f.buildAndCreate(formPublished, parsedUserId)
 		if err != nil {
 			return nil, err
 		}
+
+		solution = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId, currAttempt)
+		if err = f.solutionRepository.Create(solution); err != nil {
+			return nil, err
+		}
 	} else {
+		attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(parsedUserId, parsedPublishedId)
+		if err != nil {
+			return nil, err
+		}
+
+		//TODO: possibly more changes needed (?)
 		currAttempt, err = f.findActiveGeneratedForm(attempts)
 		if err != nil {
 			return nil, err
@@ -79,6 +93,11 @@ func (f *FormGeneratedService) GetMyForm(
 		if currAttempt == nil && len(attempts) < formPublished.MaxAttempts {
 			currAttempt, err = f.buildAndCreate(formPublished, parsedUserId)
 			if err != nil {
+				return nil, err
+			}
+
+			solution.Submissions = append(solution.Submissions, *currAttempt)
+			if err = f.solutionRepository.Save(solution); err != nil {
 				return nil, err
 			}
 		}
@@ -180,6 +199,8 @@ func (f *FormGeneratedService) SaveAnswers(
 
 	return f.formGeneratedMapper.ToDto(formGenerated)
 }
+
+//TODO: add solution logic
 
 func (f *FormGeneratedService) SubmitForm(
 	generatedId string,
