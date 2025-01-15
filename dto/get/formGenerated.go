@@ -20,12 +20,12 @@ type MyGeneratedDto struct {
 	FormPublished FormPublishedBaseDto `json:"formPublished"`
 	SubmitTime    time.Time            `json:"submitTime"`
 	Points        int                  `json:"points"`
-	Mark          string               `json:"mark"`
+	Mark          int                  `json:"mark"`
 }
 
 type SubmittedDto struct {
 	Status     generated.FormStatus `json:"status"`
 	Points     int                  `json:"points"`
-	Mark       string               `json:"mark"`
+	Mark       int                  `json:"mark"`
 	SubmitTime time.Time            `json:"submitTime"`
 }

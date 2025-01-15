@@ -14,10 +14,11 @@ type FormGenerated struct {
 	IsCompleted     bool
 	Sections        []Section `gorm:"type:jsonb;serializer:json"`
 	Points          int
-	Mark            string
+	Mark            int
 	StartTime       time.Time
 	SubmitTime      time.Time
-	FormPublishedID uuid.UUID `gorm:"type:uuid"`
+	FormPublishedId uuid.UUID `gorm:"type:uuid"`
+	SolutionId      uuid.UUID `gorm:"type:uuid"`
 }
 
 func (f *FormGenerated) ExtractQuestionsFromGeneratedForm() []IQuestion {

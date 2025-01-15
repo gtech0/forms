@@ -9,9 +9,9 @@ import (
 )
 
 type FormPatternDto struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	//OwnerId     uuid.UUID         `json:"ownerId"`
+	Title       string            `json:"title"`
+	Description string            `json:"description"`
+	OwnerId     uuid.UUID         `json:"ownerId"`
 	SubjectId   uuid.UUID         `json:"subjectId"`
 	Sections    []any             `json:"-"`
 	RawSections []json.RawMessage `json:"sections"`

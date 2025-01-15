@@ -114,7 +114,7 @@ func (f *FormGeneratedProcessor) applyNewPoints(formGenerated *generated.FormGen
 	formGenerated.Points = formGenerated.Points - difference
 }
 
-func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGenerated, marks map[string]int) error {
+func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGenerated, marks map[int]int) error {
 	pointsForForm := formGenerated.Points
 	var requiredPointsForMark int
 	for _, points := range marks {
@@ -124,7 +124,7 @@ func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGene
 	}
 
 	mark, ok := util.FindKeyByValue(marks, requiredPointsForMark)
-	if !ok {
+	if !ok && mark != 0 {
 		return errs.New(fmt.Sprintf("mark for %d points is not found", requiredPointsForMark), 500)
 	}
 

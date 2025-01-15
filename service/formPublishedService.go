@@ -134,7 +134,7 @@ func (f *FormPublishedService) UpdateForm(
 	return f.formPublishedMapper.ToBaseDto(formPublished), nil
 }
 
-func (f *FormPublishedService) recalculateMarks(formsGenerated []*generated.FormGenerated, marks map[string]int) error {
+func (f *FormPublishedService) recalculateMarks(formsGenerated []*generated.FormGenerated, marks map[int]int) error {
 	for _, formGenerated := range formsGenerated {
 		if err := f.formGeneratedProcessor.CalculateMark(formGenerated, marks); err != nil {
 			return err

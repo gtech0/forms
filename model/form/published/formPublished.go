@@ -26,7 +26,7 @@ type FormPublished struct {
 
 type FormPublishedTeam struct {
 	model.Base
-	GroupId         uuid.UUID `gorm:"type:uuid"`
+	TeamId          uuid.UUID `gorm:"type:uuid"`
 	FormPublishedId uuid.UUID `gorm:"type:uuid"`
 }
 
@@ -51,8 +51,8 @@ func (f *FormPublished) ExcludedQuestionsToSlice() []uuid.UUID {
 	return questions
 }
 
-func (f *FormPublished) GetMarkConfigMap() map[string]int {
-	config := make(map[string]int)
+func (f *FormPublished) GetMarkConfigMap() map[int]int {
+	config := make(map[int]int)
 	for _, markConfiguration := range f.MarkConfiguration {
 		config[markConfiguration.Mark] = markConfiguration.MinPoints
 	}
@@ -61,7 +61,7 @@ func (f *FormPublished) GetMarkConfigMap() map[string]int {
 
 type MarkConfiguration struct {
 	model.Base
-	Mark            string
+	Mark            int
 	MinPoints       int
 	FormPublishedId uuid.UUID `gorm:"type:uuid"`
 }

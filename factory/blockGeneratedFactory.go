@@ -66,7 +66,7 @@ func (b *BlockGeneratedFactory) buildDynamicBlock(
 
 	questionsForBlock := make([]generated.IQuestion, 0)
 
-	//TODO: fix?
+	//TODO: fix for questionCount > len(questions)
 	if questionCount <= len(questions) {
 		for i := 0; i < questionCount; i++ {
 			randomIndex := rand.Intn(len(questions))

@@ -23,7 +23,7 @@ func (f *FormGeneratedMapper) ToDto(formGenerated *generated.FormGenerated) (*ge
 	formGeneratedDto := new(get.FormGeneratedDto)
 	formGeneratedDto.Id = formGenerated.Id
 	formGeneratedDto.Status = formGenerated.Status
-	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedID)
+	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (f *FormGeneratedMapper) ToMyDto(formGenerated *generated.FormGenerated) (*
 	myGeneratedDto := new(get.MyGeneratedDto)
 	myGeneratedDto.Id = formGenerated.Id
 	myGeneratedDto.Status = formGenerated.Status
-	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedID)
+	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (f *FormGeneratedMapper) ToMyDto(formGenerated *generated.FormGenerated) (*
 	isAfterDeadline := myGeneratedDto.FormPublished.Deadline.After(time.Now())
 	if hideScore && isAfterDeadline {
 		myGeneratedDto.Points = 0
-		myGeneratedDto.Mark = ""
+		myGeneratedDto.Mark = 0
 	}
 
 	return myGeneratedDto, nil

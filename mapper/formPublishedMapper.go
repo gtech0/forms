@@ -26,9 +26,9 @@ func (f *FormPublishedMapper) ToBaseDto(publishedForm *published.FormPublished) 
 	publishedBaseDto.MaxAttempts = publishedForm.MaxAttempts
 	groups := make([]uuid.UUID, 0)
 	for _, publishedGroup := range publishedForm.Teams {
-		groups = append(groups, publishedGroup.GroupId)
+		groups = append(groups, publishedGroup.TeamId)
 	}
-	publishedBaseDto.GroupIds = groups
+	publishedBaseDto.TeamIds = groups
 
 	users := make([]uuid.UUID, 0)
 	for _, publishedUser := range publishedForm.Users {
@@ -36,7 +36,7 @@ func (f *FormPublishedMapper) ToBaseDto(publishedForm *published.FormPublished) 
 	}
 	publishedBaseDto.UserIds = users
 
-	markConfig := make(map[string]int)
+	markConfig := make(map[int]int)
 	for _, markConfiguration := range publishedForm.MarkConfiguration {
 		markConfig[markConfiguration.Mark] = markConfiguration.MinPoints
 	}
@@ -56,10 +56,10 @@ func (f *FormPublishedMapper) ToDto(publishedForm *published.FormPublished) (*ge
 	publishedDto.Deadline = publishedForm.Deadline
 	publishedDto.Duration = publishedForm.Duration
 	groups := make([]uuid.UUID, 0)
-	for _, publishedGroup := range publishedForm.Teams {
-		groups = append(groups, publishedGroup.GroupId)
+	for _, publishedTeam := range publishedForm.Teams {
+		groups = append(groups, publishedTeam.TeamId)
 	}
-	publishedDto.GroupIds = groups
+	publishedDto.TeamIds = groups
 
 	users := make([]uuid.UUID, 0)
 	for _, publishedUser := range publishedForm.Users {

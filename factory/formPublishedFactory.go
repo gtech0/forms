@@ -20,7 +20,7 @@ func (f *FormPublishedFactory) Build(publishDto create.FormPublishDto) (*publish
 	formPublished.HideScore = publishDto.HideScore
 	formPublished.PostModeration = publishDto.PostModeration
 	formPublished.FormPatternId = publishDto.FormPatternId
-	if err := f.BuildGroups(publishDto.GroupIds, formPublished); err != nil {
+	if err := f.BuildGroups(publishDto.TeamIds, formPublished); err != nil {
 		return nil, err
 	}
 
@@ -40,7 +40,7 @@ func (f *FormPublishedFactory) Update(
 	formPublished.Deadline = formPublishedDto.Deadline
 	formPublished.Duration = formPublishedDto.Duration
 	formPublished.HideScore = formPublishedDto.HideScore
-	if err := f.BuildGroups(formPublishedDto.GroupIds, formPublished); err != nil {
+	if err := f.BuildGroups(formPublishedDto.TeamIds, formPublished); err != nil {
 		return err
 	}
 
@@ -59,7 +59,7 @@ func (f *FormPublishedFactory) BuildGroups(
 	groups := make([]published.FormPublishedTeam, 0)
 	for _, groupId := range groupIds {
 		var group published.FormPublishedTeam
-		group.GroupId = groupId
+		group.TeamId = groupId
 		groups = append(groups, group)
 	}
 	formPublished.Teams = groups
@@ -81,7 +81,7 @@ func (f *FormPublishedFactory) BuildUsers(
 }
 
 func (f *FormPublishedFactory) BuildMarkConfiguration(
-	marks map[string]int,
+	marks map[int]int,
 	publishedId uuid.UUID,
 ) []published.MarkConfiguration {
 	markConfigs := make([]published.MarkConfiguration, 0)
