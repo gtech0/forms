@@ -3,6 +3,7 @@ package processor
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"hedgehog-forms/dto/common"
 	"hedgehog-forms/dto/create"
 	"hedgehog-forms/dto/get"
 	"hedgehog-forms/errs"
@@ -114,7 +115,10 @@ func (f *FormGeneratedProcessor) applyNewPoints(formGenerated *generated.FormGen
 	formGenerated.Points = formGenerated.Points - difference
 }
 
-func (f *FormGeneratedProcessor) CalculateMark(formGenerated *generated.FormGenerated, marks map[int]int) error {
+func (f *FormGeneratedProcessor) CalculateMark(
+	formGenerated *generated.FormGenerated,
+	marks common.MarkConfiguration,
+) error {
 	pointsForForm := formGenerated.Points
 	var requiredPointsForMark int
 	for _, points := range marks {

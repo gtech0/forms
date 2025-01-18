@@ -66,19 +66,20 @@ func (b *BlockGeneratedFactory) buildDynamicBlock(
 
 	questionsForBlock := make([]generated.IQuestion, 0)
 
-	//TODO: fix for questionCount > len(questions)
-	if questionCount <= len(questions) {
-		for i := 0; i < questionCount; i++ {
-			randomIndex := rand.Intn(len(questions))
-			randomQuestion := questions[randomIndex]
-			generatedQuestion, err := b.questionGeneratedFactory.buildQuestion(randomQuestion)
-			if err != nil {
-				return nil, err
-			}
+	if questionCount > len(questions) {
+		return nil, errs.New("no questions in the bank", 500)
+	}
 
-			questions = slices.Delete(questions, randomIndex, randomIndex+1)
-			questionsForBlock = append(questionsForBlock, generatedQuestion)
+	for i := 0; i < questionCount; i++ {
+		randomIndex := rand.Intn(len(questions))
+		randomQuestion := questions[randomIndex]
+		generatedQuestion, err := b.questionGeneratedFactory.buildQuestion(randomQuestion)
+		if err != nil {
+			return nil, err
 		}
+
+		questions = slices.Delete(questions, randomIndex, randomIndex+1)
+		questionsForBlock = append(questionsForBlock, generatedQuestion)
 	}
 
 	return &generated.Block{
