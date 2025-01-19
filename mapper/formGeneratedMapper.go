@@ -29,6 +29,7 @@ func (f *FormGeneratedMapper) ToDto(formGenerated *generated.FormGenerated) (*ge
 	}
 
 	formGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(formPublished)
+	formGeneratedDto.UserId = formGenerated.UserId
 	formGeneratedDto.Sections = formGenerated.Sections
 	return formGeneratedDto, nil
 }
