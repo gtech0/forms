@@ -37,7 +37,7 @@ func (f *FormGeneratedVerificationFactory) Build(
 	return &verify.FormGenerated{
 		Id:       formGenerated.Id,
 		Status:   formGenerated.Status,
-		UserId:   formGenerated.UserId,
+		UserId:   formGenerated.Submission.UserId,
 		Sections: verifiedSections,
 	}, nil
 }

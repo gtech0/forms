@@ -23,8 +23,8 @@ type Solution struct {
 	PostmoderationVerdict string `json:"postmoderationVerdict" gorm:"default:PENDING"`
 	FinalVerdict          string `json:"finalVerdict" gorm:"default:PENDING"`
 
-	Submissions      []generated.FormGenerated `json:"submissions" gorm:"-:all"`
-	SolutionComments []SolutionComment         `json:"solutionComments"`
+	Submissions      []generated.Submission `json:"submissions"`
+	SolutionComments []SolutionComment      `json:"solutionComments"`
 
 	Files []model.File `json:"files" gorm:"-:all"`
 }

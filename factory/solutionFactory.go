@@ -7,8 +7,7 @@ import (
 	"hedgehog-forms/util"
 )
 
-type SolutionFactory struct {
-}
+type SolutionFactory struct{}
 
 func NewSolutionFactory() *SolutionFactory {
 	return &SolutionFactory{}
@@ -17,7 +16,7 @@ func NewSolutionFactory() *SolutionFactory {
 func (s *SolutionFactory) BuildFromPublished(
 	formPublished *published.FormPublished,
 	userId *uuid.UUID,
-	submission *generated.FormGenerated,
+	submission *generated.Submission,
 ) *published.Solution {
 	solution := new(published.Solution)
 	solution.IsIndividual = util.Pointer(false)
@@ -27,6 +26,6 @@ func (s *SolutionFactory) BuildFromPublished(
 
 	solution.UserOwnerId = userId
 	solution.ClassTaskId = formPublished.Id
-	solution.Submissions = []generated.FormGenerated{*submission}
+	solution.Submissions = []generated.Submission{*submission}
 	return solution
 }

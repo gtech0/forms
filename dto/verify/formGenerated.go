@@ -8,6 +8,6 @@ import (
 type FormGenerated struct {
 	Id       uuid.UUID            `json:"id"`
 	Status   generated.FormStatus `json:"status"`
-	UserId   uuid.UUID            `json:"userId"`
+	UserId   *uuid.UUID           `json:"userId"`
 	Sections []Section            `json:"sections"`
 }

@@ -29,7 +29,7 @@ func (f *FormGeneratedMapper) ToDto(formGenerated *generated.FormGenerated) (*ge
 	}
 
 	formGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(formPublished)
-	formGeneratedDto.UserId = formGenerated.UserId
+	formGeneratedDto.UserId = formGenerated.Submission.UserId
 	formGeneratedDto.Sections = formGenerated.Sections
 	return formGeneratedDto, nil
 }
@@ -44,7 +44,7 @@ func (f *FormGeneratedMapper) ToMyDto(formGenerated *generated.FormGenerated) (*
 	}
 
 	myGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(formPublished)
-	myGeneratedDto.SubmitTime = formGenerated.SubmitTime
+	//myGeneratedDto.SubmitTime = formGenerated.SubmitTime
 	myGeneratedDto.Points = formGenerated.Points
 	myGeneratedDto.Mark = formGenerated.Mark
 
@@ -63,6 +63,6 @@ func (f *FormGeneratedMapper) ToSubmittedDto(formGenerated generated.FormGenerat
 	submittedDto.Status = formGenerated.Status
 	submittedDto.Points = formGenerated.Points
 	submittedDto.Mark = formGenerated.Mark
-	submittedDto.SubmitTime = formGenerated.SubmitTime
+	//submittedDto.SubmitTime = formGenerated.SubmitTime
 	return submittedDto
 }

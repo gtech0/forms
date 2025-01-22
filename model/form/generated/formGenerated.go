@@ -4,21 +4,17 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/model"
 	"slices"
-	"time"
 )
 
 type FormGenerated struct {
 	model.Base
 	Status          FormStatus
-	UserId          uuid.UUID `gorm:"type:uuid"`
 	IsCompleted     bool
 	Sections        []Section `gorm:"type:jsonb;serializer:json"`
 	Points          int
 	Mark            int
-	StartTime       time.Time
-	SubmitTime      time.Time
 	FormPublishedId uuid.UUID `gorm:"type:uuid"`
-	SolutionId      uuid.UUID `gorm:"type:uuid"`
+	Submission      *Submission
 }
 
 func (f *FormGenerated) ExtractQuestionsFromGeneratedForm() []IQuestion {
