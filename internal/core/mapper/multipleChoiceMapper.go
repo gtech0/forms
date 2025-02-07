@@ -2,7 +2,7 @@ package mapper
 
 import (
 	"hedgehog-forms/internal/core/dto/get"
-	question2 "hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 )
 
 type MultipleChoiceMapper struct {
@@ -15,7 +15,7 @@ func NewMultipleChoiceMapper() *MultipleChoiceMapper {
 	}
 }
 
-func (m *MultipleChoiceMapper) toDto(questionEntity *question2.Question) (*get.MultipleChoiceDto, error) {
+func (m *MultipleChoiceMapper) toDto(questionEntity *question.Question) (*get.MultipleChoiceDto, error) {
 	multipleChoiceDto := new(get.MultipleChoiceDto)
 	m.commonMapper.CommonFieldsToDto(questionEntity, multipleChoiceDto)
 	multipleChoiceDto.Points = m.pointsToDto(questionEntity.MultipleChoice.Points)
@@ -23,7 +23,7 @@ func (m *MultipleChoiceMapper) toDto(questionEntity *question2.Question) (*get.M
 	return multipleChoiceDto, nil
 }
 
-func (m *MultipleChoiceMapper) pointsToDto(multipleChoicePoints []question2.MultipleChoicePoints) map[int]int {
+func (m *MultipleChoiceMapper) pointsToDto(multipleChoicePoints []question.MultipleChoicePoints) map[int]int {
 	points := make(map[int]int)
 	for _, multipleChoicePoint := range multipleChoicePoints {
 		points[multipleChoicePoint.CorrectAnswer] = multipleChoicePoint.Points
@@ -31,7 +31,7 @@ func (m *MultipleChoiceMapper) pointsToDto(multipleChoicePoints []question2.Mult
 	return points
 }
 
-func (m *MultipleChoiceMapper) optionsToDto(multipleChoiceOptions []question2.MultipleChoiceOption) []get.MultipleOptionDto {
+func (m *MultipleChoiceMapper) optionsToDto(multipleChoiceOptions []question.MultipleChoiceOption) []get.MultipleOptionDto {
 	options := make([]get.MultipleOptionDto, 0)
 	for _, multipleChoiceOption := range multipleChoiceOptions {
 		var option get.MultipleOptionDto

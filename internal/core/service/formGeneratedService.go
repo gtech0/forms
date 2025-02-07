@@ -4,45 +4,45 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/dto/create"
-	get2 "hedgehog-forms/internal/core/dto/get"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/dto/verify"
 	"hedgehog-forms/internal/core/errs"
-	factory2 "hedgehog-forms/internal/core/factory"
-	mapper2 "hedgehog-forms/internal/core/mapper"
-	generated2 "hedgehog-forms/internal/core/model/form/generated"
+	"hedgehog-forms/internal/core/factory"
+	"hedgehog-forms/internal/core/mapper"
+	"hedgehog-forms/internal/core/model/form/generated"
 	"hedgehog-forms/internal/core/model/form/published"
 	"hedgehog-forms/internal/core/processor"
-	repository2 "hedgehog-forms/internal/core/repository"
-	util2 "hedgehog-forms/internal/core/util"
+	"hedgehog-forms/internal/core/repository"
+	"hedgehog-forms/internal/core/util"
 	"net/url"
 	"strconv"
 	"time"
 )
 
 type FormGeneratedService struct {
-	solutionRepository               *repository2.SolutionRepository
-	solutionFactory                  *factory2.SolutionFactory
-	submissionRepository             *repository2.SubmissionRepository
-	submissionFactory                *factory2.SubmissionFactory
-	formPublishedRepository          *repository2.FormPublishedRepository
-	formGeneratedRepository          *repository2.FormGeneratedRepository
-	formGeneratedFactory             *factory2.FormGeneratedFactory
-	formGeneratedVerificationFactory *mapper2.FormGeneratedVerificationFactory
-	formGeneratedMapper              *mapper2.FormGeneratedMapper
+	solutionRepository               *repository.SolutionRepository
+	solutionFactory                  *factory.SolutionFactory
+	submissionRepository             *repository.SubmissionRepository
+	submissionFactory                *factory.SubmissionFactory
+	formPublishedRepository          *repository.FormPublishedRepository
+	formGeneratedRepository          *repository.FormGeneratedRepository
+	formGeneratedFactory             *factory.FormGeneratedFactory
+	formGeneratedVerificationFactory *mapper.FormGeneratedVerificationFactory
+	formGeneratedMapper              *mapper.FormGeneratedMapper
 	formGeneratedProcessor           *processor.FormGeneratedProcessor
 }
 
 func NewFormGeneratedService() *FormGeneratedService {
 	return &FormGeneratedService{
-		solutionRepository:               repository2.NewSolutionRepository(),
-		solutionFactory:                  factory2.NewSolutionFactory(),
-		submissionRepository:             repository2.NewSubmissionRepository(),
-		submissionFactory:                factory2.NewSubmissionFactory(),
-		formPublishedRepository:          repository2.NewFormPublishedRepository(),
-		formGeneratedRepository:          repository2.NewFormGeneratedRepository(),
-		formGeneratedFactory:             factory2.NewFormGeneratedFactory(),
-		formGeneratedVerificationFactory: mapper2.NewFormGeneratedVerificationFactory(),
-		formGeneratedMapper:              mapper2.NewFormGeneratedMapper(),
+		solutionRepository:               repository.NewSolutionRepository(),
+		solutionFactory:                  factory.NewSolutionFactory(),
+		submissionRepository:             repository.NewSubmissionRepository(),
+		submissionFactory:                factory.NewSubmissionFactory(),
+		formPublishedRepository:          repository.NewFormPublishedRepository(),
+		formGeneratedRepository:          repository.NewFormGeneratedRepository(),
+		formGeneratedFactory:             factory.NewFormGeneratedFactory(),
+		formGeneratedVerificationFactory: mapper.NewFormGeneratedVerificationFactory(),
+		formGeneratedMapper:              mapper.NewFormGeneratedMapper(),
 		formGeneratedProcessor:           processor.NewFormGeneratedProcessor(),
 	}
 }
@@ -50,13 +50,13 @@ func NewFormGeneratedService() *FormGeneratedService {
 func (f *FormGeneratedService) GetMyForm(
 	publishedId,
 	userId string,
-) (*get2.FormGeneratedDto, error) {
-	parsedPublishedId, err := util2.IdCheckAndParse(publishedId)
+) (*get.FormGeneratedDto, error) {
+	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
 	if err != nil {
 		return nil, err
 	}
 
-	parsedUserId, err := util2.IdCheckAndParse(userId)
+	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (f *FormGeneratedService) GetMyForm(
 		return nil, err
 	}
 
-	currGenerated := new(generated2.FormGenerated)
+	currGenerated := new(generated.FormGenerated)
 	if solution.Id == uuid.Nil {
 		currGenerated, err = f.buildAndCreate(formPublished, parsedUserId)
 		if err != nil {
@@ -114,13 +114,13 @@ func (f *FormGeneratedService) GetMyForm(
 func (f *FormGeneratedService) buildAndCreate(
 	formPublished *published.FormPublished,
 	userId uuid.UUID,
-) (*generated2.FormGenerated, error) {
+) (*generated.FormGenerated, error) {
 	formGenerated, err := f.formGeneratedFactory.BuildForm(formPublished, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
+	questions := formGenerated.ExtractQuestions()
 	questionIds := f.getAllQuestionIds(userId, questions, formPublished.Id)
 	formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
 	formPublished.FormsGenerated = append(formPublished.FormsGenerated, formGenerated)
@@ -134,7 +134,7 @@ func (f *FormGeneratedService) buildAndCreate(
 
 func (f *FormGeneratedService) getAllQuestionIds(
 	userId uuid.UUID,
-	questions []generated2.IQuestion,
+	questions []generated.IQuestion,
 	formPublishedId uuid.UUID,
 ) []published.ExcludedQuestion {
 	questionIds := make([]published.ExcludedQuestion, 0)
@@ -150,9 +150,9 @@ func (f *FormGeneratedService) getAllQuestionIds(
 
 func (f *FormGeneratedService) SaveAnswers(
 	generatedId string,
-	answers get2.AnswerDto,
-) (*get2.FormGeneratedDto, error) {
-	parsedGeneratedId, err := util2.IdCheckAndParse(generatedId)
+	answers get.AnswerDto,
+) (*get.FormGeneratedDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +202,7 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
-	formGenerated.Status = generated2.IN_PROGRESS
+	formGenerated.Status = generated.IN_PROGRESS
 	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
 		return nil, err
 	}
@@ -210,13 +210,11 @@ func (f *FormGeneratedService) SaveAnswers(
 	return f.formGeneratedMapper.ToDto(formGenerated)
 }
 
-//TODO: add solution logic
-
 func (f *FormGeneratedService) SubmitForm(
 	generatedId string,
-	answers get2.AnswerDto,
-) (*get2.MyGeneratedDto, error) {
-	parsedGeneratedId, err := util2.IdCheckAndParse(generatedId)
+	answers get.AnswerDto,
+) (*get.MyGeneratedDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
 	if err != nil {
 		return nil, err
 	}
@@ -270,9 +268,9 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	status := generated2.COMPLETED
+	status := generated.COMPLETED
 	if formPublished.PostModeration {
-		status = generated2.SUBMITTED
+		status = generated.SUBMITTED
 	}
 
 	formGenerated.Status = status
@@ -280,7 +278,7 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	currSubmission.SubmitTime = util2.Pointer(time.Now())
+	currSubmission.SubmitTime = util.Pointer(time.Now())
 	if err = f.submissionRepository.Save(currSubmission); err != nil {
 		return nil, err
 	}
@@ -299,8 +297,8 @@ func (f *FormGeneratedService) SubmitForm(
 	return f.formGeneratedMapper.ToMyDto(formGenerated)
 }
 
-func (f *FormGeneratedService) UnSubmitForm(generatedId string) (*get2.MyGeneratedDto, error) {
-	parsedGeneratedId, err := util2.IdCheckAndParse(generatedId)
+func (f *FormGeneratedService) UnSubmitForm(generatedId string) (*get.MyGeneratedDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
 	if err != nil {
 		return nil, err
 	}
@@ -310,7 +308,7 @@ func (f *FormGeneratedService) UnSubmitForm(generatedId string) (*get2.MyGenerat
 		return nil, err
 	}
 
-	formGenerated.Status = generated2.IN_PROGRESS
+	formGenerated.Status = generated.IN_PROGRESS
 	if err = f.formGeneratedRepository.Create(formGenerated); err != nil {
 		return nil, err
 	}
@@ -322,13 +320,13 @@ func (f *FormGeneratedService) GetMyForms(
 	userId,
 	subjectId string,
 	query url.Values,
-) (*get2.PaginationResponse[get2.MyGeneratedDto], error) {
-	parsedSubjectId, err := util2.IdCheckAndParse(subjectId)
+) (*get.PaginationResponse[get.MyGeneratedDto], error) {
+	parsedSubjectId, err := util.IdCheckAndParse(subjectId)
 	if err != nil {
 		return nil, err
 	}
 
-	parsedUserId, err := util2.IdCheckAndParse(userId)
+	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -351,7 +349,7 @@ func (f *FormGeneratedService) GetMyForms(
 		return nil, err
 	}
 
-	myGeneratedDtos := make([]get2.MyGeneratedDto, 0)
+	myGeneratedDtos := make([]get.MyGeneratedDto, 0)
 	for _, formGenerated := range formsGenerated {
 		myGeneratedDto, err := f.formGeneratedMapper.ToMyDto(&formGenerated)
 		if err != nil {
@@ -361,7 +359,7 @@ func (f *FormGeneratedService) GetMyForms(
 		myGeneratedDtos = append(myGeneratedDtos, *myGeneratedDto)
 	}
 
-	return &get2.PaginationResponse[get2.MyGeneratedDto]{
+	return &get.PaginationResponse[get.MyGeneratedDto]{
 		Page:     page,
 		Size:     size,
 		Elements: myGeneratedDtos,
@@ -372,19 +370,19 @@ func (f *FormGeneratedService) GetSubmittedForms(
 	userId,
 	publishedId string,
 	query url.Values,
-) (*get2.PaginationResponse[get2.SubmittedDto], error) {
-	parsedPublishedId, err := util2.IdCheckAndParse(publishedId)
+) (*get.PaginationResponse[get.SubmittedDto], error) {
+	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
 	if err != nil {
 		return nil, err
 	}
 
-	parsedUserId, err := util2.IdCheckAndParse(userId)
+	parsedUserId, err := util.IdCheckAndParse(userId)
 	if err != nil {
 		return nil, err
 	}
 
 	status := query.Get("status")
-	formStatus := generated2.CheckStatusAndGet(status)
+	formStatus := generated.CheckStatusAndGet(status)
 
 	page, _ := strconv.Atoi(query.Get("page"))
 	if page <= 0 {
@@ -410,13 +408,13 @@ func (f *FormGeneratedService) GetSubmittedForms(
 		return nil, err
 	}
 
-	mySubmittedDtos := make([]get2.SubmittedDto, 0)
+	mySubmittedDtos := make([]get.SubmittedDto, 0)
 	for _, formGenerated := range formsGenerated {
 		myGeneratedDto := f.formGeneratedMapper.ToSubmittedDto(formGenerated)
 		mySubmittedDtos = append(mySubmittedDtos, *myGeneratedDto)
 	}
 
-	return &get2.PaginationResponse[get2.SubmittedDto]{
+	return &get.PaginationResponse[get.SubmittedDto]{
 		Page:     page,
 		Size:     size,
 		Elements: mySubmittedDtos,
@@ -424,7 +422,7 @@ func (f *FormGeneratedService) GetSubmittedForms(
 }
 
 func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) ([]uuid.UUID, error) {
-	parsedPublishedId, err := util2.IdCheckAndParse(publishedId)
+	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
 	if err != nil {
 		return nil, err
 	}
@@ -451,11 +449,11 @@ func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) (
 		userIdsWithGeneratedForm = append(userIdsWithGeneratedForm, *formGenerated.Submission.UserId)
 	}
 
-	return util2.Difference(userIdsWithAccess, userIdsWithGeneratedForm), nil
+	return util.Difference(userIdsWithAccess, userIdsWithGeneratedForm), nil
 }
 
 func (f *FormGeneratedService) GetSubmittedForm(generatedId string) (*verify.FormGenerated, error) {
-	parsedGeneratedId, err := util2.IdCheckAndParse(generatedId)
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
 	if err != nil {
 		return nil, err
 	}
@@ -478,8 +476,8 @@ func (f *FormGeneratedService) GetSubmittedForm(generatedId string) (*verify.For
 	return verifiedForm, nil
 }
 
-func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.CheckDto) (*get2.FormGeneratedDto, error) {
-	parsedGeneratedId, err := util2.IdCheckAndParse(generatedId)
+func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.CheckDto) (*get.FormGeneratedDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
 	if err != nil {
 		return nil, err
 	}
@@ -513,8 +511,8 @@ func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.Ch
 	return f.formGeneratedMapper.ToDto(formGenerated)
 }
 
-func (f *FormGeneratedService) ReturnForm(generatedId string) (*get2.MyGeneratedDto, error) {
-	parsedGeneratedId, err := util2.IdCheckAndParse(generatedId)
+func (f *FormGeneratedService) ReturnForm(generatedId string) (*get.MyGeneratedDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
 	if err != nil {
 		return nil, err
 	}
@@ -524,7 +522,7 @@ func (f *FormGeneratedService) ReturnForm(generatedId string) (*get2.MyGenerated
 		return nil, err
 	}
 
-	formGenerated.Status = generated2.RETURNED
+	formGenerated.Status = generated.RETURNED
 	if err = f.formGeneratedRepository.Create(formGenerated); err != nil {
 		return nil, err
 	}
@@ -533,7 +531,7 @@ func (f *FormGeneratedService) ReturnForm(generatedId string) (*get2.MyGenerated
 }
 
 func (f *FormGeneratedService) checkTime(
-	formGenerated *generated2.FormGenerated,
+	formGenerated *generated.FormGenerated,
 	startTime time.Time,
 	duration time.Duration,
 ) error {
@@ -558,8 +556,8 @@ func (f *FormGeneratedService) checkDeadline(formPublished *published.FormPublis
 	return nil
 }
 
-func (f *FormGeneratedService) checkStatus(formGenerated *generated2.FormGenerated) error {
-	if formGenerated.Status != generated2.NEW && formGenerated.Status != generated2.IN_PROGRESS {
+func (f *FormGeneratedService) checkStatus(formGenerated *generated.FormGenerated) error {
+	if formGenerated.Status != generated.NEW && formGenerated.Status != generated.IN_PROGRESS {
 		return errs.New("Form is already submitted", 400)
 	}
 
@@ -574,18 +572,18 @@ func (f *FormGeneratedService) checkAttempts(current, max int) error {
 	return nil
 }
 
-func (f *FormGeneratedService) checkStatusForVerification(old, new generated2.FormStatus) error {
-	if old != generated2.COMPLETED && old != generated2.SUBMITTED {
+func (f *FormGeneratedService) checkStatusForVerification(old, new generated.FormStatus) error {
+	if old != generated.COMPLETED && old != generated.SUBMITTED {
 		return errs.New(fmt.Sprintf("Old status %s of generated test is not suitable for verification", old), 400)
 	}
 
-	if new != generated2.COMPLETED && new != generated2.SUBMITTED {
+	if new != generated.COMPLETED && new != generated.SUBMITTED {
 		return errs.New(fmt.Sprintf("New status %s of generated test is not suitable for verification", new), 400)
 	}
 	return nil
 }
 
-func (f *FormGeneratedService) findActiveGeneratedForm(forms []*generated2.FormGenerated) (*generated2.FormGenerated, error) {
+func (f *FormGeneratedService) findActiveGeneratedForm(forms []*generated.FormGenerated) (*generated.FormGenerated, error) {
 	for _, formGenerated := range forms {
 		if formGenerated.IsCompleted == false {
 			return formGenerated, nil

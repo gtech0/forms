@@ -2,7 +2,7 @@ package factory
 
 import (
 	"github.com/google/uuid"
-	generated2 "hedgehog-forms/internal/core/model/form/generated"
+	"hedgehog-forms/internal/core/model/form/generated"
 	"hedgehog-forms/internal/core/model/form/published"
 )
 
@@ -21,10 +21,10 @@ func NewFormGeneratedFactory() *FormGeneratedFactory {
 func (f *FormGeneratedFactory) BuildForm(
 	published *published.FormPublished,
 	userId uuid.UUID,
-) (*generated2.FormGenerated, error) {
-	generatedForm := new(generated2.FormGenerated)
+) (*generated.FormGenerated, error) {
+	generatedForm := new(generated.FormGenerated)
 	generatedForm.Id = uuid.New()
-	generatedForm.Status = generated2.NEW
+	generatedForm.Status = generated.NEW
 	generatedForm.FormPublishedId = published.Id
 	sections, err := f.sectionFactory.BuildSections(published.FormPattern.Sections, published.ExcludedQuestionsToSlice())
 	if err != nil {

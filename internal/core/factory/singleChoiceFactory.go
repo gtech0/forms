@@ -3,7 +3,7 @@ package factory
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/dto/create"
-	question2 "hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 )
 
 type SingleChoiceFactory struct {
@@ -16,16 +16,16 @@ func NewSingleChoiceFactory() *SingleChoiceFactory {
 	}
 }
 
-func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuestionDto) (*question2.Question, error) {
-	questionEntity := new(question2.Question)
-	questionEntity.SingleChoice = new(question2.SingleChoice)
+func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuestionDto) (*question.Question, error) {
+	questionEntity := new(question.Question)
+	questionEntity.SingleChoice = new(question.SingleChoice)
 	if err := s.commonMapper.MapCommonDtoFields(questionDto.NewQuestionDto, questionEntity); err != nil {
 		return nil, err
 	}
 	questionEntity.SingleChoice.Points = questionDto.Points
 
 	optionNames := questionDto.Options
-	options := make([]question2.SingleChoiceOption, 0)
+	options := make([]question.SingleChoiceOption, 0)
 	for order := 0; order < len(optionNames); order++ {
 		option := s.buildOptionFromDto(questionDto, order, questionEntity.Id)
 		options = append(options, option)
@@ -34,17 +34,17 @@ func (s *SingleChoiceFactory) BuildFromDto(questionDto *create.SingleChoiceQuest
 	return questionEntity, nil
 }
 
-func (s *SingleChoiceFactory) BuildFromEntity(questionEntity *question2.Question) (*question2.Question, error) {
-	newQuestion := new(question2.Question)
-	newQuestion.SingleChoice = new(question2.SingleChoice)
+func (s *SingleChoiceFactory) BuildFromEntity(questionEntity *question.Question) (*question.Question, error) {
+	newQuestion := new(question.Question)
+	newQuestion.SingleChoice = new(question.SingleChoice)
 	if err := s.commonMapper.MapCommonEntityFields(*questionEntity, newQuestion); err != nil {
 		return nil, err
 	}
 	newQuestion.SingleChoice.Points = questionEntity.SingleChoice.Points
 
-	options := make([]question2.SingleChoiceOption, 0)
+	options := make([]question.SingleChoiceOption, 0)
 	for _, option := range questionEntity.SingleChoice.Options {
-		var newOption question2.SingleChoiceOption
+		var newOption question.SingleChoiceOption
 		newOption.Text = option.Text
 		newOption.Order = option.Order
 		newOption.IsAnswer = option.IsAnswer
@@ -57,8 +57,8 @@ func (s *SingleChoiceFactory) buildOptionFromDto(
 	questionDto *create.SingleChoiceQuestionDto,
 	order int,
 	questionId uuid.UUID,
-) question2.SingleChoiceOption {
-	var option question2.SingleChoiceOption
+) question.SingleChoiceOption {
+	var option question.SingleChoiceOption
 	option.Text = questionDto.Options[order]
 	option.Order = order
 	option.IsAnswer = questionDto.CorrectOption == order

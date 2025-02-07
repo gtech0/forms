@@ -2,12 +2,12 @@ package service
 
 import (
 	"hedgehog-forms/internal/core/dto/create"
-	get2 "hedgehog-forms/internal/core/dto/get"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/factory"
 	"hedgehog-forms/internal/core/mapper"
 	"hedgehog-forms/internal/core/model/form/generated"
 	"hedgehog-forms/internal/core/processor"
-	repository2 "hedgehog-forms/internal/core/repository"
+	"hedgehog-forms/internal/core/repository"
 	"hedgehog-forms/internal/core/util"
 	"maps"
 	"net/url"
@@ -15,26 +15,26 @@ import (
 )
 
 type FormPublishedService struct {
-	formPublishedRepository *repository2.FormPublishedRepository
+	formPublishedRepository *repository.FormPublishedRepository
 	formPatternService      *FormPatternService
 	formPublishedMapper     *mapper.FormPublishedMapper
 	formPublishedFactory    *factory.FormPublishedFactory
 	formGeneratedProcessor  *processor.FormGeneratedProcessor
-	formGeneratedRepository *repository2.FormGeneratedRepository
+	formGeneratedRepository *repository.FormGeneratedRepository
 }
 
 func NewFormPublishedService() *FormPublishedService {
 	return &FormPublishedService{
-		formPublishedRepository: repository2.NewFormPublishedRepository(),
+		formPublishedRepository: repository.NewFormPublishedRepository(),
 		formPatternService:      NewFormPatternService(),
 		formPublishedMapper:     mapper.NewFormPublishedMapper(),
 		formPublishedFactory:    factory.NewFormPublishedFactory(),
 		formGeneratedProcessor:  processor.NewFormGeneratedProcessor(),
-		formGeneratedRepository: repository2.NewFormGeneratedRepository(),
+		formGeneratedRepository: repository.NewFormGeneratedRepository(),
 	}
 }
 
-func (f *FormPublishedService) PublishForm(publishDto create.FormPublishDto) (*get2.FormPublishedBaseDto, error) {
+func (f *FormPublishedService) PublishForm(publishDto create.FormPublishDto) (*get.FormPublishedBaseDto, error) {
 	if err := f.formPatternService.doesFormExist(publishDto.FormPatternId); err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (f *FormPublishedService) PublishForm(publishDto create.FormPublishDto) (*g
 	return f.formPublishedMapper.ToBaseDto(formPublished), nil
 }
 
-func (f *FormPublishedService) GetForm(publishedId string) (*get2.FormPublishedDto, error) {
+func (f *FormPublishedService) GetForm(publishedId string) (*get.FormPublishedDto, error) {
 	id, err := util.IdCheckAndParse(publishedId)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (f *FormPublishedService) GetForm(publishedId string) (*get2.FormPublishedD
 	return publishedDto, nil
 }
 
-func (f *FormPublishedService) GetForms(query url.Values) (*get2.PaginationResponse[get2.FormPublishedBaseDto], error) {
+func (f *FormPublishedService) GetForms(query url.Values) (*get.PaginationResponse[get.FormPublishedBaseDto], error) {
 	name := query.Get("name")
 	page, _ := strconv.Atoi(query.Get("page"))
 	if page <= 0 {
@@ -90,13 +90,13 @@ func (f *FormPublishedService) GetForms(query url.Values) (*get2.PaginationRespo
 		return nil, err
 	}
 
-	publishedDtos := make([]get2.FormPublishedBaseDto, 0)
+	publishedDtos := make([]get.FormPublishedBaseDto, 0)
 	for _, formPublished := range formsPublished {
 		publishedDto := f.formPublishedMapper.ToBaseDto(&formPublished)
 		publishedDtos = append(publishedDtos, *publishedDto)
 	}
 
-	return &get2.PaginationResponse[get2.FormPublishedBaseDto]{
+	return &get.PaginationResponse[get.FormPublishedBaseDto]{
 		Page:     page,
 		Size:     size,
 		Elements: publishedDtos,
@@ -106,7 +106,7 @@ func (f *FormPublishedService) GetForms(query url.Values) (*get2.PaginationRespo
 func (f *FormPublishedService) UpdateForm(
 	publishedId string,
 	formPublishedDto create.UpdateFormPublishedDto,
-) (*get2.FormPublishedBaseDto, error) {
+) (*get.FormPublishedBaseDto, error) {
 	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
 	if err != nil {
 		return nil, err

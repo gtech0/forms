@@ -1,9 +1,9 @@
 package factory
 
 import (
-	create2 "hedgehog-forms/internal/core/dto/create"
+	"hedgehog-forms/internal/core/dto/create"
 	"hedgehog-forms/internal/core/errs"
-	block2 "hedgehog-forms/internal/core/model/form/pattern/section/block"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block"
 	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 )
 
@@ -27,15 +27,15 @@ func NewQuestionFactory() *QuestionFactory {
 
 func (q *QuestionFactory) BuildQuestionFromDto(questionDto any) (*question.Question, error) {
 	switch questionTyped := questionDto.(type) {
-	case *create2.QuestionOnExistingDto:
+	case *create.QuestionOnExistingDto:
 		return q.existingQuestionFactory.BuildFromDto(questionTyped)
-	case *create2.MatchingQuestionDto:
+	case *create.MatchingQuestionDto:
 		return q.matchingFactory.BuildFromDto(questionTyped)
-	case *create2.TextQuestionDto:
+	case *create.TextQuestionDto:
 		return q.textInputFactory.BuildFromDto(questionTyped)
-	case *create2.SingleChoiceQuestionDto:
+	case *create.SingleChoiceQuestionDto:
 		return q.singleChoiceFactory.BuildFromDto(questionTyped)
-	case *create2.MultipleChoiceQuestionDto:
+	case *create.MultipleChoiceQuestionDto:
 		return q.multipleChoiceFactory.BuildFromDto(questionTyped)
 	default:
 		return nil, errs.New("invalid question type", 400)
@@ -44,7 +44,7 @@ func (q *QuestionFactory) BuildQuestionFromDto(questionDto any) (*question.Quest
 
 func (q *QuestionFactory) BuildQuestionDtoForDynamicBlock(
 	questionDtos []any,
-	dynamicBlock *block2.Block,
+	dynamicBlock *block.Block,
 ) ([]*question.Question, error) {
 	questions := make([]*question.Question, 0)
 	for _, questionDto := range questionDtos {
@@ -62,7 +62,7 @@ func (q *QuestionFactory) BuildQuestionDtoForDynamicBlock(
 
 func (q *QuestionFactory) BuildQuestionEntityForDynamicBlock(
 	questionEntities []*question.Question,
-	dynamicBlock *block2.Block,
+	dynamicBlock *block.Block,
 ) ([]*question.Question, error) {
 	newQuestionEntities := make([]*question.Question, 0)
 	for _, questionEntity := range questionEntities {
@@ -80,7 +80,7 @@ func (q *QuestionFactory) BuildQuestionEntityForDynamicBlock(
 
 func (q *QuestionFactory) BuildQuestionDtoForVariant(
 	questionDtos []any,
-	variant *block2.Variant,
+	variant *block.Variant,
 ) ([]*question.Question, error) {
 	questionEntities := make([]*question.Question, 0)
 	for order, questionDto := range questionDtos {
@@ -99,7 +99,7 @@ func (q *QuestionFactory) BuildQuestionDtoForVariant(
 
 func (q *QuestionFactory) BuildQuestionForVariantEntities(
 	questionEntities []*question.Question,
-	variant *block2.Variant,
+	variant *block.Variant,
 ) ([]*question.Question, error) {
 	newQuestionEntities := make([]*question.Question, 0)
 	for order, questionDto := range questionEntities {
@@ -117,7 +117,7 @@ func (q *QuestionFactory) BuildQuestionForVariantEntities(
 }
 
 func (q *QuestionFactory) buildQuestionFromEntity(questionEntity *question.Question) (*question.Question, error) {
-	questionDto := new(create2.QuestionOnExistingDto)
+	questionDto := new(create.QuestionOnExistingDto)
 	questionDto.QuestionId = questionEntity.Id
 	result, err := q.BuildQuestionFromDto(questionDto)
 	if err != nil {

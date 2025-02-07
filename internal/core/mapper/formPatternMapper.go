@@ -1,7 +1,7 @@
 package mapper
 
 import (
-	get2 "hedgehog-forms/internal/core/dto/get"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/model/form/pattern"
 	"hedgehog-forms/internal/core/model/form/pattern/section"
 )
@@ -18,8 +18,8 @@ func NewFormPatternMapper() *FormPatternMapper {
 	}
 }
 
-func (f *FormPatternMapper) ToDto(formPattern *pattern.FormPattern) (*get2.FormPatternDto, error) {
-	formPatternDto := new(get2.FormPatternDto)
+func (f *FormPatternMapper) ToDto(formPattern *pattern.FormPattern) (*get.FormPatternDto, error) {
+	formPatternDto := new(get.FormPatternDto)
 	formPatternDto.Id = formPattern.Id
 	formPatternDto.Title = formPattern.Title
 	formPatternDto.Description = formPattern.Description
@@ -33,8 +33,8 @@ func (f *FormPatternMapper) ToDto(formPattern *pattern.FormPattern) (*get2.FormP
 	return formPatternDto, nil
 }
 
-func (f *FormPatternMapper) ToBaseDto(formPattern pattern.FormPattern) *get2.FormPatternBaseDto {
-	formPatternDto := new(get2.FormPatternBaseDto)
+func (f *FormPatternMapper) ToBaseDto(formPattern pattern.FormPattern) *get.FormPatternBaseDto {
+	formPatternDto := new(get.FormPatternBaseDto)
 	formPatternDto.Id = formPattern.Id
 	formPatternDto.Title = formPattern.Title
 	formPatternDto.Description = formPattern.Description
@@ -43,8 +43,8 @@ func (f *FormPatternMapper) ToBaseDto(formPattern pattern.FormPattern) *get2.For
 	return formPatternDto
 }
 
-func (f *FormPatternMapper) sectionsToDto(sections []section.Section) ([]get2.SectionDto, error) {
-	mappedSections := make([]get2.SectionDto, 0)
+func (f *FormPatternMapper) sectionsToDto(sections []section.Section) ([]get.SectionDto, error) {
+	mappedSections := make([]get.SectionDto, 0)
 	for _, currentSection := range sections {
 		mappedSection, err := f.sectionMapper.ToDto(&currentSection)
 		if err != nil {

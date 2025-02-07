@@ -1,7 +1,7 @@
 package service
 
 import (
-	get2 "hedgehog-forms/internal/core/dto/get"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/mapper"
 	"hedgehog-forms/internal/core/repository"
 	"hedgehog-forms/internal/core/util"
@@ -21,7 +21,7 @@ func NewSectionService() *SectionService {
 	}
 }
 
-func (s *SectionService) GetSection(sectionId string) (*get2.SectionDto, error) {
+func (s *SectionService) GetSection(sectionId string) (*get.SectionDto, error) {
 	parsedSectionId, err := util.IdCheckAndParse(sectionId)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (s *SectionService) GetSection(sectionId string) (*get2.SectionDto, error) 
 	return sectionDto, nil
 }
 
-func (s *SectionService) GetSections(query url.Values) (*get2.PaginationResponse[get2.SectionDto], error) {
+func (s *SectionService) GetSections(query url.Values) (*get.PaginationResponse[get.SectionDto], error) {
 	name := query.Get("name")
 	page, _ := strconv.Atoi(query.Get("page"))
 	if page <= 0 {
@@ -60,7 +60,7 @@ func (s *SectionService) GetSections(query url.Values) (*get2.PaginationResponse
 		return nil, err
 	}
 
-	sectionDtos := make([]get2.SectionDto, 0)
+	sectionDtos := make([]get.SectionDto, 0)
 	for _, section := range sections {
 		sectionDto, err := s.sectionMapper.ToDto(&section)
 		if err != nil {
@@ -70,7 +70,7 @@ func (s *SectionService) GetSections(query url.Values) (*get2.PaginationResponse
 		sectionDtos = append(sectionDtos, *sectionDto)
 	}
 
-	return &get2.PaginationResponse[get2.SectionDto]{
+	return &get.PaginationResponse[get.SectionDto]{
 		Page:     page,
 		Size:     size,
 		Elements: sectionDtos,

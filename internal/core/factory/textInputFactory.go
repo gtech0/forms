@@ -2,7 +2,7 @@ package factory
 
 import (
 	"hedgehog-forms/internal/core/dto/create"
-	question2 "hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 )
 
 type TextInputFactory struct {
@@ -15,9 +15,9 @@ func NewTextInputFactory() *TextInputFactory {
 	}
 }
 
-func (t *TextInputFactory) BuildFromDto(questionDto *create.TextQuestionDto) (*question2.Question, error) {
-	questionEntity := new(question2.Question)
-	questionEntity.TextInput = new(question2.TextInput)
+func (t *TextInputFactory) BuildFromDto(questionDto *create.TextQuestionDto) (*question.Question, error) {
+	questionEntity := new(question.Question)
+	questionEntity.TextInput = new(question.TextInput)
 	if err := t.commonMapper.MapCommonDtoFields(questionDto.NewQuestionDto, questionEntity); err != nil {
 		return nil, err
 	}
@@ -25,9 +25,9 @@ func (t *TextInputFactory) BuildFromDto(questionDto *create.TextQuestionDto) (*q
 	questionEntity.TextInput.Points = questionDto.Points
 	questionEntity.TextInput.IsCaseSensitive = questionDto.IsCaseSensitive
 
-	answers := make([]question2.TextInputAnswer, 0)
+	answers := make([]question.TextInputAnswer, 0)
 	for _, answer := range questionDto.Answers {
-		var answerEntity question2.TextInputAnswer
+		var answerEntity question.TextInputAnswer
 		answerEntity.Answer = answer
 		answers = append(answers, answerEntity)
 	}
@@ -35,9 +35,9 @@ func (t *TextInputFactory) BuildFromDto(questionDto *create.TextQuestionDto) (*q
 	return questionEntity, nil
 }
 
-func (t *TextInputFactory) BuildFromEntity(questionEntity *question2.Question) (*question2.Question, error) {
-	newQuestion := new(question2.Question)
-	newQuestion.TextInput = new(question2.TextInput)
+func (t *TextInputFactory) BuildFromEntity(questionEntity *question.Question) (*question.Question, error) {
+	newQuestion := new(question.Question)
+	newQuestion.TextInput = new(question.TextInput)
 	if err := t.commonMapper.MapCommonEntityFields(*questionEntity, newQuestion); err != nil {
 		return nil, err
 	}

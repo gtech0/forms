@@ -1,9 +1,9 @@
 package mapper
 
 import (
-	get2 "hedgehog-forms/internal/core/dto/get"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/errs"
-	block2 "hedgehog-forms/internal/core/model/form/pattern/section/block"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block"
 	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 )
 
@@ -17,19 +17,19 @@ func NewBlockMapper() *BlockMapper {
 	}
 }
 
-func (b *BlockMapper) toDto(iBlock *block2.Block) (get2.IBlockDto, error) {
+func (b *BlockMapper) toDto(iBlock *block.Block) (get.IBlockDto, error) {
 	switch iBlock.Type {
-	case block2.DYNAMIC:
+	case block.DYNAMIC:
 		return b.dynamicToDto(iBlock)
-	case block2.STATIC:
+	case block.STATIC:
 		return b.staticToDto(iBlock)
 	default:
 		return nil, errs.New("invalid block type", 400)
 	}
 }
 
-func (b *BlockMapper) dynamicToDto(dynamicBlock *block2.Block) (*get2.DynamicBlockDto, error) {
-	dynamicBlockDto := new(get2.DynamicBlockDto)
+func (b *BlockMapper) dynamicToDto(dynamicBlock *block.Block) (*get.DynamicBlockDto, error) {
+	dynamicBlockDto := new(get.DynamicBlockDto)
 	dynamicBlockDto.Id = dynamicBlock.Id
 	dynamicBlockDto.Title = dynamicBlock.Title
 	dynamicBlockDto.Description = dynamicBlock.Description
@@ -43,8 +43,8 @@ func (b *BlockMapper) dynamicToDto(dynamicBlock *block2.Block) (*get2.DynamicBlo
 	return dynamicBlockDto, nil
 }
 
-func (b *BlockMapper) staticToDto(staticBlock *block2.Block) (*get2.StaticBlockDto, error) {
-	staticBlockDto := new(get2.StaticBlockDto)
+func (b *BlockMapper) staticToDto(staticBlock *block.Block) (*get.StaticBlockDto, error) {
+	staticBlockDto := new(get.StaticBlockDto)
 	staticBlockDto.Id = staticBlock.Id
 	staticBlockDto.Title = staticBlock.Title
 	staticBlockDto.Description = staticBlock.Description
@@ -57,8 +57,8 @@ func (b *BlockMapper) staticToDto(staticBlock *block2.Block) (*get2.StaticBlockD
 	return staticBlockDto, nil
 }
 
-func (b *BlockMapper) variantsToDto(variants []block2.Variant) ([]get2.VariantDto, error) {
-	mappedVariants := make([]get2.VariantDto, 0)
+func (b *BlockMapper) variantsToDto(variants []block.Variant) ([]get.VariantDto, error) {
+	mappedVariants := make([]get.VariantDto, 0)
 	for _, variant := range variants {
 		mappedVariant, err := b.variantToDto(variant)
 		if err != nil {
@@ -69,21 +69,21 @@ func (b *BlockMapper) variantsToDto(variants []block2.Variant) ([]get2.VariantDt
 	return mappedVariants, nil
 }
 
-func (b *BlockMapper) variantToDto(variantEntity block2.Variant) (get2.VariantDto, error) {
-	var variantDto get2.VariantDto
+func (b *BlockMapper) variantToDto(variantEntity block.Variant) (get.VariantDto, error) {
+	var variantDto get.VariantDto
 	variantDto.Id = variantEntity.Id
 	variantDto.Title = variantEntity.Title
 	variantDto.Description = variantEntity.Description
 	questions, err := b.questionsToDto(variantEntity.Questions)
 	if err != nil {
-		return get2.VariantDto{}, err
+		return get.VariantDto{}, err
 	}
 	variantDto.Questions = questions
 	return variantDto, nil
 }
 
-func (b *BlockMapper) questionsToDto(questions []*question.Question) ([]get2.IQuestionDto, error) {
-	mappedQuestions := make([]get2.IQuestionDto, 0)
+func (b *BlockMapper) questionsToDto(questions []*question.Question) ([]get.IQuestionDto, error) {
+	mappedQuestions := make([]get.IQuestionDto, 0)
 	for _, questionEntity := range questions {
 		mappedQuestion, err := b.questionMapper.ToDto(questionEntity)
 		if err != nil {

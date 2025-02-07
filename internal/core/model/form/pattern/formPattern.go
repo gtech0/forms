@@ -2,7 +2,7 @@ package pattern
 
 import (
 	"github.com/google/uuid"
-	model2 "hedgehog-forms/internal/core/model"
+	"hedgehog-forms/internal/core/model"
 	"hedgehog-forms/internal/core/model/form/pattern/section"
 	"hedgehog-forms/internal/core/model/form/pattern/section/block"
 	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
@@ -10,11 +10,11 @@ import (
 )
 
 type FormPattern struct {
-	model2.Base
+	model.Base
 	Title       string
 	Description string
 	OwnerId     uuid.NullUUID `gorm:"type:uuid"`
-	Subject     model2.Subject
+	Subject     model.Subject
 	SubjectId   uuid.UUID `gorm:"type:uuid"`
 	Sections    []section.Section
 }

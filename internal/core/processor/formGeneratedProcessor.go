@@ -7,9 +7,9 @@ import (
 	"hedgehog-forms/internal/core/dto/create"
 	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/errs"
-	generated2 "hedgehog-forms/internal/core/model/form/generated"
+	"hedgehog-forms/internal/core/model/form/generated"
 	"hedgehog-forms/internal/core/model/form/pattern"
-	question2 "hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 	"hedgehog-forms/internal/core/util"
 	"maps"
 	"slices"
@@ -31,8 +31,8 @@ func NewFormGeneratedProcessor() *FormGeneratedProcessor {
 	}
 }
 
-func (f *FormGeneratedProcessor) SaveAnswers(formGenerated *generated2.FormGenerated, answers get.AnswerDto) error {
-	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
+func (f *FormGeneratedProcessor) SaveAnswers(formGenerated *generated.FormGenerated, answers get.AnswerDto) error {
+	questions := formGenerated.ExtractQuestions()
 	for _, iQuestion := range questions {
 		if err := f.checkQuestion(iQuestion.GetId(), iQuestion.GetType(), answers); err != nil {
 			return err
@@ -47,11 +47,11 @@ func (f *FormGeneratedProcessor) SaveAnswers(formGenerated *generated2.FormGener
 }
 
 func (f *FormGeneratedProcessor) CalculatePoints(
-	formGenerated *generated2.FormGenerated,
+	formGenerated *generated.FormGenerated,
 	formPattern pattern.FormPattern,
 	answers get.AnswerDto,
 ) error {
-	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
+	questions := formGenerated.ExtractQuestions()
 	for _, iQuestion := range questions {
 		if err := f.checkQuestion(iQuestion.GetId(), iQuestion.GetType(), answers); err != nil {
 			return err
@@ -82,11 +82,11 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 	return nil
 }
 
-func (f *FormGeneratedProcessor) ReapplyPoints(formGenerated *generated2.FormGenerated, checkDto create.CheckDto) error {
-	questions := formGenerated.ExtractQuestionsFromGeneratedForm()
+func (f *FormGeneratedProcessor) ReapplyPoints(formGenerated *generated.FormGenerated, checkDto create.CheckDto) error {
+	questions := formGenerated.ExtractQuestions()
 	if checkDto.Points != nil {
 		for questionId, points := range checkDto.Points {
-			var questionGenerated generated2.IQuestion
+			var questionGenerated generated.IQuestion
 			for _, iQuestion := range questions {
 				if iQuestion.GetId() == questionId {
 					questionGenerated = iQuestion
@@ -106,8 +106,8 @@ func (f *FormGeneratedProcessor) ReapplyPoints(formGenerated *generated2.FormGen
 	return nil
 }
 
-func (f *FormGeneratedProcessor) applyNewPoints(formGenerated *generated2.FormGenerated,
-	questionGenerated generated2.IQuestion,
+func (f *FormGeneratedProcessor) applyNewPoints(formGenerated *generated.FormGenerated,
+	questionGenerated generated.IQuestion,
 	newPoints int,
 ) {
 	difference := questionGenerated.GetPoints() - newPoints
@@ -116,7 +116,7 @@ func (f *FormGeneratedProcessor) applyNewPoints(formGenerated *generated2.FormGe
 }
 
 func (f *FormGeneratedProcessor) CalculateMark(
-	formGenerated *generated2.FormGenerated,
+	formGenerated *generated.FormGenerated,
 	marks common.MarkConfiguration,
 ) error {
 	pointsForForm := formGenerated.Points
@@ -136,26 +136,26 @@ func (f *FormGeneratedProcessor) CalculateMark(
 	return nil
 }
 
-func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated2.IQuestion, answers get.AnswerDto) error {
+func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated.IQuestion, answers get.AnswerDto) error {
 	switch iQuestion.GetType() {
-	case question2.SINGLE_CHOICE:
+	case question.SINGLE_CHOICE:
 		option := answers.SingleChoice[iQuestion.GetId()]
-		if err := f.singleChoiceProcessor.markAnswer(iQuestion.(*generated2.SingleChoice), option); err != nil {
+		if err := f.singleChoiceProcessor.markAnswer(iQuestion.(*generated.SingleChoice), option); err != nil {
 			return err
 		}
-	case question2.MULTIPLE_CHOICE:
+	case question.MULTIPLE_CHOICE:
 		options := answers.MultipleChoice[iQuestion.GetId()]
-		if err := f.multipleChoiceProcessor.markAnswer(iQuestion.(*generated2.MultipleChoice), options); err != nil {
+		if err := f.multipleChoiceProcessor.markAnswer(iQuestion.(*generated.MultipleChoice), options); err != nil {
 			return err
 		}
-	case question2.MATCHING:
+	case question.MATCHING:
 		pairs := answers.Matching[iQuestion.GetId()]
-		if err := f.matchingProcessor.markAnswer(iQuestion.(*generated2.Matching), pairs, iQuestion.GetId()); err != nil {
+		if err := f.matchingProcessor.markAnswer(iQuestion.(*generated.Matching), pairs, iQuestion.GetId()); err != nil {
 			return err
 		}
-	case question2.TEXT_INPUT:
+	case question.TEXT_INPUT:
 		answer := answers.TextInput[iQuestion.GetId()]
-		if err := f.textInputProcessor.markAnswer(iQuestion.(*generated2.TextInput), answer); err != nil {
+		if err := f.textInputProcessor.markAnswer(iQuestion.(*generated.TextInput), answer); err != nil {
 			return err
 		}
 	default:
@@ -165,39 +165,39 @@ func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated2.IQuestion, answ
 }
 
 func (f *FormGeneratedProcessor) markAnswerAndCalculatePoints(
-	iQuestion generated2.IQuestion,
-	questionEntity *question2.Question,
+	iQuestion generated.IQuestion,
+	questionEntity *question.Question,
 	answers get.AnswerDto,
 ) (int, error) {
 	var points int
 	var err error
 
 	switch iQuestion.GetType() {
-	case question2.SINGLE_CHOICE:
+	case question.SINGLE_CHOICE:
 		option := answers.SingleChoice[iQuestion.GetId()]
 		points, err = f.singleChoiceProcessor.markAnswerAndCalculatePoints(
-			iQuestion.(*generated2.SingleChoice),
+			iQuestion.(*generated.SingleChoice),
 			questionEntity.SingleChoice,
 			option,
 		)
-	case question2.MULTIPLE_CHOICE:
+	case question.MULTIPLE_CHOICE:
 		options := answers.MultipleChoice[iQuestion.GetId()]
 		points, err = f.multipleChoiceProcessor.markAnswerAndCalculatePoints(
-			iQuestion.(*generated2.MultipleChoice),
+			iQuestion.(*generated.MultipleChoice),
 			questionEntity.MultipleChoice,
 			options,
 		)
-	case question2.MATCHING:
+	case question.MATCHING:
 		pairs := answers.Matching[iQuestion.GetId()]
 		points, err = f.matchingProcessor.markAnswerAndCalculatePoints(
-			iQuestion.(*generated2.Matching),
+			iQuestion.(*generated.Matching),
 			questionEntity.Matching,
 			pairs,
 		)
-	case question2.TEXT_INPUT:
+	case question.TEXT_INPUT:
 		answer := answers.TextInput[iQuestion.GetId()]
 		points, err = f.textInputProcessor.markAnswerAndCalculatePoints(
-			iQuestion.(*generated2.TextInput),
+			iQuestion.(*generated.TextInput),
 			questionEntity.TextInput,
 			answer,
 		)
@@ -213,23 +213,23 @@ func (f *FormGeneratedProcessor) markAnswerAndCalculatePoints(
 
 func (f *FormGeneratedProcessor) checkQuestion(
 	questionId uuid.UUID,
-	questionType question2.QuestionType,
+	questionType question.QuestionType,
 	answers get.AnswerDto,
 ) error {
 	switch questionType {
-	case question2.SINGLE_CHOICE:
+	case question.SINGLE_CHOICE:
 		if err := f.checkQuestionId(slices.Collect(maps.Keys(answers.SingleChoice)), questionId); err != nil {
 			return err
 		}
-	case question2.MULTIPLE_CHOICE:
+	case question.MULTIPLE_CHOICE:
 		if err := f.checkQuestionId(slices.Collect(maps.Keys(answers.MultipleChoice)), questionId); err != nil {
 			return err
 		}
-	case question2.MATCHING:
+	case question.MATCHING:
 		if err := f.checkQuestionId(slices.Collect(maps.Keys(answers.Matching)), questionId); err != nil {
 			return err
 		}
-	case question2.TEXT_INPUT:
+	case question.TEXT_INPUT:
 		if err := f.checkQuestionId(slices.Collect(maps.Keys(answers.TextInput)), questionId); err != nil {
 			return err
 		}

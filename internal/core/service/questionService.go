@@ -6,12 +6,12 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 	"hedgehog-forms/internal/core/dto/create"
-	get2 "hedgehog-forms/internal/core/dto/get"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/factory"
-	mapper2 "hedgehog-forms/internal/core/mapper"
+	"hedgehog-forms/internal/core/mapper"
 	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
-	repository2 "hedgehog-forms/internal/core/repository"
+	"hedgehog-forms/internal/core/repository"
 	"hedgehog-forms/internal/core/util"
 	"net/url"
 	"strconv"
@@ -19,28 +19,28 @@ import (
 )
 
 type QuestionService struct {
-	questionRepository           *repository2.QuestionRepository
-	questionMapper               *mapper2.QuestionMapper
-	subjectRepository            *repository2.SubjectRepository
+	questionRepository           *repository.QuestionRepository
+	questionMapper               *mapper.QuestionMapper
+	subjectRepository            *repository.SubjectRepository
 	questionFactory              *factory.QuestionFactory
-	subjectMapper                *mapper2.SubjectMapper
-	commonFieldQuestionDtoMapper *mapper2.CommonFieldQuestionDtoMapper
+	subjectMapper                *mapper.SubjectMapper
+	commonFieldQuestionDtoMapper *mapper.CommonFieldQuestionDtoMapper
 	fileService                  *FileService
 }
 
 func NewQuestionService() *QuestionService {
 	return &QuestionService{
-		questionRepository:           repository2.NewQuestionRepository(),
-		questionMapper:               mapper2.NewQuestionMapper(),
-		subjectRepository:            repository2.NewSubjectRepository(),
+		questionRepository:           repository.NewQuestionRepository(),
+		questionMapper:               mapper.NewQuestionMapper(),
+		subjectRepository:            repository.NewSubjectRepository(),
 		questionFactory:              factory.NewQuestionFactory(),
-		subjectMapper:                mapper2.NewSubjectMapper(),
-		commonFieldQuestionDtoMapper: mapper2.NewCommonFieldQuestionDtoMapper(),
+		subjectMapper:                mapper.NewSubjectMapper(),
+		commonFieldQuestionDtoMapper: mapper.NewCommonFieldQuestionDtoMapper(),
 		fileService:                  NewFileService(),
 	}
 }
 
-func (q *QuestionService) CreateQuestion(subjectId string, rawQuestionDto json.RawMessage) (*get2.QuestionDto, error) {
+func (q *QuestionService) CreateQuestion(subjectId string, rawQuestionDto json.RawMessage) (*get.QuestionDto, error) {
 	parsedSubjectId, err := util.IdCheckAndParse(subjectId)
 	if err != nil {
 		return nil, err
@@ -72,12 +72,12 @@ func (q *QuestionService) CreateQuestion(subjectId string, rawQuestionDto json.R
 		return nil, err
 	}
 
-	getQuestionDto := new(get2.QuestionDto)
+	getQuestionDto := new(get.QuestionDto)
 	q.commonFieldQuestionDtoMapper.CommonFieldsToDto(questionEntity, getQuestionDto)
 	return getQuestionDto, nil
 }
 
-func (q *QuestionService) GetQuestion(questionId string) (*get2.QuestionDto, error) {
+func (q *QuestionService) GetQuestion(questionId string) (*get.QuestionDto, error) {
 	parsedQuestionId, err := util.IdCheckAndParse(questionId)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (q *QuestionService) GetQuestion(questionId string) (*get2.QuestionDto, err
 		return nil, err
 	}
 
-	getQuestionDto := new(get2.QuestionDto)
+	getQuestionDto := new(get.QuestionDto)
 	q.commonFieldQuestionDtoMapper.CommonFieldsToDto(questionEntity, getQuestionDto)
 	return getQuestionDto, nil
 }
@@ -116,7 +116,7 @@ func (q *QuestionService) GetQuestion(questionId string) (*get2.QuestionDto, err
 
 func (q *QuestionService) GetQuestions(
 	query url.Values,
-) (*get2.PaginationResponse[get2.QuestionDto], error) {
+) (*get.PaginationResponse[get.QuestionDto], error) {
 	name := query.Get("name")
 	page, _ := strconv.Atoi(query.Get("page"))
 	if page <= 0 {
@@ -152,7 +152,7 @@ func (q *QuestionService) GetQuestions(
 		return nil, err
 	}
 
-	questionDtos := make([]get2.QuestionDto, 0)
+	questionDtos := make([]get.QuestionDto, 0)
 	for _, questionEntity := range questions {
 		questionDto, err := q.questionMapper.ToDto(&questionEntity)
 		if err != nil {
@@ -162,7 +162,7 @@ func (q *QuestionService) GetQuestions(
 		q.commonFieldQuestionDtoMapper.CommonFieldsToDto(&questionEntity, questionDto)
 	}
 
-	return &get2.PaginationResponse[get2.QuestionDto]{
+	return &get.PaginationResponse[get.QuestionDto]{
 		Page:     page,
 		Size:     size,
 		Elements: questionDtos,

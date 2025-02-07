@@ -3,8 +3,8 @@ package factory
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/errs"
-	generated2 "hedgehog-forms/internal/core/model/form/generated"
-	question2 "hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/generated"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 )
 
 type QuestionGeneratedFactory struct{}
@@ -13,8 +13,8 @@ func NewQuestionGeneratedFactory() *QuestionGeneratedFactory {
 	return &QuestionGeneratedFactory{}
 }
 
-func (q *QuestionGeneratedFactory) buildQuestions(questions []*question2.Question) ([]generated2.IQuestion, error) {
-	generatedQuestions := make([]generated2.IQuestion, 0)
+func (q *QuestionGeneratedFactory) buildQuestions(questions []*question.Question) ([]generated.IQuestion, error) {
+	generatedQuestions := make([]generated.IQuestion, 0)
 	for _, iQuestion := range questions {
 		generatedQuestion, err := q.buildQuestion(iQuestion)
 		if err != nil {
@@ -26,34 +26,34 @@ func (q *QuestionGeneratedFactory) buildQuestions(questions []*question2.Questio
 	return generatedQuestions, nil
 }
 
-func (q *QuestionGeneratedFactory) buildQuestion(questionEntity *question2.Question) (generated2.IQuestion, error) {
+func (q *QuestionGeneratedFactory) buildQuestion(questionEntity *question.Question) (generated.IQuestion, error) {
 	switch questionEntity.Type {
-	case question2.TEXT_INPUT:
+	case question.TEXT_INPUT:
 		return q.buildTextInput(questionEntity), nil
-	case question2.SINGLE_CHOICE:
+	case question.SINGLE_CHOICE:
 		return q.buildSingleChoice(questionEntity), nil
-	case question2.MULTIPLE_CHOICE:
+	case question.MULTIPLE_CHOICE:
 		return q.buildMultipleChoice(questionEntity), nil
-	case question2.MATCHING:
+	case question.MATCHING:
 		return q.buildMatching(questionEntity), nil
 	default:
 		return nil, errs.New("unsupported question type", 400)
 	}
 }
 
-func (q *QuestionGeneratedFactory) buildTextInput(textInput *question2.Question) *generated2.TextInput {
-	generatedTextInput := new(generated2.TextInput)
+func (q *QuestionGeneratedFactory) buildTextInput(textInput *question.Question) *generated.TextInput {
+	generatedTextInput := new(generated.TextInput)
 	q.buildCommonFields(textInput, &generatedTextInput.Question)
 	return generatedTextInput
 }
 
-func (q *QuestionGeneratedFactory) buildSingleChoice(questionEntity *question2.Question) *generated2.SingleChoice {
-	generatedSingleChoice := new(generated2.SingleChoice)
+func (q *QuestionGeneratedFactory) buildSingleChoice(questionEntity *question.Question) *generated.SingleChoice {
+	generatedSingleChoice := new(generated.SingleChoice)
 	q.buildCommonFields(questionEntity, &generatedSingleChoice.Question)
 	generatedSingleChoice.Points = questionEntity.SingleChoice.Points
-	options := make([]generated2.SingleChoiceOption, 0)
+	options := make([]generated.SingleChoiceOption, 0)
 	for _, option := range questionEntity.SingleChoice.Options {
-		var generatedOption generated2.SingleChoiceOption
+		var generatedOption generated.SingleChoiceOption
 		generatedOption.Id = option.Id
 		generatedOption.Text = option.Text
 		options = append(options, generatedOption)
@@ -62,12 +62,12 @@ func (q *QuestionGeneratedFactory) buildSingleChoice(questionEntity *question2.Q
 	return generatedSingleChoice
 }
 
-func (q *QuestionGeneratedFactory) buildMultipleChoice(questionEntity *question2.Question) *generated2.MultipleChoice {
-	generatedMultipleChoice := new(generated2.MultipleChoice)
+func (q *QuestionGeneratedFactory) buildMultipleChoice(questionEntity *question.Question) *generated.MultipleChoice {
+	generatedMultipleChoice := new(generated.MultipleChoice)
 	q.buildCommonFields(questionEntity, &generatedMultipleChoice.Question)
-	options := make([]generated2.MultipleChoiceOption, 0)
+	options := make([]generated.MultipleChoiceOption, 0)
 	for _, option := range questionEntity.MultipleChoice.Options {
-		var generatedOption generated2.MultipleChoiceOption
+		var generatedOption generated.MultipleChoiceOption
 		generatedOption.Id = option.Id
 		generatedOption.Text = option.Text
 		options = append(options, generatedOption)
@@ -76,21 +76,21 @@ func (q *QuestionGeneratedFactory) buildMultipleChoice(questionEntity *question2
 	return generatedMultipleChoice
 }
 
-func (q *QuestionGeneratedFactory) buildMatching(questionEntity *question2.Question) *generated2.Matching {
-	generatedMatching := new(generated2.Matching)
+func (q *QuestionGeneratedFactory) buildMatching(questionEntity *question.Question) *generated.Matching {
+	generatedMatching := new(generated.Matching)
 	q.buildCommonFields(questionEntity, &generatedMatching.Question)
-	terms := make([]generated2.Term, 0)
+	terms := make([]generated.Term, 0)
 	for _, term := range questionEntity.Matching.Terms {
-		var generatedTerm generated2.Term
+		var generatedTerm generated.Term
 		generatedTerm.Id = term.Id
 		generatedTerm.Text = term.Text
 		terms = append(terms, generatedTerm)
 	}
 	generatedMatching.Terms = terms
 
-	definitions := make([]generated2.Definition, 0)
+	definitions := make([]generated.Definition, 0)
 	for _, definition := range questionEntity.Matching.Definitions {
-		var generatedDefinition generated2.Definition
+		var generatedDefinition generated.Definition
 		generatedDefinition.Id = definition.Id
 		generatedDefinition.Text = definition.Text
 		definitions = append(definitions, generatedDefinition)
@@ -100,14 +100,14 @@ func (q *QuestionGeneratedFactory) buildMatching(questionEntity *question2.Quest
 	return generatedMatching
 }
 
-func (q *QuestionGeneratedFactory) buildCommonFields(source *question2.Question, target *generated2.Question) {
+func (q *QuestionGeneratedFactory) buildCommonFields(source *question.Question, target *generated.Question) {
 	target.Id = source.Id
 	target.Description = source.Description
 	target.Type = source.Type
 	target.Attachments = q.buildAttachments(source.Attachments)
 }
 
-func (q *QuestionGeneratedFactory) buildAttachments(attachments []question2.Attachment) []uuid.UUID {
+func (q *QuestionGeneratedFactory) buildAttachments(attachments []question.Attachment) []uuid.UUID {
 	attachmentIds := make([]uuid.UUID, 0)
 	for _, attachment := range attachments {
 		attachmentIds = append(attachmentIds, attachment.Id)

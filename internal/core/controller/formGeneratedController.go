@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	create2 "hedgehog-forms/internal/core/dto/create"
+	"hedgehog-forms/internal/core/dto/create"
 	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/service"
@@ -23,7 +23,7 @@ func NewFormGeneratedController() *FormGeneratedController {
 
 func (f *FormGeneratedController) GetMyForm(ctx *gin.Context) {
 	publishedId := ctx.Param("publishedId")
-	var userIdDto create2.FormGeneratedUser
+	var userIdDto create.FormGeneratedUser
 	if err := ctx.Bind(&userIdDto); err != nil {
 		ctx.Error(errs.New(err.Error(), 500))
 		return
@@ -134,7 +134,7 @@ func (f *FormGeneratedController) GetSubmittedForm(ctx *gin.Context) {
 
 func (f *FormGeneratedController) VerifyForm(ctx *gin.Context) {
 	generatedId := ctx.Param("generatedId")
-	var checkDto create2.CheckDto
+	var checkDto create.CheckDto
 	if err := ctx.Bind(&checkDto); err != nil {
 		ctx.Error(errs.New(err.Error(), 500))
 		return

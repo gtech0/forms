@@ -35,7 +35,7 @@ func (s *SingleChoiceProcessor) calculateAndSetPoints(
 	singleChoice *generated.SingleChoice,
 	singleChoiceEntity *question.SingleChoice,
 ) (int, error) {
-	correctOption, err := s.getSingleOptionEntity(singleChoiceEntity)
+	correctOption, err := s.getAnswerEntity(singleChoiceEntity)
 	if err != nil {
 		return 0, err
 	}
@@ -47,7 +47,7 @@ func (s *SingleChoiceProcessor) calculateAndSetPoints(
 	return singleChoice.Points, nil
 }
 
-func (s *SingleChoiceProcessor) getSingleOptionEntity(
+func (s *SingleChoiceProcessor) getAnswerEntity(
 	singleChoiceEntity *question.SingleChoice,
 ) (*question.SingleChoiceOption, error) {
 	for _, singleChoiceOption := range singleChoiceEntity.Options {

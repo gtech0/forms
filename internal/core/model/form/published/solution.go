@@ -2,12 +2,12 @@ package published
 
 import (
 	"github.com/google/uuid"
-	model2 "hedgehog-forms/internal/core/model"
+	"hedgehog-forms/internal/core/model"
 	"hedgehog-forms/internal/core/model/form/generated"
 )
 
 type Solution struct {
-	model2.Base
+	model.Base
 
 	IsIndividual   *bool `json:"isIndividual"`
 	NumberAttempts int   `json:"numberAttempts" gorm:"default:0"`
@@ -26,11 +26,11 @@ type Solution struct {
 	Submissions      []generated.Submission `json:"submissions"`
 	SolutionComments []SolutionComment      `json:"solutionComments"`
 
-	Files []model2.File `json:"files" gorm:"-:all"`
+	Files []model.File `json:"files" gorm:"-:all"`
 }
 
 type SolutionComment struct {
-	model2.Base
+	model.Base
 
 	Content   string `json:"content"`
 	IsPrivate *bool  `json:"isPrivate"`

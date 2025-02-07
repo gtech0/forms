@@ -2,7 +2,7 @@ package factory
 
 import (
 	"hedgehog-forms/internal/core/dto/create"
-	block2 "hedgehog-forms/internal/core/model/form/pattern/section/block"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block"
 )
 
 type DynamicBlockFactory struct {
@@ -15,9 +15,9 @@ func NewDynamicBlockFactory() *DynamicBlockFactory {
 	}
 }
 
-func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (*block2.Block, error) {
-	blockEntity := new(block2.Block)
-	blockEntity.DynamicBlock = new(block2.DynamicBlock)
+func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (*block.Block, error) {
+	blockEntity := new(block.Block)
+	blockEntity.DynamicBlock = new(block.DynamicBlock)
 	questions, err := d.questionFactory.BuildQuestionDtoForDynamicBlock(dynamicDto.Questions, blockEntity)
 	if err != nil {
 		return nil, err
@@ -25,15 +25,15 @@ func (d *DynamicBlockFactory) buildFromDto(dynamicDto *create.DynamicBlockDto) (
 
 	blockEntity.Title = dynamicDto.Title
 	blockEntity.Description = dynamicDto.Description
-	blockEntity.Type = block2.DYNAMIC
+	blockEntity.Type = block.DYNAMIC
 	blockEntity.DynamicBlock.QuestionCount = dynamicDto.QuestionCount
 	blockEntity.DynamicBlock.Questions = questions
 	return blockEntity, nil
 }
 
-func (d *DynamicBlockFactory) buildFromEntity(dynamicBlock *block2.Block) (*block2.Block, error) {
-	newBlock := new(block2.Block)
-	newBlock.DynamicBlock = new(block2.DynamicBlock)
+func (d *DynamicBlockFactory) buildFromEntity(dynamicBlock *block.Block) (*block.Block, error) {
+	newBlock := new(block.Block)
+	newBlock.DynamicBlock = new(block.DynamicBlock)
 	newQuestions, err := d.questionFactory.BuildQuestionEntityForDynamicBlock(dynamicBlock.DynamicBlock.Questions, newBlock)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (d *DynamicBlockFactory) buildFromEntity(dynamicBlock *block2.Block) (*bloc
 
 	newBlock.Title = dynamicBlock.Title
 	newBlock.Description = dynamicBlock.Description
-	newBlock.Type = block2.DYNAMIC
+	newBlock.Type = block.DYNAMIC
 	newBlock.DynamicBlock.QuestionCount = dynamicBlock.DynamicBlock.QuestionCount
 	newBlock.DynamicBlock.Questions = newQuestions
 	return newBlock, nil

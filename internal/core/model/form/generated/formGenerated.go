@@ -17,7 +17,7 @@ type FormGenerated struct {
 	Submission      *Submission
 }
 
-func (f *FormGenerated) ExtractQuestionsFromGeneratedForm() []IQuestion {
+func (f *FormGenerated) ExtractQuestions() []IQuestion {
 	questions := make([]IQuestion, 0)
 	for _, generatedSection := range f.Sections {
 		for _, generatedBlock := range generatedSection.Blocks {

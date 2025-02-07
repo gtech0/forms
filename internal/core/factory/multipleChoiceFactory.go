@@ -3,7 +3,7 @@ package factory
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/dto/create"
-	question2 "hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 	"slices"
 )
 
@@ -17,20 +17,20 @@ func NewMultipleChoiceFactory() *MultipleChoiceFactory {
 	}
 }
 
-func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQuestionDto) (*question2.Question, error) {
-	questionEntity := new(question2.Question)
-	questionEntity.MultipleChoice = new(question2.MultipleChoice)
+func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQuestionDto) (*question.Question, error) {
+	questionEntity := new(question.Question)
+	questionEntity.MultipleChoice = new(question.MultipleChoice)
 	if err := m.commonMapper.MapCommonDtoFields(questionDto.NewQuestionDto, questionEntity); err != nil {
 		return nil, err
 	}
 
-	options := make([]question2.MultipleChoiceOption, 0)
+	options := make([]question.MultipleChoiceOption, 0)
 	for order := 0; order < len(questionDto.Options); order++ {
 		option := m.buildOptionFromDto(questionDto, order)
 		options = append(options, option)
 	}
 
-	points := make([]question2.MultipleChoicePoints, 0)
+	points := make([]question.MultipleChoicePoints, 0)
 	for answer, point := range questionDto.Points {
 		pointsEntity := m.buildPointFromDto(answer, point)
 		points = append(points, pointsEntity)
@@ -44,8 +44,8 @@ func (m *MultipleChoiceFactory) BuildFromDto(questionDto *create.MultipleChoiceQ
 func (m *MultipleChoiceFactory) buildOptionFromDto(
 	questionDto *create.MultipleChoiceQuestionDto,
 	order int,
-) question2.MultipleChoiceOption {
-	var option question2.MultipleChoiceOption
+) question.MultipleChoiceOption {
+	var option question.MultipleChoiceOption
 	option.Text = questionDto.Options[order]
 	option.Order = order
 	option.IsAnswer = slices.Contains(questionDto.CorrectOptions, order)
@@ -55,17 +55,17 @@ func (m *MultipleChoiceFactory) buildOptionFromDto(
 func (m *MultipleChoiceFactory) buildPointFromDto(
 	answer int,
 	point int,
-) question2.MultipleChoicePoints {
-	var points question2.MultipleChoicePoints
+) question.MultipleChoicePoints {
+	var points question.MultipleChoicePoints
 	points.CorrectAnswer = answer
 	points.Points = point
 	return points
 }
 
-func (m *MultipleChoiceFactory) BuildFromEntity(questionEntity *question2.Question) (*question2.Question, error) {
-	newQuestion := new(question2.Question)
-	newQuestion.MultipleChoice = new(question2.MultipleChoice)
-	options := make([]question2.MultipleChoiceOption, 0)
+func (m *MultipleChoiceFactory) BuildFromEntity(questionEntity *question.Question) (*question.Question, error) {
+	newQuestion := new(question.Question)
+	newQuestion.MultipleChoice = new(question.MultipleChoice)
+	options := make([]question.MultipleChoiceOption, 0)
 	newQuestion.MultipleChoice.Points = questionEntity.MultipleChoice.Points
 	if err := m.commonMapper.MapCommonEntityFields(*questionEntity, newQuestion); err != nil {
 		return nil, err
@@ -81,10 +81,10 @@ func (m *MultipleChoiceFactory) BuildFromEntity(questionEntity *question2.Questi
 }
 
 func (m *MultipleChoiceFactory) buildOptionFromEntity(
-	optionEntity question2.MultipleChoiceOption,
+	optionEntity question.MultipleChoiceOption,
 	questionId uuid.UUID,
-) question2.MultipleChoiceOption {
-	var option question2.MultipleChoiceOption
+) question.MultipleChoiceOption {
+	var option question.MultipleChoiceOption
 	option.Text = optionEntity.Text
 	option.Order = optionEntity.Order
 	option.IsAnswer = optionEntity.IsAnswer

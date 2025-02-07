@@ -2,11 +2,11 @@ package get
 
 import (
 	"github.com/google/uuid"
-	model2 "hedgehog-forms/internal/core/model"
+	"hedgehog-forms/internal/core/model"
 )
 
 type AttemptObject struct {
-	model2.Base
+	model.Base
 	TaskId     uuid.UUID  `json:"taskId"`
 	TaskName   string     `json:"taskName"`
 	SectionId  uuid.UUID  `json:"sectionId"`
@@ -16,9 +16,9 @@ type AttemptObject struct {
 	SenderName string     `json:"senderName"`
 	//ProgrammingLanguageId   *uuid.UUID   `json:"programmingLanguageId"`
 	//ProgrammingLanguageName *string      `json:"programmingLanguageName"`
-	FinalTestingVerdict   string        `json:"finalTestingVerdict"`
-	TestingVerdict        string        `json:"testingVerdict"`
-	PostmoderationVerdict string        `json:"postmoderationVerdict"`
-	FileData              []model2.File `json:"fileData"`
-	ClassId               uuid.UUID     `json:"classId"`
+	FinalTestingVerdict   string       `json:"finalTestingVerdict"`
+	TestingVerdict        string       `json:"testingVerdict"`
+	PostmoderationVerdict string       `json:"postmoderationVerdict"`
+	FileData              []model.File `json:"fileData"`
+	ClassId               uuid.UUID    `json:"classId"`
 }

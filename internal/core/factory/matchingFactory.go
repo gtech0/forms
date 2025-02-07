@@ -3,7 +3,7 @@ package factory
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/dto/create"
-	question2 "hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 )
 
 type MatchingFactory struct {
@@ -16,9 +16,9 @@ func NewMatchingFactory() *MatchingFactory {
 	}
 }
 
-func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*question2.Question, error) {
-	questionEntity := new(question2.Question)
-	questionEntity.Matching = new(question2.Matching)
+func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*question.Question, error) {
+	questionEntity := new(question.Question)
+	questionEntity.Matching = new(question.Matching)
 	if err := m.commonMapper.MapCommonDtoFields(dto.NewQuestionDto, questionEntity); err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*questi
 	questionEntity.Matching.Terms = terms
 	questionEntity.Matching.Definitions = definitions
 	for answer, value := range dto.Points {
-		var pointEntity question2.MatchingPoints
+		var pointEntity question.MatchingPoints
 		pointEntity.CorrectAnswer = answer
 		pointEntity.Points = value
 		questionEntity.Matching.Points = append(questionEntity.Matching.Points, pointEntity)
@@ -36,11 +36,11 @@ func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*questi
 	return questionEntity, nil
 }
 
-func (m *MatchingFactory) BuildFromEntity(questionEntity *question2.Question) (*question2.Question, error) {
-	newQuestionEntity := new(question2.Question)
-	newQuestionEntity.Matching = new(question2.Matching)
-	terms := make([]question2.MatchingTerm, 0)
-	definitions := make([]question2.MatchingDefinition, 0)
+func (m *MatchingFactory) BuildFromEntity(questionEntity *question.Question) (*question.Question, error) {
+	newQuestionEntity := new(question.Question)
+	newQuestionEntity.Matching = new(question.Matching)
+	terms := make([]question.MatchingTerm, 0)
+	definitions := make([]question.MatchingDefinition, 0)
 
 	for _, term := range questionEntity.Matching.Terms {
 		newDefinition := m.buildDefinitionFromEntity(term, newQuestionEntity.Id)
@@ -62,11 +62,11 @@ func (m *MatchingFactory) BuildFromEntity(questionEntity *question2.Question) (*
 }
 
 func (m *MatchingFactory) buildTermFromEntity(
-	term question2.MatchingTerm,
+	term question.MatchingTerm,
 	questionId uuid.UUID,
-	definition question2.MatchingDefinition,
-) question2.MatchingTerm {
-	var newTerm question2.MatchingTerm
+	definition question.MatchingDefinition,
+) question.MatchingTerm {
+	var newTerm question.MatchingTerm
 	newTerm.Text = term.Text
 	newTerm.MatchingId = questionId
 	newTerm.MatchingDefinitionId = definition.Id
@@ -74,10 +74,10 @@ func (m *MatchingFactory) buildTermFromEntity(
 }
 
 func (m *MatchingFactory) buildDefinitionFromEntity(
-	term question2.MatchingTerm,
+	term question.MatchingTerm,
 	questionId uuid.UUID,
-) question2.MatchingDefinition {
-	var definition question2.MatchingDefinition
+) question.MatchingDefinition {
+	var definition question.MatchingDefinition
 	definition.Text = term.Text
 	definition.MatchingId = questionId
 	return definition
@@ -85,15 +85,15 @@ func (m *MatchingFactory) buildDefinitionFromEntity(
 
 func (m *MatchingFactory) buildTermsAndDefinitions(
 	matchingMap map[string]string,
-) ([]question2.MatchingTerm, []question2.MatchingDefinition) {
-	terms := make([]question2.MatchingTerm, 0)
-	definitions := make([]question2.MatchingDefinition, 0)
+) ([]question.MatchingTerm, []question.MatchingDefinition) {
+	terms := make([]question.MatchingTerm, 0)
+	definitions := make([]question.MatchingDefinition, 0)
 	for key, value := range matchingMap {
-		var definition question2.MatchingDefinition
+		var definition question.MatchingDefinition
 		definition.Id = uuid.New()
 		definition.Text = value
 
-		var term question2.MatchingTerm
+		var term question.MatchingTerm
 		term.Text = key
 		term.MatchingDefinitionId = definition.Id
 

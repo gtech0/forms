@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 	"hedgehog-forms/internal/core/dto/create"
-	get2 "hedgehog-forms/internal/core/dto/get"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/factory"
 	"hedgehog-forms/internal/core/mapper"
@@ -34,7 +34,7 @@ func NewFormPatternService() *FormPatternService {
 	}
 }
 
-func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get2.FormPatternDto, error) {
+func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get.FormPatternDto, error) {
 	formPattern, err := f.formPatternFactory.BuildPattern(&body)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (f *FormPatternService) CreatePattern(body create.FormPatternDto) (*get2.Fo
 	return dto, nil
 }
 
-func (f *FormPatternService) GetForm(patternId string) (*get2.FormPatternDto, error) {
+func (f *FormPatternService) GetForm(patternId string) (*get.FormPatternDto, error) {
 	id, err := util.IdCheckAndParse(patternId)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (f *FormPatternService) GetForm(patternId string) (*get2.FormPatternDto, er
 	return dto, nil
 }
 
-func (f *FormPatternService) GetForms(query url.Values) (*get2.PaginationResponse[get2.FormPatternBaseDto], error) {
+func (f *FormPatternService) GetForms(query url.Values) (*get.PaginationResponse[get.FormPatternBaseDto], error) {
 	name := query.Get("name")
 	page, _ := strconv.Atoi(query.Get("page"))
 	if page <= 0 {
@@ -110,13 +110,13 @@ func (f *FormPatternService) GetForms(query url.Values) (*get2.PaginationRespons
 		return nil, err
 	}
 
-	patternBaseDtos := make([]get2.FormPatternBaseDto, 0)
+	patternBaseDtos := make([]get.FormPatternBaseDto, 0)
 	for _, formPublished := range formsPublished {
 		patternBaseDto := f.formPatternMapper.ToBaseDto(formPublished)
 		patternBaseDtos = append(patternBaseDtos, *patternBaseDto)
 	}
 
-	return &get2.PaginationResponse[get2.FormPatternBaseDto]{
+	return &get.PaginationResponse[get.FormPatternBaseDto]{
 		Page:     page,
 		Size:     size,
 		Elements: patternBaseDtos,

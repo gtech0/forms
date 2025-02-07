@@ -2,7 +2,7 @@ package mapper
 
 import (
 	"hedgehog-forms/internal/core/dto/get"
-	question2 "hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
 )
 
 type SingleChoiceMapper struct {
@@ -15,7 +15,7 @@ func NewSingleChoiceMapper() *SingleChoiceMapper {
 	}
 }
 
-func (s *SingleChoiceMapper) toDto(questionEntity *question2.Question) (*get.SingleChoiceDto, error) {
+func (s *SingleChoiceMapper) toDto(questionEntity *question.Question) (*get.SingleChoiceDto, error) {
 	singleChoiceDto := new(get.SingleChoiceDto)
 	s.commonMapper.CommonFieldsToDto(questionEntity, singleChoiceDto)
 	singleChoiceDto.Points = questionEntity.SingleChoice.Points
@@ -23,7 +23,7 @@ func (s *SingleChoiceMapper) toDto(questionEntity *question2.Question) (*get.Sin
 	return singleChoiceDto, nil
 }
 
-func (s *SingleChoiceMapper) singleOptionToDto(singleChoiceOptions []question2.SingleChoiceOption) []get.SingleOptionDto {
+func (s *SingleChoiceMapper) singleOptionToDto(singleChoiceOptions []question.SingleChoiceOption) []get.SingleOptionDto {
 	options := make([]get.SingleOptionDto, len(singleChoiceOptions))
 	for _, singleChoiceOption := range singleChoiceOptions {
 		var option get.SingleOptionDto

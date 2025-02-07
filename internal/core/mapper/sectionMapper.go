@@ -1,7 +1,7 @@
 package mapper
 
 import (
-	get2 "hedgehog-forms/internal/core/dto/get"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/model/form/pattern/section"
 )
 
@@ -15,8 +15,8 @@ func NewSectionMapper() *SectionMapper {
 	}
 }
 
-func (s *SectionMapper) ToDto(sectionEntity *section.Section) (*get2.SectionDto, error) {
-	sectionDto := new(get2.SectionDto)
+func (s *SectionMapper) ToDto(sectionEntity *section.Section) (*get.SectionDto, error) {
+	sectionDto := new(get.SectionDto)
 	sectionDto.Id = sectionEntity.Id
 	sectionDto.Title = sectionEntity.Title
 	sectionDto.Description = sectionEntity.Description
@@ -29,8 +29,8 @@ func (s *SectionMapper) ToDto(sectionEntity *section.Section) (*get2.SectionDto,
 	return sectionDto, nil
 }
 
-func (s *SectionMapper) blocksToDto(sectionEntity *section.Section) ([]get2.IBlockDto, error) {
-	mappedBlocks := make([]get2.IBlockDto, 0)
+func (s *SectionMapper) blocksToDto(sectionEntity *section.Section) ([]get.IBlockDto, error) {
+	mappedBlocks := make([]get.IBlockDto, 0)
 	for _, currentBlock := range sectionEntity.Blocks {
 		mappedBlock, err := s.blockMapper.toDto(currentBlock)
 		if err != nil {
