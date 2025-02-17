@@ -3,7 +3,7 @@ package processor
 import (
 	"hedgehog-forms/internal/core/mapper"
 	"hedgehog-forms/internal/core/model/form/generated"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"slices"
 	"strings"
 )
@@ -18,19 +18,19 @@ func NewTextInputProcessor() *TextInputProcessor {
 	}
 }
 
-func (t *TextInputProcessor) markAnswer(textInput *generated.TextInput, answer string) error {
+func (t *TextInputProcessor) saveAnswer(textInput *generated.TextInput, answer string) error {
 	textInput.EnteredAnswer = answer
 	return nil
 }
 
-func (t *TextInputProcessor) markAnswerAndCalculatePoints(
+func (t *TextInputProcessor) saveAnswerAndCalculatePoints(
 	textInput *generated.TextInput,
 	textInputEntity *question.TextInput,
 	enteredAnswer string,
 ) (int, error) {
 	textInput.EnteredAnswer = enteredAnswer
 
-	answers := t.textInputMapper.AnswersToDto(textInputEntity.Answers)
+	answers := t.textInputMapper.AnswersToString(textInputEntity.Answers)
 	isEnteredAnswerCorrect := func() bool {
 		if textInputEntity.IsCaseSensitive {
 			return slices.Contains(answers, enteredAnswer)

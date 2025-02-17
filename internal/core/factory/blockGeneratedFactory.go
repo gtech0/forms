@@ -4,8 +4,8 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/model/form/generated"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	block "hedgehog-forms/internal/core/model/form/pattern/block"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"math/rand"
 	"slices"
 )

@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/model/form/generated"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"slices"
 )
 
@@ -15,12 +15,12 @@ func NewMatchingProcessor() *MatchingProcessor {
 	return &MatchingProcessor{}
 }
 
-func (m *MatchingProcessor) markAnswerAndCalculatePoints(
+func (m *MatchingProcessor) saveAnswerAndCalculatePoints(
 	matchingQuestion *generated.Matching,
 	matchingQuestionEntity *question.Matching,
 	pairs []generated.EnteredMatchingPair,
 ) (int, error) {
-	if err := m.markAnswer(matchingQuestion, pairs, matchingQuestion.GetId()); err != nil {
+	if err := m.saveAnswer(matchingQuestion, pairs, matchingQuestion.GetId()); err != nil {
 		return 0, err
 	}
 
@@ -66,7 +66,7 @@ func (m *MatchingProcessor) extractTermDefinitionPairs(matchingEntity *question.
 	return pairs
 }
 
-func (m *MatchingProcessor) markAnswer(
+func (m *MatchingProcessor) saveAnswer(
 	matching *generated.Matching,
 	termsAndDefinitions []generated.EnteredMatchingPair,
 	questionId uuid.UUID,

@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/model/form/generated"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"slices"
 )
 
@@ -15,12 +15,12 @@ func NewMultipleChoiceProcessor() *MultipleChoiceProcessor {
 	return &MultipleChoiceProcessor{}
 }
 
-func (m *MultipleChoiceProcessor) markAnswerAndCalculatePoints(
+func (m *MultipleChoiceProcessor) saveAnswerAndCalculatePoints(
 	multipleChoice *generated.MultipleChoice,
 	multipleChoiceEntity *question.MultipleChoice,
-	enteredAnswers []uuid.UUID,
+	optionIds []uuid.UUID,
 ) (int, error) {
-	if err := m.markAnswer(multipleChoice, enteredAnswers); err != nil {
+	if err := m.saveAnswer(multipleChoice, optionIds); err != nil {
 		return 0, err
 	}
 
@@ -38,7 +38,7 @@ func (m *MultipleChoiceProcessor) calculateAndSetPoints(
 ) (int, error) {
 	var correctAnswers int
 	for _, enteredAnswer := range multipleChoice.EnteredAnswers {
-		option, err := m.getMultipleOptionEntity(multipleChoiceEntity, enteredAnswer)
+		option, err := m.getAnswerEntity(multipleChoiceEntity, enteredAnswer)
 		if err != nil {
 			return 0, err
 		}
@@ -55,7 +55,7 @@ func (m *MultipleChoiceProcessor) calculateAndSetPoints(
 	return multipleChoice.Points, nil
 }
 
-func (m *MultipleChoiceProcessor) getMultipleOptionEntity(
+func (m *MultipleChoiceProcessor) getAnswerEntity(
 	multipleChoiceEntity *question.MultipleChoice,
 	optionId uuid.UUID,
 ) (*question.MultipleChoiceOption, error) {
@@ -81,7 +81,7 @@ func (m *MultipleChoiceProcessor) calculatePoints(matchingPoints []question.Mult
 	return points
 }
 
-func (m *MultipleChoiceProcessor) markAnswer(multipleChoice *generated.MultipleChoice, optionIds []uuid.UUID) error {
+func (m *MultipleChoiceProcessor) saveAnswer(multipleChoice *generated.MultipleChoice, optionIds []uuid.UUID) error {
 	questionOptionIds := make([]uuid.UUID, 0)
 	for _, optionId := range multipleChoice.Options {
 		questionOptionIds = append(questionOptionIds, optionId.Id)

@@ -9,7 +9,7 @@ import (
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/model/form/generated"
 	"hedgehog-forms/internal/core/model/form/pattern"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	question "hedgehog-forms/internal/core/model/form/pattern/question"
 	"hedgehog-forms/internal/core/util"
 	"maps"
 	"slices"
@@ -69,7 +69,7 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 	for _, iQuestion := range questions {
 		for _, questionEntity := range questionEntities {
 			if iQuestion.GetId() == questionEntity.Id {
-				calculatedPoints, err := f.markAnswerAndCalculatePoints(iQuestion, questionEntity, answers)
+				calculatedPoints, err := f.saveAnswerAndCalculatePoints(iQuestion, questionEntity, answers)
 				if err != nil {
 					return err
 				}
@@ -140,22 +140,22 @@ func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated.IQuestion, answe
 	switch iQuestion.GetType() {
 	case question.SINGLE_CHOICE:
 		option := answers.SingleChoice[iQuestion.GetId()]
-		if err := f.singleChoiceProcessor.markAnswer(iQuestion.(*generated.SingleChoice), option); err != nil {
+		if err := f.singleChoiceProcessor.saveAnswer(iQuestion.(*generated.SingleChoice), option); err != nil {
 			return err
 		}
 	case question.MULTIPLE_CHOICE:
 		options := answers.MultipleChoice[iQuestion.GetId()]
-		if err := f.multipleChoiceProcessor.markAnswer(iQuestion.(*generated.MultipleChoice), options); err != nil {
+		if err := f.multipleChoiceProcessor.saveAnswer(iQuestion.(*generated.MultipleChoice), options); err != nil {
 			return err
 		}
 	case question.MATCHING:
 		pairs := answers.Matching[iQuestion.GetId()]
-		if err := f.matchingProcessor.markAnswer(iQuestion.(*generated.Matching), pairs, iQuestion.GetId()); err != nil {
+		if err := f.matchingProcessor.saveAnswer(iQuestion.(*generated.Matching), pairs, iQuestion.GetId()); err != nil {
 			return err
 		}
 	case question.TEXT_INPUT:
 		answer := answers.TextInput[iQuestion.GetId()]
-		if err := f.textInputProcessor.markAnswer(iQuestion.(*generated.TextInput), answer); err != nil {
+		if err := f.textInputProcessor.saveAnswer(iQuestion.(*generated.TextInput), answer); err != nil {
 			return err
 		}
 	default:
@@ -164,7 +164,7 @@ func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated.IQuestion, answe
 	return nil
 }
 
-func (f *FormGeneratedProcessor) markAnswerAndCalculatePoints(
+func (f *FormGeneratedProcessor) saveAnswerAndCalculatePoints(
 	iQuestion generated.IQuestion,
 	questionEntity *question.Question,
 	answers get.AnswerDto,
@@ -175,28 +175,28 @@ func (f *FormGeneratedProcessor) markAnswerAndCalculatePoints(
 	switch iQuestion.GetType() {
 	case question.SINGLE_CHOICE:
 		option := answers.SingleChoice[iQuestion.GetId()]
-		points, err = f.singleChoiceProcessor.markAnswerAndCalculatePoints(
+		points, err = f.singleChoiceProcessor.saveAnswerAndCalculatePoints(
 			iQuestion.(*generated.SingleChoice),
 			questionEntity.SingleChoice,
 			option,
 		)
 	case question.MULTIPLE_CHOICE:
 		options := answers.MultipleChoice[iQuestion.GetId()]
-		points, err = f.multipleChoiceProcessor.markAnswerAndCalculatePoints(
+		points, err = f.multipleChoiceProcessor.saveAnswerAndCalculatePoints(
 			iQuestion.(*generated.MultipleChoice),
 			questionEntity.MultipleChoice,
 			options,
 		)
 	case question.MATCHING:
 		pairs := answers.Matching[iQuestion.GetId()]
-		points, err = f.matchingProcessor.markAnswerAndCalculatePoints(
+		points, err = f.matchingProcessor.saveAnswerAndCalculatePoints(
 			iQuestion.(*generated.Matching),
 			questionEntity.Matching,
 			pairs,
 		)
 	case question.TEXT_INPUT:
 		answer := answers.TextInput[iQuestion.GetId()]
-		points, err = f.textInputProcessor.markAnswerAndCalculatePoints(
+		points, err = f.textInputProcessor.saveAnswerAndCalculatePoints(
 			iQuestion.(*generated.TextInput),
 			questionEntity.TextInput,
 			answer,

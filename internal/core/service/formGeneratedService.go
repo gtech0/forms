@@ -71,14 +71,14 @@ func (f *FormGeneratedService) GetMyForm(
 		return nil, err
 	}
 
-	currGenerated := new(generated.FormGenerated)
+	attempt := new(generated.FormGenerated)
 	if solution.Id == uuid.Nil {
-		currGenerated, err = f.buildAndCreate(formPublished, parsedUserId)
+		attempt, err = f.buildAndCreate(formPublished, parsedUserId)
 		if err != nil {
 			return nil, err
 		}
 
-		solution = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId, currGenerated.Submission)
+		solution = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId, attempt.Submission)
 		if err = f.solutionRepository.Create(solution); err != nil {
 			return nil, err
 		}
@@ -89,15 +89,15 @@ func (f *FormGeneratedService) GetMyForm(
 		}
 
 		//TODO: possibly more changes needed (?)
-		currGenerated, _ = f.findActiveGeneratedForm(attempts)
+		attempt, _ = f.findActiveGeneratedForm(attempts)
 
-		if currGenerated == nil && len(attempts) < formPublished.MaxAttempts {
-			currGenerated, err = f.buildAndCreate(formPublished, parsedUserId)
+		if attempt == nil && len(attempts) < formPublished.MaxAttempts {
+			attempt, err = f.buildAndCreate(formPublished, parsedUserId)
 			if err != nil {
 				return nil, err
 			}
 
-			solution.Submissions = append(solution.Submissions, *currGenerated.Submission)
+			solution.Submissions = append(solution.Submissions, *attempt.Submission)
 			solution.NumberAttempts = len(attempts)
 		} else {
 			solution.NumberAttempts = formPublished.MaxAttempts
@@ -108,7 +108,7 @@ func (f *FormGeneratedService) GetMyForm(
 		}
 	}
 
-	return f.formGeneratedMapper.ToDto(currGenerated)
+	return f.formGeneratedMapper.ToDto(attempt)
 }
 
 func (f *FormGeneratedService) buildAndCreate(

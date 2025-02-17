@@ -2,7 +2,7 @@ package generated
 
 import (
 	"github.com/google/uuid"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 )
 
 type IQuestion interface {

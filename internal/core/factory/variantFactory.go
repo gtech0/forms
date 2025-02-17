@@ -3,7 +3,7 @@ package factory
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/dto/create"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block"
+	"hedgehog-forms/internal/core/model/form/pattern/block"
 )
 
 type VariantFactory struct {

@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/model/form/generated"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 )
 
 type SingleChoiceProcessor struct{}
@@ -14,12 +14,12 @@ func NewSingleChoiceProcessor() *SingleChoiceProcessor {
 	return &SingleChoiceProcessor{}
 }
 
-func (s *SingleChoiceProcessor) markAnswerAndCalculatePoints(
+func (s *SingleChoiceProcessor) saveAnswerAndCalculatePoints(
 	singleChoice *generated.SingleChoice,
 	singleChoiceEntity *question.SingleChoice,
 	optionId uuid.UUID,
 ) (int, error) {
-	if err := s.markAnswer(singleChoice, optionId); err != nil {
+	if err := s.saveAnswer(singleChoice, optionId); err != nil {
 		return 0, err
 	}
 
@@ -60,7 +60,7 @@ func (s *SingleChoiceProcessor) getAnswerEntity(
 		500)
 }
 
-func (s *SingleChoiceProcessor) markAnswer(singleChoice *generated.SingleChoice, optionId uuid.UUID) error {
+func (s *SingleChoiceProcessor) saveAnswer(singleChoice *generated.SingleChoice, optionId uuid.UUID) error {
 	isOptionExist := func() bool {
 		for _, singleChoiceOption := range singleChoice.Options {
 			if singleChoiceOption.Id == optionId {

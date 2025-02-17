@@ -2,7 +2,7 @@ package factory
 
 import (
 	"hedgehog-forms/internal/core/model/form/generated"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block"
+	"hedgehog-forms/internal/core/model/form/pattern/block"
 	"math/rand"
 )
 

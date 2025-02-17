@@ -10,7 +10,7 @@ import (
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/factory"
 	"hedgehog-forms/internal/core/mapper"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"hedgehog-forms/internal/core/repository"
 	"hedgehog-forms/internal/core/util"
 	"net/url"

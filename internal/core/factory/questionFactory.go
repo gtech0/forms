@@ -3,8 +3,8 @@ package factory
 import (
 	"hedgehog-forms/internal/core/dto/create"
 	"hedgehog-forms/internal/core/errs"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	block "hedgehog-forms/internal/core/model/form/pattern/block"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 )
 
 type QuestionFactory struct {

@@ -3,7 +3,7 @@ package block
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/model"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 )
 
 type Variant struct {

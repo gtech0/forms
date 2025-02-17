@@ -2,7 +2,7 @@ package factory
 
 import (
 	"hedgehog-forms/internal/core/dto/create"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block"
+	block "hedgehog-forms/internal/core/model/form/pattern/block"
 )
 
 type DynamicBlockFactory struct {

@@ -9,7 +9,7 @@ import (
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/file"
 	"hedgehog-forms/internal/core/model"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"hedgehog-forms/internal/core/repository"
 	"mime/multipart"
 )

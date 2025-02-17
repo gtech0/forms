@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/errs"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block"
+	"hedgehog-forms/internal/core/model/form/pattern/block"
 	"hedgehog-forms/pkg/database"
 )
 

@@ -2,7 +2,7 @@ package get
 
 import (
 	"github.com/google/uuid"
-	"hedgehog-forms/internal/core/model/form/pattern/section/block"
+	"hedgehog-forms/internal/core/model/form/pattern/block"
 )
 
 type IBlockDto interface {
