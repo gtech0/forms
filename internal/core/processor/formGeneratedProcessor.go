@@ -9,7 +9,7 @@ import (
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/model/form/generated"
 	"hedgehog-forms/internal/core/model/form/pattern"
-	question "hedgehog-forms/internal/core/model/form/pattern/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"hedgehog-forms/internal/core/util"
 	"maps"
 	"slices"
@@ -69,7 +69,11 @@ func (f *FormGeneratedProcessor) CalculatePoints(
 	for _, iQuestion := range questions {
 		for _, questionEntity := range questionEntities {
 			if iQuestion.GetId() == questionEntity.Id {
-				calculatedPoints, err := f.saveAnswerAndCalculatePoints(iQuestion, questionEntity, answers)
+				if err := f.saveAnswer(iQuestion, answers); err != nil {
+					return err
+				}
+
+				calculatedPoints, err := f.calculateAndSetPoints(iQuestion, questionEntity)
 				if err != nil {
 					return err
 				}
@@ -164,42 +168,33 @@ func (f *FormGeneratedProcessor) saveAnswer(iQuestion generated.IQuestion, answe
 	return nil
 }
 
-func (f *FormGeneratedProcessor) saveAnswerAndCalculatePoints(
+func (f *FormGeneratedProcessor) calculateAndSetPoints(
 	iQuestion generated.IQuestion,
 	questionEntity *question.Question,
-	answers get.AnswerDto,
 ) (int, error) {
 	var points int
 	var err error
 
 	switch iQuestion.GetType() {
 	case question.SINGLE_CHOICE:
-		option := answers.SingleChoice[iQuestion.GetId()]
-		points, err = f.singleChoiceProcessor.saveAnswerAndCalculatePoints(
+		points, err = f.singleChoiceProcessor.calculateAndSetPoints(
 			iQuestion.(*generated.SingleChoice),
 			questionEntity.SingleChoice,
-			option,
 		)
 	case question.MULTIPLE_CHOICE:
-		options := answers.MultipleChoice[iQuestion.GetId()]
-		points, err = f.multipleChoiceProcessor.saveAnswerAndCalculatePoints(
+		points, err = f.multipleChoiceProcessor.calculateAndSetPoints(
 			iQuestion.(*generated.MultipleChoice),
 			questionEntity.MultipleChoice,
-			options,
 		)
 	case question.MATCHING:
-		pairs := answers.Matching[iQuestion.GetId()]
-		points, err = f.matchingProcessor.saveAnswerAndCalculatePoints(
+		points = f.matchingProcessor.calculateAndSetPoints(
 			iQuestion.(*generated.Matching),
 			questionEntity.Matching,
-			pairs,
 		)
 	case question.TEXT_INPUT:
-		answer := answers.TextInput[iQuestion.GetId()]
 		points, err = f.textInputProcessor.saveAnswerAndCalculatePoints(
 			iQuestion.(*generated.TextInput),
 			questionEntity.TextInput,
-			answer,
 		)
 	default:
 		return 0, errs.New(fmt.Sprintf("invalid type %s", iQuestion.GetType()), 400)

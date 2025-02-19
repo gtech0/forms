@@ -3,7 +3,7 @@ package factory
 import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/dto/create"
-	question "hedgehog-forms/internal/core/model/form/pattern/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 )
 
 type SingleChoiceFactory struct {

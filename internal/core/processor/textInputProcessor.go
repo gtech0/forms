@@ -26,18 +26,15 @@ func (t *TextInputProcessor) saveAnswer(textInput *generated.TextInput, answer s
 func (t *TextInputProcessor) saveAnswerAndCalculatePoints(
 	textInput *generated.TextInput,
 	textInputEntity *question.TextInput,
-	enteredAnswer string,
 ) (int, error) {
-	textInput.EnteredAnswer = enteredAnswer
-
 	answers := t.textInputMapper.AnswersToString(textInputEntity.Answers)
 	isEnteredAnswerCorrect := func() bool {
 		if textInputEntity.IsCaseSensitive {
-			return slices.Contains(answers, enteredAnswer)
+			return slices.Contains(answers, textInput.EnteredAnswer)
 		}
 
 		for _, answer := range answers {
-			return strings.EqualFold(answer, enteredAnswer)
+			return strings.EqualFold(answer, textInput.EnteredAnswer)
 		}
 		return false
 	}

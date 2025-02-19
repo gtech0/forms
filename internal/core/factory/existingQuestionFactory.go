@@ -3,7 +3,7 @@ package factory
 import (
 	"hedgehog-forms/internal/core/dto/create"
 	"hedgehog-forms/internal/core/errs"
-	question "hedgehog-forms/internal/core/model/form/pattern/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"hedgehog-forms/internal/core/repository"
 )
 

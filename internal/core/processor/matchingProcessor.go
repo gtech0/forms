@@ -15,18 +15,6 @@ func NewMatchingProcessor() *MatchingProcessor {
 	return &MatchingProcessor{}
 }
 
-func (m *MatchingProcessor) saveAnswerAndCalculatePoints(
-	matchingQuestion *generated.Matching,
-	matchingQuestionEntity *question.Matching,
-	pairs []generated.EnteredMatchingPair,
-) (int, error) {
-	if err := m.saveAnswer(matchingQuestion, pairs, matchingQuestion.GetId()); err != nil {
-		return 0, err
-	}
-
-	return m.calculateAndSetPoints(matchingQuestion, matchingQuestionEntity), nil
-}
-
 func (m *MatchingProcessor) calculateAndSetPoints(
 	matching *generated.Matching,
 	matchingEntity *question.Matching,

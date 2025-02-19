@@ -15,23 +15,6 @@ func NewMultipleChoiceProcessor() *MultipleChoiceProcessor {
 	return &MultipleChoiceProcessor{}
 }
 
-func (m *MultipleChoiceProcessor) saveAnswerAndCalculatePoints(
-	multipleChoice *generated.MultipleChoice,
-	multipleChoiceEntity *question.MultipleChoice,
-	optionIds []uuid.UUID,
-) (int, error) {
-	if err := m.saveAnswer(multipleChoice, optionIds); err != nil {
-		return 0, err
-	}
-
-	points, err := m.calculateAndSetPoints(multipleChoice, multipleChoiceEntity)
-	if err != nil {
-		return 0, err
-	}
-
-	return points, nil
-}
-
 func (m *MultipleChoiceProcessor) calculateAndSetPoints(
 	multipleChoice *generated.MultipleChoice,
 	multipleChoiceEntity *question.MultipleChoice,

@@ -2,7 +2,7 @@ package mapper
 
 import (
 	"hedgehog-forms/internal/core/dto/get"
-	question "hedgehog-forms/internal/core/model/form/pattern/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 )
 
 type MatchingMapper struct {

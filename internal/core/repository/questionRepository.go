@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 	"hedgehog-forms/internal/core/errs"
-	question "hedgehog-forms/internal/core/model/form/pattern/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"hedgehog-forms/pkg/database"
 )
 

@@ -14,23 +14,6 @@ func NewSingleChoiceProcessor() *SingleChoiceProcessor {
 	return &SingleChoiceProcessor{}
 }
 
-func (s *SingleChoiceProcessor) saveAnswerAndCalculatePoints(
-	singleChoice *generated.SingleChoice,
-	singleChoiceEntity *question.SingleChoice,
-	optionId uuid.UUID,
-) (int, error) {
-	if err := s.saveAnswer(singleChoice, optionId); err != nil {
-		return 0, err
-	}
-
-	points, err := s.calculateAndSetPoints(singleChoice, singleChoiceEntity)
-	if err != nil {
-		return 0, err
-	}
-
-	return points, nil
-}
-
 func (s *SingleChoiceProcessor) calculateAndSetPoints(
 	singleChoice *generated.SingleChoice,
 	singleChoiceEntity *question.SingleChoice,

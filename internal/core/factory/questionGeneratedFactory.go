@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/model/form/generated"
-	question "hedgehog-forms/internal/core/model/form/pattern/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 )
 
 type QuestionGeneratedFactory struct{}

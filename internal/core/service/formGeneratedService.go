@@ -82,13 +82,15 @@ func (f *FormGeneratedService) GetMyForm(
 		if err = f.solutionRepository.Create(solution); err != nil {
 			return nil, err
 		}
+
+		//TODO: integration 1
+
 	} else {
 		attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(parsedUserId, parsedPublishedId)
 		if err != nil {
 			return nil, err
 		}
 
-		//TODO: possibly more changes needed (?)
 		attempt, _ = f.findActiveGeneratedForm(attempts)
 
 		if attempt == nil && len(attempts) < formPublished.MaxAttempts {
@@ -106,6 +108,8 @@ func (f *FormGeneratedService) GetMyForm(
 		if err = f.solutionRepository.Save(solution); err != nil {
 			return nil, err
 		}
+
+		//TODO: integration 2
 	}
 
 	return f.formGeneratedMapper.ToDto(attempt)
@@ -433,13 +437,6 @@ func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) (
 	}
 
 	userIdsWithAccess := make([]uuid.UUID, 0)
-	//TODO: user group ids
-	//for _, groupEntity := range formPublished.Teams {
-	//	for _, userEntity := range groupEntity.Users {
-	//		userIdsWithAccess = append(userIdsWithAccess, userEntity.Id)
-	//	}
-	//}
-
 	for _, userEntity := range formPublished.Users {
 		userIdsWithAccess = append(userIdsWithAccess, userEntity.UserId)
 	}

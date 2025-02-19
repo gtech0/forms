@@ -2,7 +2,7 @@ package factory
 
 import (
 	"hedgehog-forms/internal/core/dto/create"
-	question "hedgehog-forms/internal/core/model/form/pattern/question"
+	"hedgehog-forms/internal/core/model/form/pattern/question"
 )
 
 type TextInputFactory struct {
