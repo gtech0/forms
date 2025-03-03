@@ -1,0 +1,740 @@
+basePath: /api
+definitions:
+  block.BlockType:
+    enum:
+    - STATIC
+    - DYNAMIC
+    - EXISTING
+    type: string
+    x-enum-varnames:
+    - STATIC
+    - DYNAMIC
+    - EXISTING
+  common.MarkConfiguration:
+    additionalProperties:
+      type: integer
+    type: object
+  create.FormPatternDto:
+    properties:
+      description:
+        type: string
+      ownerId:
+        type: string
+      sections:
+        items:
+          items:
+            type: integer
+          type: array
+        type: array
+      subjectId:
+        type: string
+      title:
+        type: string
+    type: object
+  create.FormPublishDto:
+    properties:
+      deadline:
+        type: string
+      duration:
+        $ref: '#/definitions/time.Duration'
+      formPatternId:
+        type: string
+      hideScore:
+        type: boolean
+      markConfiguration:
+        $ref: '#/definitions/common.MarkConfiguration'
+      maxAttempts:
+        type: integer
+      postModeration:
+        type: boolean
+      teamIds:
+        items:
+          type: string
+        type: array
+      userIds:
+        items:
+          type: string
+        type: array
+    type: object
+  create.UpdateFormPublishedDto:
+    properties:
+      deadline:
+        type: string
+      duration:
+        $ref: '#/definitions/time.Duration'
+      hideScore:
+        type: boolean
+      markConfiguration:
+        $ref: '#/definitions/common.MarkConfiguration'
+      teamIds:
+        items:
+          type: string
+        type: array
+      userIds:
+        items:
+          type: string
+        type: array
+    type: object
+  errs.CustomError:
+    properties:
+      status:
+        type: integer
+      text:
+        type: string
+    type: object
+  generated.Block:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      questions:
+        items:
+          items:
+            type: integer
+          type: array
+        type: array
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/block.BlockType'
+      variant:
+        $ref: '#/definitions/generated.Variant'
+    type: object
+  generated.FormStatus:
+    enum:
+    - NEW
+    - IN_PROGRESS
+    - RETURNED
+    - SUBMITTED
+    - COMPLETED
+    type: string
+    x-enum-varnames:
+    - NEW
+    - IN_PROGRESS
+    - RETURNED
+    - SUBMITTED
+    - COMPLETED
+  generated.Section:
+    properties:
+      blocks:
+        items:
+          $ref: '#/definitions/generated.Block'
+        type: array
+      description:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+    type: object
+  generated.Variant:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      questions:
+        items:
+          items:
+            type: integer
+          type: array
+        type: array
+      title:
+        type: string
+    type: object
+  get.FileDto:
+    properties:
+      file:
+        $ref: '#/definitions/multipart.FileHeader'
+    type: object
+  get.FormGeneratedDto:
+    properties:
+      formPublished:
+        $ref: '#/definitions/get.FormPublishedBaseDto'
+      id:
+        type: string
+      sections:
+        items:
+          $ref: '#/definitions/generated.Section'
+        type: array
+      status:
+        $ref: '#/definitions/generated.FormStatus'
+      userId:
+        type: string
+    type: object
+  get.FormPatternDto:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      ownerId:
+        $ref: '#/definitions/uuid.NullUUID'
+      sections:
+        items:
+          $ref: '#/definitions/get.SectionDto'
+        type: array
+      subject:
+        $ref: '#/definitions/get.SubjectDto'
+      title:
+        type: string
+    type: object
+  get.FormPublishedBaseDto:
+    properties:
+      deadline:
+        type: string
+      duration:
+        $ref: '#/definitions/time.Duration'
+      formPatternId:
+        type: string
+      hideScore:
+        type: boolean
+      id:
+        type: string
+      markConfiguration:
+        $ref: '#/definitions/common.MarkConfiguration'
+      maxAttempts:
+        type: integer
+      teamIds:
+        items:
+          type: string
+        type: array
+      userIds:
+        items:
+          type: string
+        type: array
+    type: object
+  get.FormPublishedDto:
+    properties:
+      deadline:
+        type: string
+      duration:
+        $ref: '#/definitions/time.Duration'
+      formPattern:
+        $ref: '#/definitions/get.FormPatternDto'
+      hideScore:
+        type: boolean
+      id:
+        type: string
+      teamIds:
+        items:
+          type: string
+        type: array
+      userIds:
+        items:
+          type: string
+        type: array
+    type: object
+  get.MyGeneratedDto:
+    properties:
+      formPublished:
+        $ref: '#/definitions/get.FormPublishedBaseDto'
+      id:
+        type: string
+      mark:
+        type: integer
+      points:
+        description: SubmitTime    time.Time            `json:"submitTime"`
+        type: integer
+      status:
+        $ref: '#/definitions/generated.FormStatus'
+    type: object
+  get.QuestionDto:
+    properties:
+      attachments:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      id:
+        type: string
+      ownerId:
+        $ref: '#/definitions/uuid.NullUUID'
+      subject:
+        $ref: '#/definitions/get.SubjectDto'
+      type:
+        $ref: '#/definitions/question.QuestionType'
+    type: object
+  get.SectionDto:
+    properties:
+      blocks:
+        items: {}
+        type: array
+      description:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+    type: object
+  get.SubjectDto:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  minio.UploadInfo:
+    properties:
+      bucket:
+        type: string
+      checksumCRC32:
+        description: |-
+          Verified checksum values, if any.
+          Values are base64 (standard) encoded.
+          For multipart objects this is a checksum of the checksum of each part.
+        type: string
+      checksumCRC32C:
+        type: string
+      checksumCRC64NVME:
+        type: string
+      checksumSHA1:
+        type: string
+      checksumSHA256:
+        type: string
+      etag:
+        type: string
+      expiration:
+        description: |-
+          Lifecycle expiry-date and ruleID associated with the expiry
+          not to be confused with `Expires` HTTP header.
+        type: string
+      expirationRuleID:
+        type: string
+      key:
+        type: string
+      lastModified:
+        type: string
+      location:
+        type: string
+      size:
+        type: integer
+      versionID:
+        type: string
+    type: object
+  multipart.FileHeader:
+    properties:
+      filename:
+        type: string
+      header:
+        $ref: '#/definitions/textproto.MIMEHeader'
+      size:
+        type: integer
+    type: object
+  question.QuestionType:
+    enum:
+    - MULTIPLE_CHOICE
+    - SINGLE_CHOICE
+    - MATCHING
+    - TEXT_INPUT
+    - EXISTING
+    type: string
+    x-enum-varnames:
+    - MULTIPLE_CHOICE
+    - SINGLE_CHOICE
+    - MATCHING
+    - TEXT_INPUT
+    - EXISTING
+  textproto.MIMEHeader:
+    additionalProperties:
+      items:
+        type: string
+      type: array
+    type: object
+  time.Duration:
+    enum:
+    - -9223372036854775808
+    - 9223372036854775807
+    - 1
+    - 1000
+    - 1000000
+    - 1000000000
+    - 60000000000
+    - 3600000000000
+    type: integer
+    x-enum-varnames:
+    - minDuration
+    - maxDuration
+    - Nanosecond
+    - Microsecond
+    - Millisecond
+    - Second
+    - Minute
+    - Hour
+  uuid.NullUUID:
+    properties:
+      uuid:
+        type: string
+      valid:
+        description: Valid is true if UUID is not NULL
+        type: boolean
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8001
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Forms API
+  version: "0.01"
+paths:
+  /file/download/{fileId}:
+    get:
+      description: download file
+      parameters:
+      - description: File id
+        in: path
+        name: fileId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Download file
+      tags:
+      - File
+  /file/upload:
+    post:
+      description: upload file
+      parameters:
+      - description: File data
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/get.FileDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/minio.UploadInfo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Upload file
+      tags:
+      - File
+  /form/generated/get/{publishedId}:
+    post:
+      description: get current user form
+      parameters:
+      - description: Published id
+        in: path
+        name: publishedId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.FormGeneratedDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Get current user form
+      tags:
+      - FormGenerated
+  /form/generated/save/{generatedId}:
+    post:
+      description: save answers for current form
+      parameters:
+      - description: Generated id
+        in: path
+        name: generatedId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.FormGeneratedDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Save answers for current form
+      tags:
+      - FormGenerated
+  /form/generated/submit/{generatedId}:
+    post:
+      description: submit current form for evaluation
+      parameters:
+      - description: Generated id
+        in: path
+        name: generatedId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.MyGeneratedDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Submit current form for evaluation
+      tags:
+      - FormGenerated
+  /form/generated/verify/{generatedId}:
+    post:
+      description: evaluate users form manually
+      parameters:
+      - description: Generated id
+        in: path
+        name: generatedId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.FormGeneratedDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Evaluate users form manually
+      tags:
+      - FormGenerated
+  /form/pattern/create:
+    post:
+      description: create form pattern
+      parameters:
+      - description: Form data
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/create.FormPatternDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.FormPatternDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Create form pattern
+      tags:
+      - FormPattern
+  /form/pattern/get/{patternId}:
+    get:
+      description: get form pattern
+      parameters:
+      - description: Pattern id
+        in: path
+        name: patternId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.FormPatternDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Get form pattern
+      tags:
+      - FormPattern
+  /form/published/create:
+    post:
+      description: publish form
+      parameters:
+      - description: Form data
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/create.FormPublishDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.FormPublishedBaseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Publish form
+      tags:
+      - FormPublished
+  /form/published/delete/{publishedId}:
+    delete:
+      description: delete form
+      parameters:
+      - description: Published id
+        in: path
+        name: publishedId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Delete form
+      tags:
+      - FormPublished
+  /form/published/get/{publishedId}:
+    get:
+      description: get form
+      parameters:
+      - description: Published id
+        in: path
+        name: publishedId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.FormPublishedDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Get form
+      tags:
+      - FormPublished
+  /form/published/update/{publishedId}:
+    put:
+      description: update form
+      parameters:
+      - description: New form data
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/create.UpdateFormPublishedDto'
+      - description: Published id
+        in: path
+        name: publishedId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.FormPublishedDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Update form
+      tags:
+      - FormPublished
+  /question/create/{subjectId}:
+    post:
+      description: create question
+      parameters:
+      - description: Subject id
+        in: path
+        name: subjectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.QuestionDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Create question
+      tags:
+      - Question
+  /question/delete/{questionId}:
+    delete:
+      description: delete question
+      parameters:
+      - description: Question id
+        in: path
+        name: questionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Delete question
+      tags:
+      - Question
+  /question/get/{questionId}:
+    get:
+      description: get question
+      parameters:
+      - description: Question id
+        in: path
+        name: questionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/get.QuestionDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errs.CustomError'
+      summary: Get question
+      tags:
+      - Question
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

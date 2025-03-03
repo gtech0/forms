@@ -2,10 +2,8 @@ package generated
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/model/form/pattern/block"
-	"hedgehog-forms/internal/core/model/form/pattern/question"
 	"hedgehog-forms/internal/core/util"
 )
 
@@ -28,27 +26,7 @@ func (c *Block) UnmarshalJSON(b []byte) error {
 	}
 
 	for _, rawQuestion := range c.RawQuestions {
-		var generatedQuestion Question
-		err = json.Unmarshal(rawQuestion, &generatedQuestion)
-		if err != nil {
-			return err
-		}
-
-		var questionI IQuestion
-		switch generatedQuestion.Type {
-		case question.MATCHING:
-			questionI = &Matching{}
-		case question.MULTIPLE_CHOICE:
-			questionI = &MultipleChoice{}
-		case question.SINGLE_CHOICE:
-			questionI = &SingleChoice{}
-		case question.TEXT_INPUT:
-			questionI = &TextInput{}
-		default:
-			return fmt.Errorf("unknown question type: %s", generatedQuestion.Type)
-		}
-
-		err = json.Unmarshal(rawQuestion, questionI)
+		questionI, err := CommonQuestionUnmarshal(rawQuestion)
 		if err != nil {
 			return err
 		}

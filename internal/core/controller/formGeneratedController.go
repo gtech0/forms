@@ -19,8 +19,15 @@ func NewFormGeneratedController() *FormGeneratedController {
 	}
 }
 
-//TODO: userIds
-
+// GetMyForm godoc
+// @Tags         FormGenerated
+// @Summary      Get current user form
+// @Description  get current user form
+// @Produce      json
+// @Param   	 publishedId path string true "Published id"
+// @Success      200 {object} get.FormGeneratedDto
+// @Failure      400 {object} errs.CustomError
+// @Router       /form/generated/get/{publishedId} [post]
 func (f *FormGeneratedController) GetMyForm(ctx *gin.Context) {
 	publishedId := ctx.Param("publishedId")
 	var userIdDto create.FormGeneratedUser
@@ -38,6 +45,15 @@ func (f *FormGeneratedController) GetMyForm(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *formGeneratedDto)
 }
 
+// SaveAnswers godoc
+// @Tags         FormGenerated
+// @Summary      Save answers for current form
+// @Description  save answers for current form
+// @Produce      json
+// @Param   	 generatedId path string true "Generated id"
+// @Success      200 {object} get.FormGeneratedDto
+// @Failure      400 {object} errs.CustomError
+// @Router       /form/generated/save/{generatedId} [post]
 func (f *FormGeneratedController) SaveAnswers(ctx *gin.Context) {
 	generatedId := ctx.Param("generatedId")
 	var answerDto get.AnswerDto
@@ -55,6 +71,15 @@ func (f *FormGeneratedController) SaveAnswers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *formGeneratedDto)
 }
 
+// SubmitForm godoc
+// @Tags         FormGenerated
+// @Summary      Submit current form for evaluation
+// @Description  submit current form for evaluation
+// @Produce      json
+// @Param   	 generatedId path string true "Generated id"
+// @Success      200 {object} get.MyGeneratedDto
+// @Failure      400 {object} errs.CustomError
+// @Router       /form/generated/submit/{generatedId} [post]
 func (f *FormGeneratedController) SubmitForm(ctx *gin.Context) {
 	generatedId := ctx.Param("generatedId")
 	var answerDto get.AnswerDto
@@ -132,6 +157,15 @@ func (f *FormGeneratedController) GetSubmittedForm(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *submittedForm)
 }
 
+// VerifyForm godoc
+// @Tags         FormGenerated
+// @Summary      Evaluate users form manually
+// @Description  evaluate users form manually
+// @Produce      json
+// @Param   	 generatedId path string true "Generated id"
+// @Success      200 {object} get.FormGeneratedDto
+// @Failure      400 {object} errs.CustomError
+// @Router       /form/generated/verify/{generatedId} [post]
 func (f *FormGeneratedController) VerifyForm(ctx *gin.Context) {
 	generatedId := ctx.Param("generatedId")
 	var checkDto create.CheckDto

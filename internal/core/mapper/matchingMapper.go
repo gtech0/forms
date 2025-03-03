@@ -48,7 +48,7 @@ func (m *MatchingMapper) termsAndDefinitionsToDto(
 func (m *MatchingMapper) pointsToDto(matchingPoints []question.MatchingPoints) map[int]int {
 	points := make(map[int]int)
 	for _, matchingPoint := range matchingPoints {
-		points[matchingPoint.CorrectAnswer] = matchingPoint.Points
+		points[matchingPoint.CorrectAnswers] = matchingPoint.Points
 	}
 	return points
 }

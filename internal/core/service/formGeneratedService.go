@@ -82,9 +82,6 @@ func (f *FormGeneratedService) GetMyForm(
 		if err = f.solutionRepository.Create(solution); err != nil {
 			return nil, err
 		}
-
-		//TODO: integration 1
-
 	} else {
 		attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(parsedUserId, parsedPublishedId)
 		if err != nil {
@@ -108,8 +105,6 @@ func (f *FormGeneratedService) GetMyForm(
 		if err = f.solutionRepository.Save(solution); err != nil {
 			return nil, err
 		}
-
-		//TODO: integration 2
 	}
 
 	return f.formGeneratedMapper.ToDto(attempt)
@@ -534,7 +529,7 @@ func (f *FormGeneratedService) checkTime(
 ) error {
 	endTime := startTime.Add(duration)
 	if endTime.Before(time.Now()) {
-		formGenerated.IsCompleted = true
+		formGenerated.Status = generated.COMPLETED
 		if err := f.formGeneratedRepository.Save(formGenerated); err != nil {
 			return err
 		}
@@ -582,7 +577,7 @@ func (f *FormGeneratedService) checkStatusForVerification(old, new generated.For
 
 func (f *FormGeneratedService) findActiveGeneratedForm(forms []*generated.FormGenerated) (*generated.FormGenerated, error) {
 	for _, formGenerated := range forms {
-		if formGenerated.IsCompleted == false {
+		if formGenerated.Status != generated.COMPLETED {
 			return formGenerated, nil
 		}
 	}

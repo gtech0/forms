@@ -18,6 +18,15 @@ func NewFormPatternController() *FormPatternController {
 	}
 }
 
+// CreateForm godoc
+// @Tags         FormPattern
+// @Summary      Create form pattern
+// @Description  create form pattern
+// @Produce      json
+// @Param   	 payload body create.FormPatternDto false "Form data"
+// @Success      200 {object} get.FormPatternDto
+// @Failure      400 {object} errs.CustomError
+// @Router       /form/pattern/create [post]
 func (f *FormPatternController) CreateForm(ctx *gin.Context) {
 	body := create.FormPatternDto{}
 	if err := ctx.Bind(&body); err != nil {
@@ -34,6 +43,15 @@ func (f *FormPatternController) CreateForm(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *dto)
 }
 
+// GetForm godoc
+// @Tags         FormPattern
+// @Summary      Get form pattern
+// @Description  get form pattern
+// @Produce      json
+// @Param   	 patternId path string true "Pattern id"
+// @Success      200 {object} get.FormPatternDto
+// @Failure      400 {object} errs.CustomError
+// @Router       /form/pattern/get/{patternId} [get]
 func (f *FormPatternController) GetForm(ctx *gin.Context) {
 	patternId := ctx.Param("patternId")
 	dto, err := f.formPatternService.GetForm(patternId)

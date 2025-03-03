@@ -8,10 +8,9 @@ import (
 
 type Section struct {
 	model.Base
-	Title           string
-	Description     string
-	Order           int
-	Blocks          []*block.Block
-	FormPatternId   uuid.UUID     `gorm:"type:uuid"`
-	FormGeneratedId uuid.NullUUID `gorm:"type:uuid"`
+	Title         string
+	Description   string
+	Order         int
+	Blocks        []*block.Block
+	FormPatternId uuid.UUID `gorm:"type:uuid"`
 }

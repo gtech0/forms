@@ -26,7 +26,7 @@ func (m *MultipleChoiceMapper) toDto(questionEntity *question.Question) (*get.Mu
 func (m *MultipleChoiceMapper) pointsToDto(multipleChoicePoints []question.MultipleChoicePoints) map[int]int {
 	points := make(map[int]int)
 	for _, multipleChoicePoint := range multipleChoicePoints {
-		points[multipleChoicePoint.CorrectAnswer] = multipleChoicePoint.Points
+		points[multipleChoicePoint.CorrectAnswers] = multipleChoicePoint.Points
 	}
 	return points
 }

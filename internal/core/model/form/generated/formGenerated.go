@@ -9,7 +9,6 @@ import (
 type FormGenerated struct {
 	model.Base
 	Status          FormStatus
-	IsCompleted     bool
 	Sections        []Section `gorm:"type:jsonb;serializer:json"`
 	Points          int
 	Mark            int

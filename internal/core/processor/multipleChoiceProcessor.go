@@ -56,8 +56,8 @@ func (m *MultipleChoiceProcessor) getAnswerEntity(
 func (m *MultipleChoiceProcessor) calculatePoints(matchingPoints []question.MultipleChoicePoints, correctAnswers int) int {
 	var points int
 	for _, matchingPoint := range matchingPoints {
-		if matchingPoint.CorrectAnswer > points && matchingPoint.CorrectAnswer <= correctAnswers {
-			points = matchingPoint.CorrectAnswer
+		if matchingPoint.CorrectAnswers > points && matchingPoint.CorrectAnswers <= correctAnswers {
+			points = matchingPoint.CorrectAnswers
 		}
 	}
 

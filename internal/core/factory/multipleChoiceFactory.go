@@ -57,7 +57,7 @@ func (m *MultipleChoiceFactory) buildPointFromDto(
 	point int,
 ) question.MultipleChoicePoints {
 	var points question.MultipleChoicePoints
-	points.CorrectAnswer = answer
+	points.CorrectAnswers = answer
 	points.Points = point
 	return points
 }

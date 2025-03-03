@@ -110,7 +110,8 @@ func (f *FormGeneratedProcessor) ReapplyPoints(formGenerated *generated.FormGene
 	return nil
 }
 
-func (f *FormGeneratedProcessor) applyNewPoints(formGenerated *generated.FormGenerated,
+func (f *FormGeneratedProcessor) applyNewPoints(
+	formGenerated *generated.FormGenerated,
 	questionGenerated generated.IQuestion,
 	newPoints int,
 ) {

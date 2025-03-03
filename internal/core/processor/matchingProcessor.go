@@ -35,7 +35,7 @@ func (m *MatchingProcessor) calculateAndSetPoints(
 func (m *MatchingProcessor) calculatePoints(matchingPoints []question.MatchingPoints, correctAnswers int) int {
 	var points int
 	for _, matchingPoint := range matchingPoints {
-		if matchingPoint.Points > points && matchingPoint.CorrectAnswer <= correctAnswers {
+		if matchingPoint.Points > points && matchingPoint.CorrectAnswers <= correctAnswers {
 			points = matchingPoint.Points
 		}
 	}

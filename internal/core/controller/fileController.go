@@ -22,6 +22,15 @@ func NewFileController() *FileController {
 	}
 }
 
+// UploadFile godoc
+// @Tags         File
+// @Summary      Upload file
+// @Description  upload file
+// @Produce      json
+// @Param   	 payload body get.FileDto false "File data"
+// @Success      200 {object} minio.UploadInfo
+// @Failure      400 {object} errs.CustomError
+// @Router       /file/upload [post]
 func (f *FileController) UploadFile(ctx *gin.Context) {
 	fileDto := get.FileDto{}
 	if err := ctx.Bind(&fileDto); err != nil {
@@ -38,6 +47,15 @@ func (f *FileController) UploadFile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *info)
 }
 
+// DownloadFile godoc
+// @Tags         File
+// @Summary      Download file
+// @Description  download file
+// @Produce      json
+// @Param   	 fileId path string true "File id"
+// @Success      200
+// @Failure      400 {object} errs.CustomError
+// @Router       /file/download/{fileId} [get]
 func (f *FileController) DownloadFile(ctx *gin.Context) {
 	fileId := ctx.Param("fileId")
 	reader, err := f.fileService.DownloadFile(fileId, f.bucket)

@@ -3,6 +3,8 @@ package web
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"hedgehog-forms/internal/core/controller"
 	"hedgehog-forms/internal/core/errs"
 )
@@ -80,6 +82,8 @@ func NewRouter() *gin.Engine {
 		subject.PUT("/update/:subjectId", subjectController.UpdateSubject)
 		subject.DELETE("/delete/:subjectId", subjectController.DeleteSubject)
 	}
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return router
 }

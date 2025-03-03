@@ -28,7 +28,7 @@ func (m *MatchingFactory) BuildFromDto(dto *create.MatchingQuestionDto) (*questi
 	questionEntity.Matching.Definitions = definitions
 	for answer, value := range dto.Points {
 		var pointEntity question.MatchingPoints
-		pointEntity.CorrectAnswer = answer
+		pointEntity.CorrectAnswers = answer
 		pointEntity.Points = value
 		questionEntity.Matching.Points = append(questionEntity.Matching.Points, pointEntity)
 	}
