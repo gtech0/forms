@@ -22,8 +22,6 @@ import (
 type FormGeneratedService struct {
 	solutionRepository               *repository.SolutionRepository
 	solutionFactory                  *factory.SolutionFactory
-	submissionRepository             *repository.SubmissionRepository
-	submissionFactory                *factory.SubmissionFactory
 	formPublishedRepository          *repository.FormPublishedRepository
 	formGeneratedRepository          *repository.FormGeneratedRepository
 	formGeneratedFactory             *factory.FormGeneratedFactory
@@ -36,8 +34,6 @@ func NewFormGeneratedService() *FormGeneratedService {
 	return &FormGeneratedService{
 		solutionRepository:               repository.NewSolutionRepository(),
 		solutionFactory:                  factory.NewSolutionFactory(),
-		submissionRepository:             repository.NewSubmissionRepository(),
-		submissionFactory:                factory.NewSubmissionFactory(),
 		formPublishedRepository:          repository.NewFormPublishedRepository(),
 		formGeneratedRepository:          repository.NewFormGeneratedRepository(),
 		formGeneratedFactory:             factory.NewFormGeneratedFactory(),
@@ -176,12 +172,7 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
-	currSubmission, err := f.submissionRepository.FindByFormGeneratedId(currForm.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = f.checkTime(currForm, currSubmission.StartTime, formPublished.Duration); err != nil {
+	if err = f.checkTime(currForm, formPublished.Duration); err != nil {
 		return nil, err
 	}
 
@@ -238,12 +229,7 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	currSubmission, err := f.submissionRepository.FindByFormGeneratedId(currForm.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = f.checkTime(currForm, currSubmission.StartTime, formPublished.Duration); err != nil {
+	if err = f.checkTime(currForm, formPublished.Duration); err != nil {
 		return nil, err
 	}
 
@@ -277,8 +263,8 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	currSubmission.SubmitTime = util.Pointer(time.Now())
-	if err = f.submissionRepository.Save(currSubmission); err != nil {
+	currForm.Submission.SubmitTime = util.Pointer(time.Now())
+	if err = f.formGeneratedRepository.Save(currForm); err != nil {
 		return nil, err
 	}
 
@@ -524,10 +510,9 @@ func (f *FormGeneratedService) ReturnForm(generatedId string) (*get.MyGeneratedD
 
 func (f *FormGeneratedService) checkTime(
 	formGenerated *generated.FormGenerated,
-	startTime time.Time,
 	duration time.Duration,
 ) error {
-	endTime := startTime.Add(duration)
+	endTime := formGenerated.Submission.StartTime.Add(duration)
 	if endTime.Before(time.Now()) {
 		formGenerated.Status = generated.COMPLETED
 		if err := f.formGeneratedRepository.Save(formGenerated); err != nil {
