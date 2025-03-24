@@ -102,6 +102,7 @@ func (f *FormGeneratedRepository) FindAttemptsByUserAndPublished(
 	if err := database.DB.
 		Preload(clause.Associations, preload).
 		Model(&generated.FormGenerated{}).
+		Joins("inner join submission on submission_id = submission.id").
 		Where("user_id = ?", userId).
 		Where("form_published_id = ?", publishedId).
 		Find(&attempts).

@@ -20,6 +20,8 @@ import (
 )
 
 type FormGeneratedService struct {
+	submissionRepository             *repository.SubmissionRepository
+	submissionFactory                *factory.SubmissionFactory
 	solutionRepository               *repository.SolutionRepository
 	solutionFactory                  *factory.SolutionFactory
 	formPublishedRepository          *repository.FormPublishedRepository
@@ -32,6 +34,8 @@ type FormGeneratedService struct {
 
 func NewFormGeneratedService() *FormGeneratedService {
 	return &FormGeneratedService{
+		submissionRepository:             repository.NewSubmissionRepository(),
+		submissionFactory:                factory.NewSubmissionFactory(),
 		solutionRepository:               repository.NewSolutionRepository(),
 		solutionFactory:                  factory.NewSolutionFactory(),
 		formPublishedRepository:          repository.NewFormPublishedRepository(),
@@ -42,6 +46,22 @@ func NewFormGeneratedService() *FormGeneratedService {
 		formGeneratedProcessor:           processor.NewFormGeneratedProcessor(),
 	}
 }
+
+//func (f *FormGeneratedService) GetFormNames(publishedId string) ([]string, error) {
+//	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	for _, formGenerated := range formPublished.FormsGenerated {
+//		//names
+//	}
+//}
 
 func (f *FormGeneratedService) GetMyForm(
 	publishedId,
@@ -69,15 +89,27 @@ func (f *FormGeneratedService) GetMyForm(
 
 	attempt := new(generated.FormGenerated)
 	if solution.Id == uuid.Nil {
-		attempt, err = f.buildAndCreate(formPublished, parsedUserId)
+		solution = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId)
+		submission, err := f.submissionFactory.Build(parsedUserId, formPublished)
 		if err != nil {
 			return nil, err
 		}
 
-		solution = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId, attempt.Submission)
+		solution.Submissions = append(solution.Submissions, *submission)
 		if err = f.solutionRepository.Create(solution); err != nil {
 			return nil, err
 		}
+
+		questions := submission.FormGenerated.ExtractQuestions()
+		questionIds := f.getAllQuestionIds(*submission.UserId, questions, formPublished.Id)
+		formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
+		formPublished.FormsGenerated = append(formPublished.FormsGenerated, submission.FormGenerated)
+
+		if err = f.formPublishedRepository.Save(formPublished); err != nil {
+			return nil, err
+		}
+
+		attempt = submission.FormGenerated
 	} else {
 		attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(parsedUserId, parsedPublishedId)
 		if err != nil {
@@ -87,15 +119,22 @@ func (f *FormGeneratedService) GetMyForm(
 		attempt, _ = f.findActiveGeneratedForm(attempts)
 
 		if attempt == nil && len(attempts) < formPublished.MaxAttempts {
-			attempt, err = f.buildAndCreate(formPublished, parsedUserId)
+			submission, err := f.submissionFactory.Build(parsedUserId, formPublished)
 			if err != nil {
 				return nil, err
 			}
 
-			solution.Submissions = append(solution.Submissions, *attempt.Submission)
+			questions := submission.FormGenerated.ExtractQuestions()
+			questionIds := f.getAllQuestionIds(*submission.UserId, questions, formPublished.Id)
+			formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
+			formPublished.FormsGenerated = append(formPublished.FormsGenerated, submission.FormGenerated)
+
+			if err = f.formPublishedRepository.Save(formPublished); err != nil {
+				return nil, err
+			}
+
+			solution.Submissions = append(solution.Submissions, *submission)
 			solution.NumberAttempts = len(attempts)
-		} else {
-			solution.NumberAttempts = formPublished.MaxAttempts
 		}
 
 		if err = f.solutionRepository.Save(solution); err != nil {
@@ -106,26 +145,14 @@ func (f *FormGeneratedService) GetMyForm(
 	return f.formGeneratedMapper.ToDto(attempt)
 }
 
-func (f *FormGeneratedService) buildAndCreate(
-	formPublished *published.FormPublished,
-	userId uuid.UUID,
-) (*generated.FormGenerated, error) {
-	formGenerated, err := f.formGeneratedFactory.BuildForm(formPublished, userId)
-	if err != nil {
-		return nil, err
-	}
-
-	questions := formGenerated.ExtractQuestions()
-	questionIds := f.getAllQuestionIds(userId, questions, formPublished.Id)
-	formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
-	formPublished.FormsGenerated = append(formPublished.FormsGenerated, formGenerated)
-
-	if err = f.formPublishedRepository.Save(formPublished); err != nil {
-		return nil, err
-	}
-
-	return formGenerated, nil
-}
+//func (f *FormGeneratedService) buildAndCreateSubmission(
+//	formPublished *published.FormPublished,
+//	userId uuid.UUID,
+//) (*generated.Submission, error) {
+//
+//
+//	return submission, nil
+//}
 
 func (f *FormGeneratedService) getAllQuestionIds(
 	userId uuid.UUID,
@@ -162,17 +189,17 @@ func (f *FormGeneratedService) SaveAnswers(
 		return nil, err
 	}
 
-	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(*formGenerated.Submission.UserId, formGenerated.FormPublishedId)
+	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
 	if err != nil {
 		return nil, err
 	}
 
-	currForm, err := f.findActiveGeneratedForm(attempts)
+	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(*submission.UserId, formGenerated.FormPublishedId)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = f.checkTime(currForm, formPublished.Duration); err != nil {
+	if err = f.checkTime(submission, formPublished.Duration); err != nil {
 		return nil, err
 	}
 
@@ -219,17 +246,17 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(*formGenerated.Submission.UserId, formGenerated.FormPublishedId)
+	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
 	if err != nil {
 		return nil, err
 	}
 
-	currForm, err := f.findActiveGeneratedForm(attempts)
+	attempts, err := f.formGeneratedRepository.FindAttemptsByUserAndPublished(*submission.UserId, formGenerated.FormPublishedId)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = f.checkTime(currForm, formPublished.Duration); err != nil {
+	if err = f.checkTime(submission, formPublished.Duration); err != nil {
 		return nil, err
 	}
 
@@ -263,12 +290,12 @@ func (f *FormGeneratedService) SubmitForm(
 		return nil, err
 	}
 
-	currForm.Submission.SubmitTime = util.Pointer(time.Now())
-	if err = f.formGeneratedRepository.Save(currForm); err != nil {
+	submission.SubmitTime = util.Pointer(time.Now())
+	if err = f.submissionRepository.Save(submission); err != nil {
 		return nil, err
 	}
 
-	solution, err := f.solutionRepository.FindByTaskIdAndUserId(formGenerated.FormPublishedId, *formGenerated.Submission.UserId)
+	solution, err := f.solutionRepository.FindByTaskIdAndUserId(formGenerated.FormPublishedId, *submission.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -424,7 +451,12 @@ func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) (
 
 	userIdsWithGeneratedForm := make([]uuid.UUID, 0)
 	for _, formGenerated := range formPublished.FormsGenerated {
-		userIdsWithGeneratedForm = append(userIdsWithGeneratedForm, *formGenerated.Submission.UserId)
+		submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
+		if err != nil {
+			return nil, err
+		}
+
+		userIdsWithGeneratedForm = append(userIdsWithGeneratedForm, *submission.UserId)
 	}
 
 	return util.Difference(userIdsWithAccess, userIdsWithGeneratedForm), nil
@@ -441,12 +473,17 @@ func (f *FormGeneratedService) GetSubmittedForm(generatedId string) (*verify.For
 		return nil, err
 	}
 
+	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
+	if err != nil {
+		return nil, err
+	}
+
 	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
 	if err != nil {
 		return nil, err
 	}
 
-	verifiedForm, err := f.formGeneratedVerificationFactory.Build(formGenerated, formPublished.FormPattern)
+	verifiedForm, err := f.formGeneratedVerificationFactory.Build(formGenerated, formPublished.FormPattern, submission.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -509,13 +546,13 @@ func (f *FormGeneratedService) ReturnForm(generatedId string) (*get.MyGeneratedD
 }
 
 func (f *FormGeneratedService) checkTime(
-	formGenerated *generated.FormGenerated,
+	submission *generated.Submission,
 	duration time.Duration,
 ) error {
-	endTime := formGenerated.Submission.StartTime.Add(duration)
+	endTime := submission.StartTime.Add(duration)
 	if endTime.Before(time.Now()) {
-		formGenerated.Status = generated.COMPLETED
-		if err := f.formGeneratedRepository.Save(formGenerated); err != nil {
+		submission.FormGenerated.Status = generated.COMPLETED
+		if err := f.submissionRepository.Save(submission); err != nil {
 			return err
 		}
 		return errs.New("Generated form duration is expired", 400)

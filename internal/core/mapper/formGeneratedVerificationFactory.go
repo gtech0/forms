@@ -23,6 +23,7 @@ func NewFormGeneratedVerificationFactory() *FormGeneratedVerificationFactory {
 func (f *FormGeneratedVerificationFactory) Build(
 	formGenerated *generated.FormGenerated,
 	formPattern pattern.FormPattern,
+	userId *uuid.UUID,
 ) (*verify.FormGenerated, error) {
 	questionsWithCorrectAnswers, err := f.ExtractQuestionDtoMap(formPattern)
 	if err != nil {
@@ -37,7 +38,7 @@ func (f *FormGeneratedVerificationFactory) Build(
 	return &verify.FormGenerated{
 		Id:       formGenerated.Id,
 		Status:   formGenerated.Status,
-		UserId:   formGenerated.Submission.UserId,
+		UserId:   userId,
 		Sections: verifiedSections,
 	}, nil
 }
