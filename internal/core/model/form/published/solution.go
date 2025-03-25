@@ -9,9 +9,8 @@ import (
 type Solution struct {
 	model.Base
 
-	IsIndividual   *bool `json:"isIndividual"`
-	NumberAttempts int   `json:"numberAttempts" gorm:"default:0"`
-	Score          int   `json:"score"`
+	IsIndividual *bool `json:"isIndividual"`
+	Score        int   `json:"score"`
 
 	UserOwnerId *uuid.UUID `json:"userOwnerId,omitempty"`
 	TeamOwnerId *uuid.UUID `json:"teamOwnerId,omitempty"`

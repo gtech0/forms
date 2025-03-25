@@ -55,3 +55,21 @@ func (s *SubmissionRepository) FindByFormGeneratedId(generatedId uuid.UUID) (*ge
 	}
 	return submission, nil
 }
+
+func (s *SubmissionRepository) FindAttemptsByUserAndPublished(
+	userId,
+	publishedId uuid.UUID,
+) ([]*generated.Submission, error) {
+	attempts := make([]*generated.Submission, 0)
+	if err := database.DB.
+		Preload(clause.Associations, preload).
+		Model(&generated.Submission{}).
+		Joins("inner join form_generated on submission_id = submission.id").
+		Where("user_id = ?", userId).
+		Where("form_published_id = ?", publishedId).
+		Find(&attempts).
+		Error; err != nil {
+		return nil, errs.New(err.Error(), 500)
+	}
+	return attempts, nil
+}
