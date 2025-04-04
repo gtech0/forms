@@ -18,11 +18,11 @@ func NewSubmissionFactory() *SubmissionFactory {
 }
 
 func (s *SubmissionFactory) Build(
-	userId uuid.UUID,
+	userId *uuid.UUID,
 	formPublished *published.FormPublished,
 ) (*generated.Submission, error) {
 	submission := new(generated.Submission)
-	submission.UserId = &userId
+	submission.UserId = userId
 	submission.StartTime = time.Now()
 	formGenerated, err := s.formGeneratedFactory.BuildForm(formPublished)
 	if err != nil {

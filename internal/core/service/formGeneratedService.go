@@ -93,40 +93,25 @@ func (f *FormGeneratedService) GetMyForm(
 
 	submission := new(generated.Submission)
 	if solution.Id == uuid.Nil {
-		solution = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId)
-		submission, err = f.submissionFactory.Build(parsedUserId, formPublished)
-		if err != nil {
-			return nil, err
-		}
-
-		solution.Submissions = append(solution.Submissions, *submission)
+		solution, err = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId)
 		if err = f.solutionRepository.Create(solution); err != nil {
 			return nil, err
 		}
 
-		if err = f.savePublished(formPublished, submission); err != nil {
+		if err = f.savePublished(formPublished, &solution.Submissions[0]); err != nil {
 			return nil, err
 		}
 	} else {
-		submissions, err := f.submissionRepository.FindAttemptsByUserAndPublished(parsedUserId, parsedPublishedId)
+		submission, err = f.findActiveGeneratedForm(solution.Submissions, formPublished, &parsedUserId)
 		if err != nil {
 			return nil, err
 		}
 
-		submission = f.findActiveGeneratedForm(submissions)
-		if submission == nil {
-			submission, err = f.submissionFactory.Build(parsedUserId, formPublished)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		if len(submissions) < formPublished.MaxAttempts {
+		if len(solution.Submissions) < formPublished.MaxAttempts {
+			solution.Submissions = append(solution.Submissions, *submission)
 			if err = f.savePublished(formPublished, submission); err != nil {
 				return nil, err
 			}
-
-			solution.Submissions = append(solution.Submissions, *submission)
 		} else {
 			return nil, errors.New("max attempts reached")
 		}
@@ -331,6 +316,34 @@ func (f *FormGeneratedService) UnSubmitForm(generatedId string) (*get.MyGenerate
 	return f.formGeneratedMapper.ToMyDto(formGenerated)
 }
 
+func (f *FormGeneratedService) paginationConfig(
+	minSize, maxSize int,
+	query url.Values,
+) (int, int, error) {
+	page, err := strconv.Atoi(query.Get("page"))
+	if err != nil {
+		return 0, 0, err
+	}
+
+	if page <= 0 {
+		page = 1
+	}
+
+	size, err := strconv.Atoi(query.Get("size"))
+	if err != nil {
+		return 0, 0, err
+	}
+
+	switch {
+	case size > maxSize:
+		size = maxSize
+	case size <= 0:
+		size = minSize
+	}
+
+	return page, size, nil
+}
+
 func (f *FormGeneratedService) GetMyForms(
 	userId,
 	subjectId string,
@@ -346,17 +359,9 @@ func (f *FormGeneratedService) GetMyForms(
 		return nil, err
 	}
 
-	page, _ := strconv.Atoi(query.Get("page"))
-	if page <= 0 {
-		page = 1
-	}
-
-	size, _ := strconv.Atoi(query.Get("size"))
-	switch {
-	case size > 50:
-		size = 50
-	case size <= 0:
-		size = 5
+	page, size, err := f.paginationConfig(5, 50, query)
+	if err != nil {
+		return nil, err
 	}
 
 	formsGenerated, err := f.formGeneratedRepository.FindBySubjectIdAndPaginate(parsedUserId, parsedSubjectId, page, size)
@@ -425,8 +430,8 @@ func (f *FormGeneratedService) GetSubmittedForms(
 
 	mySubmittedDtos := make([]get.SubmittedDto, 0)
 	for _, formGenerated := range formsGenerated {
-		myGeneratedDto := f.formGeneratedMapper.ToSubmittedDto(formGenerated)
-		mySubmittedDtos = append(mySubmittedDtos, *myGeneratedDto)
+		mySubmittedDto := f.formGeneratedMapper.ToSubmittedDto(formGenerated)
+		mySubmittedDtos = append(mySubmittedDtos, *mySubmittedDto)
 	}
 
 	return &get.PaginationResponse[get.SubmittedDto]{
@@ -600,11 +605,21 @@ func (f *FormGeneratedService) checkStatusForVerification(old, new generated.For
 	return nil
 }
 
-func (f *FormGeneratedService) findActiveGeneratedForm(forms []*generated.Submission) *generated.Submission {
+func (f *FormGeneratedService) findActiveGeneratedForm(
+	forms []generated.Submission,
+	formPublished *published.FormPublished,
+	userId *uuid.UUID,
+) (*generated.Submission, error) {
 	for _, submission := range forms {
 		if submission.FormGenerated.Status != generated.COMPLETED {
-			return submission
+			return &submission, nil
 		}
 	}
-	return nil
+
+	submission, err := f.submissionFactory.Build(userId, formPublished)
+	if err != nil {
+		return nil, err
+	}
+
+	return submission, nil
 }

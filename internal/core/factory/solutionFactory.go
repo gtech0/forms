@@ -6,16 +6,20 @@ import (
 	"hedgehog-forms/internal/core/util"
 )
 
-type SolutionFactory struct{}
+type SolutionFactory struct {
+	submissionFactory *SubmissionFactory
+}
 
 func NewSolutionFactory() *SolutionFactory {
-	return &SolutionFactory{}
+	return &SolutionFactory{
+		submissionFactory: NewSubmissionFactory(),
+	}
 }
 
 func (s *SolutionFactory) BuildFromPublished(
 	formPublished *published.FormPublished,
 	userId *uuid.UUID,
-) *published.Solution {
+) (*published.Solution, error) {
 	solution := new(published.Solution)
 	solution.IsIndividual = util.Pointer(false)
 	if formPublished.Teams == nil || len(formPublished.Teams) == 0 {
@@ -24,5 +28,12 @@ func (s *SolutionFactory) BuildFromPublished(
 
 	solution.UserOwnerId = userId
 	solution.ClassTaskId = formPublished.Id
-	return solution
+
+	submission, err := s.submissionFactory.Build(userId, formPublished)
+	if err != nil {
+		return nil, err
+	}
+
+	solution.Submissions = append(solution.Submissions, *submission)
+	return solution, nil
 }
