@@ -21,11 +21,7 @@ func (s *SolutionFactory) BuildFromPublished(
 	userId *uuid.UUID,
 ) (*published.Solution, error) {
 	solution := new(published.Solution)
-	solution.IsIndividual = util.Pointer(false)
-	if formPublished.Teams == nil || len(formPublished.Teams) == 0 {
-		solution.IsIndividual = util.Pointer(true)
-	}
-
+	solution.IsIndividual = util.Pointer(true)
 	solution.UserOwnerId = userId
 	solution.ClassTaskId = formPublished.Id
 

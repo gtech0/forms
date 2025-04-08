@@ -17,14 +17,12 @@ type MyGeneratedDto struct {
 	Id            uuid.UUID            `json:"id"`
 	Status        generated.FormStatus `json:"status"`
 	FormPublished FormPublishedBaseDto `json:"formPublished"`
-	//SubmitTime    time.Time            `json:"submitTime"`
-	Points int `json:"points"`
-	Mark   int `json:"mark"`
+	Points        int                  `json:"points"`
+	Mark          int                  `json:"mark"`
 }
 
 type SubmittedDto struct {
 	Status generated.FormStatus `json:"status"`
 	Points int                  `json:"points"`
 	Mark   int                  `json:"mark"`
-	//SubmitTime time.Time            `json:"submitTime"`
 }

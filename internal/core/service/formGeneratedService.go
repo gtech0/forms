@@ -48,25 +48,6 @@ func NewFormGeneratedService() *FormGeneratedService {
 	}
 }
 
-//func (f *FormGeneratedService) GetFormNames(publishedId string) ([]string, error) {
-//	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	names := make([]string, 0)
-//	for _, formGenerated := range formPublished.FormsGenerated {
-//		names = append(names, formGenerated.Name)
-//	}
-//
-//	return names, nil
-//}
-
 func (f *FormGeneratedService) GetMyForm(
 	publishedId,
 	userId string,
@@ -439,35 +420,6 @@ func (f *FormGeneratedService) GetSubmittedForms(
 		Size:     size,
 		Elements: mySubmittedDtos,
 	}, nil
-}
-
-func (f *FormGeneratedService) GetUsersWithUnsubmittedForm(publishedId string) ([]uuid.UUID, error) {
-	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	userIdsWithAccess := make([]uuid.UUID, 0)
-	for _, userEntity := range formPublished.Users {
-		userIdsWithAccess = append(userIdsWithAccess, userEntity.UserId)
-	}
-
-	userIdsWithGeneratedForm := make([]uuid.UUID, 0)
-	for _, formGenerated := range formPublished.FormsGenerated {
-		submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
-		if err != nil {
-			return nil, err
-		}
-
-		userIdsWithGeneratedForm = append(userIdsWithGeneratedForm, *submission.UserId)
-	}
-
-	return util.Difference(userIdsWithAccess, userIdsWithGeneratedForm), nil
 }
 
 func (f *FormGeneratedService) GetSubmittedForm(generatedId string) (*verify.FormGenerated, error) {

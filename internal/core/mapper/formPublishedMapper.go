@@ -1,7 +1,6 @@
 package mapper
 
 import (
-	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/model/form/published"
 )
@@ -24,17 +23,6 @@ func (f *FormPublishedMapper) ToBaseDto(publishedForm *published.FormPublished) 
 	publishedBaseDto.Deadline = publishedForm.Deadline
 	publishedBaseDto.Duration = publishedForm.Duration
 	publishedBaseDto.MaxAttempts = publishedForm.MaxAttempts
-	groups := make([]uuid.UUID, 0)
-	for _, publishedGroup := range publishedForm.Teams {
-		groups = append(groups, publishedGroup.TeamId)
-	}
-	publishedBaseDto.TeamIds = groups
-
-	users := make([]uuid.UUID, 0)
-	for _, publishedUser := range publishedForm.Users {
-		users = append(users, publishedUser.UserId)
-	}
-	publishedBaseDto.UserIds = users
 
 	markConfig := make(map[int]int)
 	for _, markConfiguration := range publishedForm.MarkConfiguration {
@@ -55,16 +43,12 @@ func (f *FormPublishedMapper) ToDto(publishedForm *published.FormPublished) (*ge
 	publishedDto.HideScore = publishedForm.HideScore
 	publishedDto.Deadline = publishedForm.Deadline
 	publishedDto.Duration = publishedForm.Duration
-	groups := make([]uuid.UUID, 0)
-	for _, publishedTeam := range publishedForm.Teams {
-		groups = append(groups, publishedTeam.TeamId)
-	}
-	publishedDto.TeamIds = groups
+	publishedDto.MaxAttempts = publishedForm.MaxAttempts
 
-	users := make([]uuid.UUID, 0)
-	for _, publishedUser := range publishedForm.Users {
-		users = append(users, publishedUser.UserId)
+	markConfig := make(map[int]int)
+	for _, markConfiguration := range publishedForm.MarkConfiguration {
+		markConfig[markConfiguration.Mark] = markConfiguration.MinPoints
 	}
-	publishedDto.UserIds = users
+	publishedDto.MarkConfiguration = markConfig
 	return publishedDto, nil
 }

@@ -16,24 +16,10 @@ type FormPublished struct {
 	PostModeration    bool
 	MaxAttempts       int
 	MarkConfiguration []MarkConfiguration
-	Teams             []FormPublishedTeam
-	Users             []FormPublishedUser
 	FormPattern       pattern.FormPattern
 	FormPatternId     uuid.UUID `gorm:"type:uuid"`
 	FormsGenerated    []*generated.FormGenerated
 	ExcludedQuestions []ExcludedQuestion
-}
-
-type FormPublishedTeam struct {
-	model.Base
-	TeamId          uuid.UUID `gorm:"type:uuid"`
-	FormPublishedId uuid.UUID `gorm:"type:uuid"`
-}
-
-type FormPublishedUser struct {
-	model.Base
-	UserId          uuid.UUID `gorm:"type:uuid"`
-	FormPublishedId uuid.UUID `gorm:"type:uuid"`
 }
 
 type ExcludedQuestion struct {

@@ -135,17 +135,6 @@ func (f *FormGeneratedController) GetSubmittedForms(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *response)
 }
 
-func (f *FormGeneratedController) GetUsersWithUnsubmittedForms(ctx *gin.Context) {
-	publishedId := ctx.Param("publishedId")
-	ids, err := f.formGeneratedService.GetUsersWithUnsubmittedForm(publishedId)
-	if err != nil {
-		ctx.Error(err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, ids)
-}
-
 func (f *FormGeneratedController) GetSubmittedForm(ctx *gin.Context) {
 	generatedId := ctx.Param("generatedId")
 	submittedForm, err := f.formGeneratedService.GetSubmittedForm(generatedId)

@@ -16,9 +16,6 @@ func Sync() {
 	err := database.DB.AutoMigrate(
 		&published.FormPublished{},
 		&published.MarkConfiguration{},
-
-		&published.FormPublishedTeam{},
-		&published.FormPublishedUser{},
 		&published.ExcludedQuestion{},
 
 		&published.Solution{},
