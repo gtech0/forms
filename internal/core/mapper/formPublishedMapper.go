@@ -52,3 +52,12 @@ func (f *FormPublishedMapper) ToDto(publishedForm *published.FormPublished) (*ge
 	publishedDto.MarkConfiguration = markConfig
 	return publishedDto, nil
 }
+
+func (f *FormPublishedMapper) ToTaskDescription(publishedForm *published.FormPublished) (*get.TaskDescription, error) {
+	formPattern := publishedForm.FormPattern
+
+	taskDescription := new(get.TaskDescription)
+	taskDescription.Name = formPattern.Title
+	taskDescription.Description = formPattern.Description
+	return taskDescription, nil
+}

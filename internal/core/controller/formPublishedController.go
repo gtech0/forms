@@ -78,6 +78,18 @@ func (f *FormPublishedController) GetForms(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *forms)
 }
 
+func (f *FormPublishedController) GetTaskDescription(ctx *gin.Context) {
+	publishedId := ctx.Param("publishedId")
+
+	taskDescription, err := f.formPublishedService.GetTaskDescription(publishedId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *taskDescription)
+}
+
 // UpdateForm godoc
 // @Tags         FormPublished
 // @Summary      Update form

@@ -48,6 +48,75 @@ func NewFormGeneratedService() *FormGeneratedService {
 	}
 }
 
+func (f *FormGeneratedService) Create(
+	publishedId,
+	userId string,
+) (*get.FormGeneratedDto, error) {
+	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	parsedUserId, err := util.IdCheckAndParse(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedFactory.BuildForm(formPublished)
+	if err != nil {
+		return nil, err
+	}
+
+	//-should be optional?-
+	questionIds := f.getAllQuestionIds(parsedUserId, formGenerated.ExtractQuestions(), formPublished.Id)
+	formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
+	//---------------------
+	formPublished.FormsGenerated = append(formPublished.FormsGenerated, formGenerated)
+	if err = f.formPublishedRepository.Save(formPublished); err != nil {
+		return nil, err
+	}
+
+	return f.formGeneratedMapper.ToDto(formGenerated)
+}
+
+func (f *FormGeneratedService) savePublished(
+	formPublished *published.FormPublished,
+	submission *generated.Submission,
+) error {
+	formGenerated := submission.FormGenerated
+
+	questions := formGenerated.ExtractQuestions()
+	questionIds := f.getAllQuestionIds(*submission.UserId, questions, formPublished.Id)
+
+	formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
+	formPublished.FormsGenerated = append(formPublished.FormsGenerated, formGenerated)
+
+	if err := f.formPublishedRepository.Save(formPublished); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (f *FormGeneratedService) Get(generatedId string) (*get.FormGeneratedDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
+	if err != nil {
+		return nil, err
+	}
+
+	return f.formGeneratedMapper.ToDto(formGenerated)
+}
+
 func (f *FormGeneratedService) GetMyForm(
 	publishedId,
 	userId string,
@@ -103,25 +172,6 @@ func (f *FormGeneratedService) GetMyForm(
 	}
 
 	return f.formGeneratedMapper.ToDto(submission.FormGenerated)
-}
-
-func (f *FormGeneratedService) savePublished(
-	formPublished *published.FormPublished,
-	submission *generated.Submission,
-) error {
-	formGenerated := submission.FormGenerated
-
-	questions := formGenerated.ExtractQuestions()
-	questionIds := f.getAllQuestionIds(*submission.UserId, questions, formPublished.Id)
-
-	formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
-	formPublished.FormsGenerated = append(formPublished.FormsGenerated, formGenerated)
-
-	if err := f.formPublishedRepository.Save(formPublished); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (f *FormGeneratedService) getAllQuestionIds(

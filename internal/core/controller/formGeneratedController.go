@@ -5,18 +5,58 @@ import (
 	"hedgehog-forms/internal/core/dto/create"
 	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/errs"
+	"hedgehog-forms/internal/core/mapper"
 	"hedgehog-forms/internal/core/service"
 	"net/http"
 )
 
 type FormGeneratedController struct {
 	formGeneratedService *service.FormGeneratedService
+	formGeneratedMapper  *mapper.FormGeneratedMapper
 }
 
 func NewFormGeneratedController() *FormGeneratedController {
 	return &FormGeneratedController{
 		formGeneratedService: service.NewFormGeneratedService(),
+		formGeneratedMapper:  mapper.NewFormGeneratedMapper(),
 	}
+}
+
+// Create godoc
+// @Tags         FormGenerated
+// @Summary      Create user form
+// @Description  Create user form
+// @Produce      json
+// @Param   	 publishedId path string true "Published id"
+// @Success      200 {object} get.MyGeneratedDto
+// @Failure      400 {object} errs.CustomError
+// @Router       /form/generated/create/{publishedId} [post]
+func (f *FormGeneratedController) Create(ctx *gin.Context) {
+	publishedId := ctx.Param("publishedId")
+	var userIdDto create.FormGeneratedUser
+	if err := ctx.Bind(&userIdDto); err != nil {
+		ctx.Error(errs.New(err.Error(), 500))
+		return
+	}
+
+	formGeneratedDto, err := f.formGeneratedService.Create(publishedId, userIdDto.UserId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *formGeneratedDto)
+}
+
+func (f *FormGeneratedController) Get(ctx *gin.Context) {
+	generatedId := ctx.Param("generatedId")
+	formGeneratedDto, err := f.formGeneratedService.Get(generatedId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, *formGeneratedDto)
 }
 
 // GetMyForm godoc
@@ -28,22 +68,22 @@ func NewFormGeneratedController() *FormGeneratedController {
 // @Success      200 {object} get.FormGeneratedDto
 // @Failure      400 {object} errs.CustomError
 // @Router       /form/generated/get/{publishedId} [post]
-func (f *FormGeneratedController) GetMyForm(ctx *gin.Context) {
-	publishedId := ctx.Param("publishedId")
-	var userIdDto create.FormGeneratedUser
-	if err := ctx.Bind(&userIdDto); err != nil {
-		ctx.Error(errs.New(err.Error(), 500))
-		return
-	}
-
-	formGeneratedDto, err := f.formGeneratedService.GetMyForm(publishedId, userIdDto.UserId)
-	if err != nil {
-		ctx.Error(err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, *formGeneratedDto)
-}
+//func (f *FormGeneratedController) GetMyForm(ctx *gin.Context) {
+//	publishedId := ctx.Param("publishedId")
+//	var userIdDto create.FormGeneratedUser
+//	if err := ctx.Bind(&userIdDto); err != nil {
+//		ctx.Error(errs.New(err.Error(), 500))
+//		return
+//	}
+//
+//	formGeneratedDto, err := f.formGeneratedService.GetMyForm(publishedId, userIdDto.UserId)
+//	if err != nil {
+//		ctx.Error(err)
+//		return
+//	}
+//
+//	ctx.JSON(http.StatusOK, *formGeneratedDto)
+//}
 
 // SaveAnswers godoc
 // @Tags         FormGenerated

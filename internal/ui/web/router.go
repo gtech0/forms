@@ -50,6 +50,7 @@ func NewRouter() *gin.Engine {
 	{
 		formPublished.POST("/create", formPublishedController.PublishForm)
 		formPublished.GET("/get/:publishedId", formPublishedController.GetForm)
+		formPublished.GET("/get/description/:publishedId", formPublishedController.GetTaskDescription)
 		formPublished.GET("/get", formPublishedController.GetForms)
 		formPublished.PUT("/update/:publishedId", formPublishedController.UpdateForm)
 		formPublished.DELETE("/delete/:publishedId", formPublishedController.DeleteForm)
@@ -57,7 +58,9 @@ func NewRouter() *gin.Engine {
 
 	formGenerated := router.Group("/api/form/generated")
 	{
-		formGenerated.POST("/get/:publishedId", formGeneratedController.GetMyForm)
+		formGenerated.POST("/create/:publishedId", formGeneratedController.Create)
+		formGenerated.GET("/get/:generatedId", formGeneratedController.Get)
+		//formGenerated.POST("/get/:publishedId", formGeneratedController.GetMyForm)
 		formGenerated.POST("/save/:generatedId", formGeneratedController.SaveAnswers)
 		formGenerated.POST("/submit/:generatedId", formGeneratedController.SubmitForm)
 		formGenerated.POST("/unsubmit/:generatedId", formGeneratedController.UnSubmitForm)

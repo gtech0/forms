@@ -70,6 +70,25 @@ func (f *FormPublishedService) GetForm(publishedId string) (*get.FormPublishedDt
 	return publishedDto, nil
 }
 
+func (f *FormPublishedService) GetTaskDescription(publishedId string) (*get.TaskDescription, error) {
+	id, err := util.IdCheckAndParse(publishedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formPublished, err := f.formPublishedRepository.FindById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	taskDescription, err := f.formPublishedMapper.ToTaskDescription(formPublished)
+	if err != nil {
+		return nil, err
+	}
+
+	return taskDescription, nil
+}
+
 func (f *FormPublishedService) GetForms(query url.Values) (*get.PaginationResponse[get.FormPublishedBaseDto], error) {
 	name := query.Get("name")
 	page, _ := strconv.Atoi(query.Get("page"))

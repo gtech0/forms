@@ -25,3 +25,8 @@ type FormPublishedDto struct {
 	MaxAttempts       int                      `json:"maxAttempts"`
 	MarkConfiguration common.MarkConfiguration `json:"markConfiguration"`
 }
+
+type TaskDescription struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
