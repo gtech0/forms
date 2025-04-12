@@ -13,5 +13,5 @@ type Submission struct {
 	SubmitTime            *time.Time
 	PostmoderationVerdict string    `gorm:"default:PENDING"`
 	SolutionId            uuid.UUID `gorm:"type:uuid"`
-	FormGenerated         *FormGenerated
+	//FormGenerated         *FormGenerated
 }

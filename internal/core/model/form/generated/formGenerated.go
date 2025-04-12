@@ -13,7 +13,7 @@ type FormGenerated struct {
 	Points          int
 	Mark            int
 	FormPublishedId uuid.UUID `gorm:"type:uuid"`
-	SubmissionId    uuid.UUID `gorm:"type:uuid"`
+	//SubmissionId    uuid.UUID `gorm:"type:uuid"`
 }
 
 func (f *FormGenerated) ExtractQuestions() []IQuestion {

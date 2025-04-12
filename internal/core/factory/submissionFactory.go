@@ -24,11 +24,5 @@ func (s *SubmissionFactory) Build(
 	submission := new(generated.Submission)
 	submission.UserId = userId
 	submission.StartTime = time.Now()
-	formGenerated, err := s.formGeneratedFactory.BuildForm(formPublished)
-	if err != nil {
-		return nil, err
-	}
-
-	submission.FormGenerated = formGenerated
 	return submission, nil
 }

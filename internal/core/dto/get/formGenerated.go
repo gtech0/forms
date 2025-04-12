@@ -5,19 +5,17 @@ import (
 	"hedgehog-forms/internal/core/model/form/generated"
 )
 
-type IntegrationGeneratedDto struct {
-	Id       uuid.UUID            `json:"id"`
-	Status   generated.FormStatus `json:"status"`
-	UserId   *uuid.UUID           `json:"userId"`
-	Sections []generated.Section  `json:"sections"`
+type IntegrationGeneratedFormDto struct {
+	Id       uuid.UUID               `json:"id"`
+	Status   generated.FormStatus    `json:"status"`
+	Sections []IntegrationSectionDto `json:"sections"`
 }
 
 type FormGeneratedDto struct {
-	Id            uuid.UUID            `json:"id"`
-	Status        generated.FormStatus `json:"status"`
-	FormPublished FormPublishedBaseDto `json:"formPublished"`
-	UserId        *uuid.UUID           `json:"userId"`
-	Sections      []generated.Section  `json:"sections"`
+	Id     uuid.UUID            `json:"id"`
+	Status generated.FormStatus `json:"status"`
+	//FormPublished FormPublishedBaseDto `json:"formPublished"`
+	Sections []generated.Section `json:"sections"`
 }
 
 type MyGeneratedDto struct {

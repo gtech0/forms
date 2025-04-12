@@ -8,16 +8,18 @@ import (
 )
 
 type FormGeneratedMapper struct {
-	formPublishedMapper     *FormPublishedMapper
-	submissionRepository    *repository.SubmissionRepository
-	formPublishedRepository *repository.FormPublishedRepository
+	formPublishedMapper               *FormPublishedMapper
+	submissionRepository              *repository.SubmissionRepository
+	formPublishedRepository           *repository.FormPublishedRepository
+	sectionGeneratedIntegrationMapper *SectionGeneratedIntegrationMapper
 }
 
 func NewFormGeneratedMapper() *FormGeneratedMapper {
 	return &FormGeneratedMapper{
-		formPublishedMapper:     NewFormPublishedMapper(),
-		submissionRepository:    repository.NewSubmissionRepository(),
-		formPublishedRepository: repository.NewFormPublishedRepository(),
+		formPublishedMapper:               NewFormPublishedMapper(),
+		submissionRepository:              repository.NewSubmissionRepository(),
+		formPublishedRepository:           repository.NewFormPublishedRepository(),
+		sectionGeneratedIntegrationMapper: NewSectionGeneratedIntegrationMapper(),
 	}
 }
 
@@ -25,20 +27,39 @@ func (f *FormGeneratedMapper) ToDto(formGenerated *generated.FormGenerated) (*ge
 	formGeneratedDto := new(get.FormGeneratedDto)
 	formGeneratedDto.Id = formGenerated.Id
 	formGeneratedDto.Status = formGenerated.Status
-	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	formGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(formPublished)
-	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
-	if err != nil {
-		return nil, err
-	}
-
-	formGeneratedDto.UserId = submission.UserId
+	//formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//formGeneratedDto.FormPublished = *f.formPublishedMapper.ToBaseDto(formPublished)
 	formGeneratedDto.Sections = formGenerated.Sections
 	return formGeneratedDto, nil
+}
+
+func (f *FormGeneratedMapper) ToIntegrationDto(formGenerated *generated.FormGenerated) (*get.IntegrationGeneratedFormDto, error) {
+	formGeneratedDto := new(get.IntegrationGeneratedFormDto)
+	formGeneratedDto.Id = formGenerated.Id
+	formGeneratedDto.Status = formGenerated.Status
+	sections, err := f.sectionsToDto(formGenerated.Sections)
+	if err != nil {
+		return nil, err
+	}
+
+	formGeneratedDto.Sections = sections
+	return formGeneratedDto, nil
+}
+
+func (f *FormGeneratedMapper) sectionsToDto(sections []generated.Section) ([]get.IntegrationSectionDto, error) {
+	mappedSections := make([]get.IntegrationSectionDto, 0)
+	for _, currentSection := range sections {
+		mappedSection, err := f.sectionGeneratedIntegrationMapper.ToIntegrationDto(currentSection)
+		if err != nil {
+			return nil, err
+		}
+		mappedSections = append(mappedSections, *mappedSection)
+	}
+	return mappedSections, nil
 }
 
 func (f *FormGeneratedMapper) ToMyDto(formGenerated *generated.FormGenerated) (*get.MyGeneratedDto, error) {

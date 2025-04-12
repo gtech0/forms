@@ -3,7 +3,6 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"hedgehog-forms/internal/core/dto/create"
-	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/mapper"
 	"hedgehog-forms/internal/core/service"
@@ -94,22 +93,22 @@ func (f *FormGeneratedController) Get(ctx *gin.Context) {
 // @Success      200 {object} get.FormGeneratedDto
 // @Failure      400 {object} errs.CustomError
 // @Router       /form/generated/save/{generatedId} [post]
-func (f *FormGeneratedController) SaveAnswers(ctx *gin.Context) {
-	generatedId := ctx.Param("generatedId")
-	var answerDto get.AnswerDto
-	if err := ctx.Bind(&answerDto); err != nil {
-		ctx.Error(errs.New(err.Error(), 500))
-		return
-	}
-
-	formGeneratedDto, err := f.formGeneratedService.SaveAnswers(generatedId, answerDto)
-	if err != nil {
-		ctx.Error(err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, *formGeneratedDto)
-}
+//func (f *FormGeneratedController) SaveAnswers(ctx *gin.Context) {
+//	generatedId := ctx.Param("generatedId")
+//	var answerDto get.AnswerDto
+//	if err := ctx.Bind(&answerDto); err != nil {
+//		ctx.Error(errs.New(err.Error(), 500))
+//		return
+//	}
+//
+//	formGeneratedDto, err := f.formGeneratedService.SaveAnswers(generatedId, answerDto)
+//	if err != nil {
+//		ctx.Error(err)
+//		return
+//	}
+//
+//	ctx.JSON(http.StatusOK, *formGeneratedDto)
+//}
 
 // SubmitForm godoc
 // @Tags         FormGenerated
@@ -120,22 +119,22 @@ func (f *FormGeneratedController) SaveAnswers(ctx *gin.Context) {
 // @Success      200 {object} get.MyGeneratedDto
 // @Failure      400 {object} errs.CustomError
 // @Router       /form/generated/submit/{generatedId} [post]
-func (f *FormGeneratedController) SubmitForm(ctx *gin.Context) {
-	generatedId := ctx.Param("generatedId")
-	var answerDto get.AnswerDto
-	if err := ctx.Bind(&answerDto); err != nil {
-		ctx.Error(errs.New(err.Error(), 500))
-		return
-	}
-
-	myGeneratedDto, err := f.formGeneratedService.SubmitForm(generatedId, answerDto)
-	if err != nil {
-		ctx.Error(err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, *myGeneratedDto)
-}
+//func (f *FormGeneratedController) SubmitForm(ctx *gin.Context) {
+//	generatedId := ctx.Param("generatedId")
+//	var answerDto get.AnswerDto
+//	if err := ctx.Bind(&answerDto); err != nil {
+//		ctx.Error(errs.New(err.Error(), 500))
+//		return
+//	}
+//
+//	myGeneratedDto, err := f.formGeneratedService.SubmitForm(generatedId, answerDto)
+//	if err != nil {
+//		ctx.Error(err)
+//		return
+//	}
+//
+//	ctx.JSON(http.StatusOK, *myGeneratedDto)
+//}
 
 func (f *FormGeneratedController) UnSubmitForm(ctx *gin.Context) {
 	generatedId := ctx.Param("generatedId")
@@ -175,16 +174,16 @@ func (f *FormGeneratedController) GetSubmittedForms(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, *response)
 }
 
-func (f *FormGeneratedController) GetSubmittedForm(ctx *gin.Context) {
-	generatedId := ctx.Param("generatedId")
-	submittedForm, err := f.formGeneratedService.GetSubmittedForm(generatedId)
-	if err != nil {
-		ctx.Error(err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, *submittedForm)
-}
+//func (f *FormGeneratedController) GetSubmittedForm(ctx *gin.Context) {
+//	generatedId := ctx.Param("generatedId")
+//	submittedForm, err := f.formGeneratedService.GetSubmittedForm(generatedId)
+//	if err != nil {
+//		ctx.Error(err)
+//		return
+//	}
+//
+//	ctx.JSON(http.StatusOK, *submittedForm)
+//}
 
 // VerifyForm godoc
 // @Tags         FormGenerated

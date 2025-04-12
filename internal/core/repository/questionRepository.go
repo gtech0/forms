@@ -25,6 +25,7 @@ func (q *QuestionRepository) Create(questionEntity *question.Question) error {
 func (q *QuestionRepository) FindById(id uuid.UUID) (*question.Question, error) {
 	questionEntity := new(question.Question)
 	if err := database.DB.Model(&question.Question{}).
+		Preload(clause.Associations, preload).
 		Where("id = ?", id).
 		First(questionEntity).Error; err != nil {
 		return nil, errs.New(err.Error(), 500)

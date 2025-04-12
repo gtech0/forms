@@ -1,12 +1,10 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"hedgehog-forms/internal/core/dto/create"
 	"hedgehog-forms/internal/core/dto/get"
-	"hedgehog-forms/internal/core/dto/verify"
 	"hedgehog-forms/internal/core/errs"
 	"hedgehog-forms/internal/core/factory"
 	"hedgehog-forms/internal/core/mapper"
@@ -84,26 +82,26 @@ func (f *FormGeneratedService) Create(
 	return f.formGeneratedMapper.ToDto(formGenerated)
 }
 
-func (f *FormGeneratedService) savePublished(
-	formPublished *published.FormPublished,
-	submission *generated.Submission,
-) error {
-	formGenerated := submission.FormGenerated
+//func (f *FormGeneratedService) savePublished(
+//	formPublished *published.FormPublished,
+//	submission *generated.Submission,
+//) error {
+//	formGenerated := submission.FormGenerated
+//
+//	questions := formGenerated.ExtractQuestions()
+//	questionIds := f.getAllQuestionIds(*submission.UserId, questions, formPublished.Id)
+//
+//	formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
+//	formPublished.FormsGenerated = append(formPublished.FormsGenerated, formGenerated)
+//
+//	if err := f.formPublishedRepository.Save(formPublished); err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}
 
-	questions := formGenerated.ExtractQuestions()
-	questionIds := f.getAllQuestionIds(*submission.UserId, questions, formPublished.Id)
-
-	formPublished.ExcludedQuestions = append(formPublished.ExcludedQuestions, questionIds...)
-	formPublished.FormsGenerated = append(formPublished.FormsGenerated, formGenerated)
-
-	if err := f.formPublishedRepository.Save(formPublished); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (f *FormGeneratedService) Get(generatedId string) (*get.FormGeneratedDto, error) {
+func (f *FormGeneratedService) Get(generatedId string) (*get.IntegrationGeneratedFormDto, error) {
 	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
 	if err != nil {
 		return nil, err
@@ -114,65 +112,65 @@ func (f *FormGeneratedService) Get(generatedId string) (*get.FormGeneratedDto, e
 		return nil, err
 	}
 
-	return f.formGeneratedMapper.ToDto(formGenerated)
+	return f.formGeneratedMapper.ToIntegrationDto(formGenerated)
 }
 
-func (f *FormGeneratedService) GetMyForm(
-	publishedId,
-	userId string,
-) (*get.FormGeneratedDto, error) {
-	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	parsedUserId, err := util.IdCheckAndParse(userId)
-	if err != nil {
-		return nil, err
-	}
-
-	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	solution, err := f.solutionRepository.FindByTaskIdAndUserId(parsedPublishedId, parsedUserId)
-	if err != nil {
-		return nil, err
-	}
-
-	submission := new(generated.Submission)
-	if solution.Id == uuid.Nil {
-		solution, err = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId)
-		if err = f.solutionRepository.Create(solution); err != nil {
-			return nil, err
-		}
-
-		if err = f.savePublished(formPublished, &solution.Submissions[0]); err != nil {
-			return nil, err
-		}
-	} else {
-		submission, err = f.findActiveGeneratedForm(solution.Submissions, formPublished, &parsedUserId)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(solution.Submissions) < formPublished.MaxAttempts {
-			solution.Submissions = append(solution.Submissions, *submission)
-			if err = f.savePublished(formPublished, submission); err != nil {
-				return nil, err
-			}
-		} else {
-			return nil, errors.New("max attempts reached")
-		}
-
-		if err = f.solutionRepository.Save(solution); err != nil {
-			return nil, err
-		}
-	}
-
-	return f.formGeneratedMapper.ToDto(submission.FormGenerated)
-}
+//func (f *FormGeneratedService) GetMyForm(
+//	publishedId,
+//	userId string,
+//) (*get.FormGeneratedDto, error) {
+//	parsedPublishedId, err := util.IdCheckAndParse(publishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	parsedUserId, err := util.IdCheckAndParse(userId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	formPublished, err := f.formPublishedRepository.FindById(parsedPublishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	solution, err := f.solutionRepository.FindByTaskIdAndUserId(parsedPublishedId, parsedUserId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	submission := new(generated.Submission)
+//	if solution.Id == uuid.Nil {
+//		solution, err = f.solutionFactory.BuildFromPublished(formPublished, &parsedUserId)
+//		if err = f.solutionRepository.Create(solution); err != nil {
+//			return nil, err
+//		}
+//
+//		if err = f.savePublished(formPublished, &solution.Submissions[0]); err != nil {
+//			return nil, err
+//		}
+//	} else {
+//		submission, err = f.findActiveGeneratedForm(solution.Submissions, formPublished, &parsedUserId)
+//		if err != nil {
+//			return nil, err
+//		}
+//
+//		if len(solution.Submissions) < formPublished.MaxAttempts {
+//			solution.Submissions = append(solution.Submissions, *submission)
+//			if err = f.savePublished(formPublished, submission); err != nil {
+//				return nil, err
+//			}
+//		} else {
+//			return nil, errors.New("max attempts reached")
+//		}
+//
+//		if err = f.solutionRepository.Save(solution); err != nil {
+//			return nil, err
+//		}
+//	}
+//
+//	return f.formGeneratedMapper.ToDto(submission.FormGenerated)
+//}
 
 func (f *FormGeneratedService) getAllQuestionIds(
 	userId uuid.UUID,
@@ -190,143 +188,143 @@ func (f *FormGeneratedService) getAllQuestionIds(
 	return questionIds
 }
 
-func (f *FormGeneratedService) SaveAnswers(
-	generatedId string,
-	answers get.AnswerDto,
-) (*get.FormGeneratedDto, error) {
-	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
-	if err != nil {
-		return nil, err
-	}
-
-	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
-	if err != nil {
-		return nil, err
-	}
-
-	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
-	if err != nil {
-		return nil, err
-	}
-
-	submissions, err := f.submissionRepository.FindAttemptsByUserAndPublished(*submission.UserId, formGenerated.FormPublishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = f.checkTime(submission, formPublished.Duration); err != nil {
-		return nil, err
-	}
-
-	if err = f.checkDeadline(formPublished); err != nil {
-		return nil, err
-	}
-
-	if err = f.checkStatus(formGenerated); err != nil {
-		return nil, err
-	}
-
-	if err = f.checkAttempts(len(submissions), formPublished.MaxAttempts); err != nil {
-		return nil, err
-	}
-
-	if err = f.formGeneratedProcessor.SaveAnswers(formGenerated, answers); err != nil {
-		return nil, err
-	}
-
-	formGenerated.Status = generated.IN_PROGRESS
-	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
-		return nil, err
-	}
-
-	return f.formGeneratedMapper.ToDto(formGenerated)
-}
-
-func (f *FormGeneratedService) SubmitForm(
-	generatedId string,
-	answers get.AnswerDto,
-) (*get.MyGeneratedDto, error) {
-	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
-	if err != nil {
-		return nil, err
-	}
-
-	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
-	if err != nil {
-		return nil, err
-	}
-
-	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
-	if err != nil {
-		return nil, err
-	}
-
-	submissions, err := f.submissionRepository.FindAttemptsByUserAndPublished(*submission.UserId, formGenerated.FormPublishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = f.checkTime(submission, formPublished.Duration); err != nil {
-		return nil, err
-	}
-
-	if err = f.checkDeadline(formPublished); err != nil {
-		return nil, err
-	}
-
-	if err = f.checkStatus(formGenerated); err != nil {
-		return nil, err
-	}
-
-	if err = f.checkAttempts(len(submissions), formPublished.MaxAttempts); err != nil {
-		return nil, err
-	}
-
-	if err = f.formGeneratedProcessor.CalculatePoints(formGenerated, formPublished.FormPattern, answers); err != nil {
-		return nil, err
-	}
-
-	if err = f.formGeneratedProcessor.CalculateMark(formGenerated, formPublished.GetMarkConfigMap()); err != nil {
-		return nil, err
-	}
-
-	status := generated.COMPLETED
-	if formPublished.PostModeration {
-		status = generated.SUBMITTED
-	}
-
-	formGenerated.Status = status
-	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
-		return nil, err
-	}
-
-	submission.SubmitTime = util.Pointer(time.Now())
-	if err = f.submissionRepository.Save(submission); err != nil {
-		return nil, err
-	}
-
-	solution, err := f.solutionRepository.FindByTaskIdAndUserId(formGenerated.FormPublishedId, *submission.UserId)
-	if err != nil {
-		return nil, err
-	}
-
-	solution.Score = formGenerated.Points
-	if err = f.solutionRepository.Save(solution); err != nil {
-		return nil, err
-	}
-
-	return f.formGeneratedMapper.ToMyDto(formGenerated)
-}
+//func (f *FormGeneratedService) SaveAnswers(
+//	generatedId string,
+//	answers get.AnswerDto,
+//) (*get.FormGeneratedDto, error) {
+//	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	submissions, err := f.submissionRepository.FindAttemptsByUserAndPublished(*submission.UserId, formGenerated.FormPublishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.checkTime(submission, formPublished.Duration); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.checkDeadline(formPublished); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.checkStatus(formGenerated); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.checkAttempts(len(submissions), formPublished.MaxAttempts); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.formGeneratedProcessor.SaveAnswers(formGenerated, answers); err != nil {
+//		return nil, err
+//	}
+//
+//	formGenerated.Status = generated.IN_PROGRESS
+//	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+//		return nil, err
+//	}
+//
+//	return f.formGeneratedMapper.ToDto(formGenerated)
+//}
+//
+//func (f *FormGeneratedService) SubmitForm(
+//	generatedId string,
+//	answers get.AnswerDto,
+//) (*get.MyGeneratedDto, error) {
+//	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	submissions, err := f.submissionRepository.FindAttemptsByUserAndPublished(*submission.UserId, formGenerated.FormPublishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.checkTime(submission, formPublished.Duration); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.checkDeadline(formPublished); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.checkStatus(formGenerated); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.checkAttempts(len(submissions), formPublished.MaxAttempts); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.formGeneratedProcessor.CalculatePoints(formGenerated, formPublished.FormPattern, answers); err != nil {
+//		return nil, err
+//	}
+//
+//	if err = f.formGeneratedProcessor.CalculateMark(formGenerated, formPublished.GetMarkConfigMap()); err != nil {
+//		return nil, err
+//	}
+//
+//	status := generated.COMPLETED
+//	if formPublished.PostModeration {
+//		status = generated.SUBMITTED
+//	}
+//
+//	formGenerated.Status = status
+//	if err = f.formGeneratedRepository.Save(formGenerated); err != nil {
+//		return nil, err
+//	}
+//
+//	submission.SubmitTime = util.Pointer(time.Now())
+//	if err = f.submissionRepository.Save(submission); err != nil {
+//		return nil, err
+//	}
+//
+//	solution, err := f.solutionRepository.FindByTaskIdAndUserId(formGenerated.FormPublishedId, *submission.UserId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	solution.Score = formGenerated.Points
+//	if err = f.solutionRepository.Save(solution); err != nil {
+//		return nil, err
+//	}
+//
+//	return f.formGeneratedMapper.ToMyDto(formGenerated)
+//}
 
 func (f *FormGeneratedService) UnSubmitForm(generatedId string) (*get.MyGeneratedDto, error) {
 	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
@@ -472,34 +470,34 @@ func (f *FormGeneratedService) GetSubmittedForms(
 	}, nil
 }
 
-func (f *FormGeneratedService) GetSubmittedForm(generatedId string) (*verify.FormGenerated, error) {
-	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
-	if err != nil {
-		return nil, err
-	}
-
-	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
-	if err != nil {
-		return nil, err
-	}
-
-	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
-	if err != nil {
-		return nil, err
-	}
-
-	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
-	if err != nil {
-		return nil, err
-	}
-
-	verifiedForm, err := f.formGeneratedVerificationFactory.Build(formGenerated, formPublished.FormPattern, submission.UserId)
-	if err != nil {
-		return nil, err
-	}
-
-	return verifiedForm, nil
-}
+//func (f *FormGeneratedService) GetSubmittedForm(generatedId string) (*verify.FormGenerated, error) {
+//	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	submission, err := f.submissionRepository.FindById(formGenerated.SubmissionId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	formPublished, err := f.formPublishedRepository.FindById(formGenerated.FormPublishedId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	verifiedForm, err := f.formGeneratedVerificationFactory.Build(formGenerated, formPublished.FormPattern, submission.UserId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return verifiedForm, nil
+//}
 
 func (f *FormGeneratedService) VerifyForm(generatedId string, checkDto create.CheckDto) (*get.FormGeneratedDto, error) {
 	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
@@ -555,21 +553,21 @@ func (f *FormGeneratedService) ReturnForm(generatedId string) (*get.MyGeneratedD
 	return f.formGeneratedMapper.ToMyDto(formGenerated)
 }
 
-func (f *FormGeneratedService) checkTime(
-	submission *generated.Submission,
-	duration time.Duration,
-) error {
-	endTime := submission.StartTime.Add(duration)
-	if endTime.Before(time.Now()) {
-		submission.FormGenerated.Status = generated.COMPLETED
-		if err := f.submissionRepository.Save(submission); err != nil {
-			return err
-		}
-		return errs.New("Generated form duration is expired", 400)
-	}
-
-	return nil
-}
+//func (f *FormGeneratedService) checkTime(
+//	submission *generated.Submission,
+//	duration time.Duration,
+//) error {
+//	endTime := submission.StartTime.Add(duration)
+//	if endTime.Before(time.Now()) {
+//		submission.FormGenerated.Status = generated.COMPLETED
+//		if err := f.submissionRepository.Save(submission); err != nil {
+//			return err
+//		}
+//		return errs.New("Generated form duration is expired", 400)
+//	}
+//
+//	return nil
+//}
 
 func (f *FormGeneratedService) checkDeadline(formPublished *published.FormPublished) error {
 	currentTime := time.Now()
@@ -607,21 +605,21 @@ func (f *FormGeneratedService) checkStatusForVerification(old, new generated.For
 	return nil
 }
 
-func (f *FormGeneratedService) findActiveGeneratedForm(
-	forms []generated.Submission,
-	formPublished *published.FormPublished,
-	userId *uuid.UUID,
-) (*generated.Submission, error) {
-	for _, submission := range forms {
-		if submission.FormGenerated.Status != generated.COMPLETED {
-			return &submission, nil
-		}
-	}
-
-	submission, err := f.submissionFactory.Build(userId, formPublished)
-	if err != nil {
-		return nil, err
-	}
-
-	return submission, nil
-}
+//func (f *FormGeneratedService) findActiveGeneratedForm(
+//	forms []generated.Submission,
+//	formPublished *published.FormPublished,
+//	userId *uuid.UUID,
+//) (*generated.Submission, error) {
+//	for _, submission := range forms {
+//		if submission.FormGenerated.Status != generated.COMPLETED {
+//			return &submission, nil
+//		}
+//	}
+//
+//	submission, err := f.submissionFactory.Build(userId, formPublished)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return submission, nil
+//}

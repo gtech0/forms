@@ -18,9 +18,9 @@ func Sync() {
 		&published.MarkConfiguration{},
 		&published.ExcludedQuestion{},
 
-		&published.Solution{},
-		&published.SolutionComment{},
-		&generated.Submission{},
+		//&published.Solution{},
+		//&published.SolutionComment{},
+		//&generated.Submission{},
 
 		&generated.FormGenerated{},
 
