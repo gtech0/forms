@@ -28,7 +28,7 @@ func NewQuestionGeneratedIntegrationMapper() *QuestionGeneratedIntegrationMapper
 	}
 }
 
-func (q *QuestionGeneratedIntegrationMapper) ToDto(questionGenerated generated.IQuestion) (get.IntegratedIQuestionDto, error) {
+func (q *QuestionGeneratedIntegrationMapper) ToDto(questionGenerated generated.IQuestion, isAnswerRequired bool) (get.IntegratedIQuestionDto, error) {
 	questionEntity, err := q.questionRepository.FindById(questionGenerated.GetId())
 	if err != nil {
 		return nil, err
@@ -36,13 +36,13 @@ func (q *QuestionGeneratedIntegrationMapper) ToDto(questionGenerated generated.I
 
 	switch questionGenerated.GetType() {
 	case question.SINGLE_CHOICE:
-		return q.singleChoiceGeneratedIntegrationMapper.toDto(questionGenerated.(*generated.SingleChoice), questionEntity)
+		return q.singleChoiceGeneratedIntegrationMapper.toDto(questionGenerated.(*generated.SingleChoice), questionEntity, isAnswerRequired)
 	case question.TEXT_INPUT:
-		return q.textInputGeneratedIntegrationMapper.toDto(questionGenerated.(*generated.TextInput), questionEntity)
+		return q.textInputGeneratedIntegrationMapper.toDto(questionGenerated.(*generated.TextInput), questionEntity, isAnswerRequired)
 	case question.MULTIPLE_CHOICE:
-		return q.multipleChoiceGeneratedIntegrationMapper.toDto(questionGenerated.(*generated.MultipleChoice), questionEntity)
+		return q.multipleChoiceGeneratedIntegrationMapper.toDto(questionGenerated.(*generated.MultipleChoice), questionEntity, isAnswerRequired)
 	case question.MATCHING:
-		return q.matchingGeneratedIntegrationMapper.toDto(questionGenerated.(*generated.Matching), questionEntity)
+		return q.matchingGeneratedIntegrationMapper.toDto(questionGenerated.(*generated.Matching), questionEntity, isAnswerRequired)
 	default:
 		return nil, errs.New("invalid question type", 400)
 	}

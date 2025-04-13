@@ -3,21 +3,19 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"hedgehog-forms/internal/core/dto/create"
+	"hedgehog-forms/internal/core/dto/get"
 	"hedgehog-forms/internal/core/errs"
-	"hedgehog-forms/internal/core/mapper"
 	"hedgehog-forms/internal/core/service"
 	"net/http"
 )
 
 type FormGeneratedController struct {
 	formGeneratedService *service.FormGeneratedService
-	formGeneratedMapper  *mapper.FormGeneratedMapper
 }
 
 func NewFormGeneratedController() *FormGeneratedController {
 	return &FormGeneratedController{
 		formGeneratedService: service.NewFormGeneratedService(),
-		formGeneratedMapper:  mapper.NewFormGeneratedMapper(),
 	}
 }
 
@@ -53,6 +51,29 @@ func (f *FormGeneratedController) Get(ctx *gin.Context) {
 	if err != nil {
 		ctx.Error(err)
 		return
+	}
+
+	ctx.JSON(http.StatusOK, *formGeneratedDto)
+}
+
+func (f *FormGeneratedController) GetResults(ctx *gin.Context) {
+	generatedId := ctx.Param("generatedId")
+	answerRequired := ctx.Query("answers")
+
+	var err error
+	formGeneratedDto := new(get.IntegrationGeneratedFormDto)
+	if answerRequired == "true" {
+		formGeneratedDto, err = f.formGeneratedService.GetResults(generatedId)
+		if err != nil {
+			ctx.Error(err)
+			return
+		}
+	} else {
+		formGeneratedDto, err = f.formGeneratedService.GetResultsNoAnswer(generatedId)
+		if err != nil {
+			ctx.Error(err)
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusOK, *formGeneratedDto)

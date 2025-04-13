@@ -101,7 +101,7 @@ func (f *FormGeneratedService) Create(
 //	return nil
 //}
 
-func (f *FormGeneratedService) Get(generatedId string) (*get.IntegrationGeneratedFormDto, error) {
+func (f *FormGeneratedService) Get(generatedId string) (*get.FormGeneratedDto, error) {
 	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,35 @@ func (f *FormGeneratedService) Get(generatedId string) (*get.IntegrationGenerate
 		return nil, err
 	}
 
-	return f.formGeneratedMapper.ToIntegrationDto(formGenerated)
+	return f.formGeneratedMapper.ToDto(formGenerated)
+}
+
+func (f *FormGeneratedService) GetResults(generatedId string) (*get.IntegrationGeneratedFormDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
+	if err != nil {
+		return nil, err
+	}
+
+	return f.formGeneratedMapper.ToIntegrationDto(formGenerated, true)
+}
+
+func (f *FormGeneratedService) GetResultsNoAnswer(generatedId string) (*get.IntegrationGeneratedFormDto, error) {
+	parsedGeneratedId, err := util.IdCheckAndParse(generatedId)
+	if err != nil {
+		return nil, err
+	}
+
+	formGenerated, err := f.formGeneratedRepository.FindById(parsedGeneratedId)
+	if err != nil {
+		return nil, err
+	}
+
+	return f.formGeneratedMapper.ToIntegrationDto(formGenerated, false)
 }
 
 //func (f *FormGeneratedService) GetMyForm(

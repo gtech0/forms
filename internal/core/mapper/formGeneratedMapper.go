@@ -37,11 +37,14 @@ func (f *FormGeneratedMapper) ToDto(formGenerated *generated.FormGenerated) (*ge
 	return formGeneratedDto, nil
 }
 
-func (f *FormGeneratedMapper) ToIntegrationDto(formGenerated *generated.FormGenerated) (*get.IntegrationGeneratedFormDto, error) {
+func (f *FormGeneratedMapper) ToIntegrationDto(
+	formGenerated *generated.FormGenerated,
+	isAnswerRequired bool,
+) (*get.IntegrationGeneratedFormDto, error) {
 	formGeneratedDto := new(get.IntegrationGeneratedFormDto)
 	formGeneratedDto.Id = formGenerated.Id
 	formGeneratedDto.Status = formGenerated.Status
-	sections, err := f.sectionsToDto(formGenerated.Sections)
+	sections, err := f.sectionsToDto(formGenerated.Sections, isAnswerRequired)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +53,10 @@ func (f *FormGeneratedMapper) ToIntegrationDto(formGenerated *generated.FormGene
 	return formGeneratedDto, nil
 }
 
-func (f *FormGeneratedMapper) sectionsToDto(sections []generated.Section) ([]get.IntegrationSectionDto, error) {
+func (f *FormGeneratedMapper) sectionsToDto(sections []generated.Section, isAnswerRequired bool) ([]get.IntegrationSectionDto, error) {
 	mappedSections := make([]get.IntegrationSectionDto, 0)
 	for _, currentSection := range sections {
-		mappedSection, err := f.sectionGeneratedIntegrationMapper.ToIntegrationDto(currentSection)
+		mappedSection, err := f.sectionGeneratedIntegrationMapper.ToIntegrationDto(currentSection, isAnswerRequired)
 		if err != nil {
 			return nil, err
 		}

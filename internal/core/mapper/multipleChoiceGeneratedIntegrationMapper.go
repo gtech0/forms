@@ -15,19 +15,21 @@ func NewMultipleChoiceGeneratedIntegrationMapper() *MultipleChoiceGeneratedInteg
 func (m *MultipleChoiceGeneratedIntegrationMapper) toDto(
 	multipleChoice *generated.MultipleChoice,
 	questionEntity *question.Question,
+	isAnswerRequired bool,
 ) (*get.IntegratedMultipleChoiceDto, error) {
 	multipleChoiceDto := new(get.IntegratedMultipleChoiceDto)
 	multipleChoiceDto.Id = multipleChoice.Id
 	multipleChoiceDto.Description = multipleChoice.Description
 	multipleChoiceDto.OwnerId = questionEntity.OwnerId
 	multipleChoiceDto.Type = multipleChoice.Type
-	multipleChoiceDto.Options, multipleChoiceDto.CorrectOptions = m.optionsToDto(questionEntity.MultipleChoice.Options)
+	multipleChoiceDto.Options, multipleChoiceDto.CorrectOptions = m.optionsToDto(questionEntity.MultipleChoice.Options, isAnswerRequired)
 	multipleChoiceDto.EnteredAnswers = multipleChoice.EnteredAnswers
 	return multipleChoiceDto, nil
 }
 
 func (m *MultipleChoiceGeneratedIntegrationMapper) optionsToDto(
 	multipleChoiceOptions []question.MultipleChoiceOption,
+	isAnswerRequired bool,
 ) ([]get.IntegratedMultipleOptionDto, []get.IntegratedMultipleOptionDto) {
 	options := make([]get.IntegratedMultipleOptionDto, 0)
 	correctOptions := make([]get.IntegratedMultipleOptionDto, 0)
@@ -35,9 +37,9 @@ func (m *MultipleChoiceGeneratedIntegrationMapper) optionsToDto(
 		var option get.IntegratedMultipleOptionDto
 		option.Id = multipleChoiceOption.Id
 		option.Text = multipleChoiceOption.Text
-		if multipleChoiceOption.IsAnswer {
+		if multipleChoiceOption.IsAnswer && isAnswerRequired {
 			correctOptions = append(correctOptions, option)
-		} else {
+		} else if !isAnswerRequired {
 			options = append(options, option)
 		}
 	}

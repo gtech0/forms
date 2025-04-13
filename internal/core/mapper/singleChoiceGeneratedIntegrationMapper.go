@@ -15,19 +15,21 @@ func NewSingleChoiceGeneratedIntegrationMapper() *SingleChoiceGeneratedIntegrati
 func (s *SingleChoiceGeneratedIntegrationMapper) toDto(
 	singleChoice *generated.SingleChoice,
 	questionEntity *question.Question,
+	isAnswerRequired bool,
 ) (*get.IntegratedSingleChoiceDto, error) {
 	singleChoiceDto := new(get.IntegratedSingleChoiceDto)
 	singleChoiceDto.Id = singleChoice.Id
 	singleChoiceDto.Description = singleChoice.Description
 	singleChoiceDto.OwnerId = questionEntity.OwnerId
 	singleChoiceDto.Type = singleChoice.Type
-	singleChoiceDto.Options, singleChoiceDto.Answer = s.singleOptionToDto(questionEntity.SingleChoice.Options)
+	singleChoiceDto.Options, singleChoiceDto.Answer = s.singleOptionToDto(questionEntity.SingleChoice.Options, isAnswerRequired)
 	singleChoiceDto.EnteredAnswer = singleChoice.EnteredAnswer
 	return singleChoiceDto, nil
 }
 
 func (s *SingleChoiceGeneratedIntegrationMapper) singleOptionToDto(
 	singleChoiceOptions []question.SingleChoiceOption,
+	isAnswerRequired bool,
 ) ([]get.IntegratedSingleOptionDto, get.IntegratedSingleOptionDto) {
 	options := make([]get.IntegratedSingleOptionDto, len(singleChoiceOptions))
 	var answer get.IntegratedSingleOptionDto
@@ -35,9 +37,9 @@ func (s *SingleChoiceGeneratedIntegrationMapper) singleOptionToDto(
 		var option get.IntegratedSingleOptionDto
 		option.Id = singleChoiceOption.Id
 		option.Text = singleChoiceOption.Text
-		if singleChoiceOption.IsAnswer {
+		if singleChoiceOption.IsAnswer && isAnswerRequired {
 			answer = option
-		} else {
+		} else if !singleChoiceOption.IsAnswer {
 			options = append(options, option)
 		}
 	}

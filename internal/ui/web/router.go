@@ -60,6 +60,7 @@ func NewRouter() *gin.Engine {
 	{
 		formGenerated.POST("/create/:publishedId", formGeneratedController.Create)
 		formGenerated.GET("/get/:generatedId", formGeneratedController.Get)
+		formGenerated.GET("/get/results/:generatedId", formGeneratedController.GetResults)
 		//formGenerated.POST("/get/:publishedId", formGeneratedController.GetMyForm)
 		//formGenerated.POST("/save/:generatedId", formGeneratedController.SaveAnswers)
 		//formGenerated.POST("/submit/:generatedId", formGeneratedController.SubmitForm)

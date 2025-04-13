@@ -15,13 +15,16 @@ func NewTextInputGeneratedIntegrationMapper() *TextInputGeneratedIntegrationMapp
 func (m *TextInputGeneratedIntegrationMapper) toDto(
 	singleChoice *generated.TextInput,
 	questionEntity *question.Question,
+	isAnswerRequired bool,
 ) (*get.IntegratedTextInputDto, error) {
 	singleChoiceDto := new(get.IntegratedTextInputDto)
 	singleChoiceDto.Id = singleChoice.Id
 	singleChoiceDto.Description = singleChoice.Description
 	singleChoiceDto.OwnerId = questionEntity.OwnerId
 	singleChoiceDto.Type = singleChoice.Type
-	singleChoiceDto.Answers = m.answersToString(questionEntity.TextInput.Answers)
+	if isAnswerRequired {
+		singleChoiceDto.Answers = m.answersToString(questionEntity.TextInput.Answers)
+	}
 	singleChoiceDto.EnteredAnswer = singleChoice.EnteredAnswer
 	return singleChoiceDto, nil
 }

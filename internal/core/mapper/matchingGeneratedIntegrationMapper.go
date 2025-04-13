@@ -16,6 +16,7 @@ func NewMatchingGeneratedIntegrationMapper() *MatchingGeneratedIntegrationMapper
 func (m *MatchingGeneratedIntegrationMapper) toDto(
 	matching *generated.Matching,
 	questionEntity *question.Question,
+	isAnswerRequired bool,
 ) (*get.IntegratedMatchingDto, error) {
 	matchingDto := new(get.IntegratedMatchingDto)
 	matchingDto.Id = matching.Id
@@ -24,7 +25,9 @@ func (m *MatchingGeneratedIntegrationMapper) toDto(
 	matchingDto.Type = matching.Type
 	matchingDto.Terms = matching.Terms
 	matchingDto.Definitions = matching.Definitions
-	matchingDto.TermsAndDefinitions = m.termsAndDefinitionsToDto(questionEntity.Matching.Definitions)
+	if isAnswerRequired {
+		matchingDto.TermsAndDefinitions = m.termsAndDefinitionsToDto(questionEntity.Matching.Definitions)
+	}
 	matchingDto.EnteredAnswers = matching.EnteredAnswers
 	return matchingDto, nil
 }

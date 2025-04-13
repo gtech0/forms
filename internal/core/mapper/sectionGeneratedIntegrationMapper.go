@@ -15,12 +15,12 @@ func NewSectionGeneratedIntegrationMapper() *SectionGeneratedIntegrationMapper {
 	}
 }
 
-func (m *SectionGeneratedIntegrationMapper) ToIntegrationDto(section generated.Section) (*get.IntegrationSectionDto, error) {
+func (m *SectionGeneratedIntegrationMapper) ToIntegrationDto(section generated.Section, isAnswerRequired bool) (*get.IntegrationSectionDto, error) {
 	sectionDto := new(get.IntegrationSectionDto)
 	sectionDto.Id = section.Id
 	sectionDto.Title = section.Title
 	sectionDto.Description = section.Description
-	blocks, err := m.blocksToDto(section.Blocks)
+	blocks, err := m.blocksToDto(section.Blocks, isAnswerRequired)
 	if err != nil {
 		return nil, err
 	}
@@ -29,10 +29,10 @@ func (m *SectionGeneratedIntegrationMapper) ToIntegrationDto(section generated.S
 	return sectionDto, nil
 }
 
-func (m *SectionGeneratedIntegrationMapper) blocksToDto(blocks []*generated.Block) ([]get.IntegrationBlockDto, error) {
+func (m *SectionGeneratedIntegrationMapper) blocksToDto(blocks []*generated.Block, isAnswerRequired bool) ([]get.IntegrationBlockDto, error) {
 	mappedBlocks := make([]get.IntegrationBlockDto, 0)
 	for _, currentBlock := range blocks {
-		mappedBlock, err := m.blockGeneratedIntegrationMapper.toDto(currentBlock)
+		mappedBlock, err := m.blockGeneratedIntegrationMapper.toDto(currentBlock, isAnswerRequired)
 		if err != nil {
 			return nil, err
 		}

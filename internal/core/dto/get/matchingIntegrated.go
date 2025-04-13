@@ -8,6 +8,6 @@ type IntegratedMatchingDto struct {
 	IntegratedQuestionDto
 	Terms               []generated.Term                `json:"terms"`
 	Definitions         []generated.Definition          `json:"definitions"`
-	TermsAndDefinitions []MatchingTermDefinitionDto     `json:"termsAndDefinitions"`
+	TermsAndDefinitions []MatchingTermDefinitionDto     `json:"termsAndDefinitions,omitempty"`
 	EnteredAnswers      []generated.EnteredMatchingPair `json:"enteredAnswers"`
 }

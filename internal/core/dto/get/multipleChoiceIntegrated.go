@@ -5,7 +5,7 @@ import "github.com/google/uuid"
 type IntegratedMultipleChoiceDto struct {
 	IntegratedQuestionDto
 	Options        []IntegratedMultipleOptionDto `json:"options"`
-	CorrectOptions []IntegratedMultipleOptionDto `json:"correctOptions"`
+	CorrectOptions []IntegratedMultipleOptionDto `json:"correctOptions,omitempty"`
 	EnteredAnswers []uuid.UUID                   `json:"enteredAnswers"`
 }
 
